@@ -60,8 +60,6 @@ void UserInterface::join()
 
 Move UserInterface::readMove()
 {
-    std::cout << "Target pos, speed: ";
-
     Move move;
     std::cin >> move.targetPosition >> move.speed;
 

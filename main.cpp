@@ -13,28 +13,17 @@ int main()
     auto driver = std::make_shared<Driver>(0.5);
     driver->run(milliseconds(20));
 
+    Controller controller(driver);
+
     UserInterface ui;
     ui.run(milliseconds(50), driver);
 
-    //
+    while (true)
+    {
+        Move move = ui.readMove();
 
-    std::this_thread::sleep_for(milliseconds(500));
-
-    driver->loggingOn();
-    driver->accelerate(.2);
-    std::this_thread::sleep_for(milliseconds(1000));
-    driver->loggingOff();
-
-    driver->loggingOn();
-    driver->accelerate(-.6);
-    std::this_thread::sleep_for(milliseconds(1000));
-    driver->loggingOff();
-
-    driver->accelerate(.4);
-
-    std::this_thread::sleep_for(milliseconds(1000));
-
-    //
+        controller.executeMove(move);
+    }
 
     ui.join();
 
