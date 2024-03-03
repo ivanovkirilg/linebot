@@ -18,9 +18,12 @@ int main()
     UserInterface ui;
     ui.run(milliseconds(50), driver);
 
+    // FIXME Workaround for background starting slower than first readMove
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
     while (true)
     {
-        Move move = ui.readMove();
+        move::Move move = ui.readMove();
 
         controller.executeMove(move);
     }

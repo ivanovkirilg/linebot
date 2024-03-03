@@ -14,10 +14,11 @@ public:
              std::weak_ptr<const Driver> driver);
     void join();
 
-    static Move readMove();
+    move::Move readMove();
 
 private:
     std::atomic<bool> m_running{};
+    std::atomic<bool> m_paused{};
     std::thread m_background;
 };
 

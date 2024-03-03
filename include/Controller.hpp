@@ -12,7 +12,7 @@ class Controller
 public:
     Controller(std::shared_ptr<Driver> driver) : m_driver(driver) { }
 
-    void executeMove(const Move& move);
+    void executeMove(const move::Move& move);
 
 private:
     std::shared_ptr<Driver> m_driver;

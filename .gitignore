@@ -1,0 +1,6 @@
+build/
+bld/
+
+.cache/
+
+.vscode/

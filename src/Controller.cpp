@@ -3,7 +3,7 @@
 #include "Move.hpp"
 
 
-void Controller::executeMove(const Move& move)
+void Controller::executeMove(const move::Move& move)
 {
     // Stop driver
     m_driver->accelerate(-m_driver->velocity());
