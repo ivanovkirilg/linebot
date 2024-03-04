@@ -22,7 +22,7 @@ public:
     void loggingOff();
 
     void run(std::chrono::milliseconds refreshRate);
-    void join();
+    void terminate();
 
     void accelerate(double instantaneousAcceleration);
 

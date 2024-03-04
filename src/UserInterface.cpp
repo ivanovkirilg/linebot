@@ -53,7 +53,7 @@ void UserInterface::run(
     m_background = std::thread(job);
 }
 
-void UserInterface::join()
+void UserInterface::terminate()
 {
     m_running = false;
     m_background.join();

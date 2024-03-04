@@ -11,12 +11,12 @@ int main()
     using namespace std::chrono;
 
     auto driver = std::make_shared<Driver>(0.5);
-    driver->run(milliseconds(20));
+    driver->run(milliseconds(4));
 
     Controller controller(driver);
 
     UserInterface ui;
-    ui.run(milliseconds(50), driver);
+    ui.run(milliseconds(16), driver);
 
     // FIXME Workaround for background starting slower than first readMove
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -28,9 +28,9 @@ int main()
         controller.executeMove(move);
     }
 
-    ui.join();
+    ui.terminate();
 
-    driver->join();
+    driver->terminate();
 
     return 0;
 }

@@ -42,7 +42,7 @@ void Driver::run(std::chrono::milliseconds refreshRate)
     m_background = std::thread(job);
 }
 
-void Driver::join()
+void Driver::terminate()
 {
     m_running = false;
     m_background.join();

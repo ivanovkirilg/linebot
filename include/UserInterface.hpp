@@ -12,7 +12,7 @@ class UserInterface
 public:
     void run(std::chrono::milliseconds refreshRate,
              std::weak_ptr<const Driver> driver);
-    void join();
+    void terminate();
 
     move::Move readMove();
 
