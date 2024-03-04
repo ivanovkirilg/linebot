@@ -7,7 +7,7 @@ namespace move
 constexpr double MIN_POSITION = 0.0;
 constexpr double MAX_POSITION = 1.0;
 
-constexpr double MIN_SPEED = 0.0;
+constexpr double MIN_SPEED_EXCL = 0.0;
 
 
 struct Move
@@ -18,9 +18,9 @@ struct Move
 
 inline bool isValid(const Move& move)
 {
-    return (move.targetPosition >= 0.0)
-        && (move.targetPosition <= 1.0)
-        && (move.speed > 0.0);
+    return (move.targetPosition >= MIN_POSITION)
+        && (move.targetPosition <= MAX_POSITION)
+        && (move.speed > MIN_SPEED_EXCL);
 }
 
 }
