@@ -17,3 +17,5 @@ add_library(
 )
 
 target_include_directories(${PROJECT_NAME} INTERFACE ${EXT_INC_PATH})
+
+add_subdirectory(test)

@@ -23,3 +23,5 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE DOMN DRVR)
+
+add_subdirectory(test)
