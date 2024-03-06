@@ -2,6 +2,9 @@
 
 #include "DOMN/Move.hpp"
 
+#include <cmath>
+#include <thread>
+
 
 void Controller::executeMove(const move::Move& move)
 {

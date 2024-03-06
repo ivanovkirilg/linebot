@@ -1,13 +1,15 @@
 #ifndef DRVR_INCLUDE_DRVR_DRIVER
 #define DRVR_INCLUDE_DRVR_DRIVER
 
+#include "IDriver.hpp"
+
 #include <atomic>
 #include <chrono>
 #include <thread>
 #include <fstream>
 
 
-class Driver
+class Driver : public IDriver
 {
 public:
     Driver(double position)
@@ -15,16 +17,16 @@ public:
         m_logFile( std::string("driver") + std::to_string(time(NULL)) + ".txt" )
     { }
 
-    inline double position() const { return m_position; }
-    inline double velocity() const { return m_velocity; }
+    virtual double position() const override { return m_position; }
+    virtual double velocity() const override { return m_velocity; }
 
-    void loggingOn();
-    void loggingOff();
+    virtual void loggingOn() override;
+    virtual void loggingOff() override;
 
-    void run(std::chrono::milliseconds refreshRate);
-    void terminate();
+    virtual void run(std::chrono::milliseconds refreshRate) override;
+    virtual void terminate() override;
 
-    void accelerate(double instantaneousAcceleration);
+    virtual void accelerate(double instantaneousAcceleration) override;
 
 private:
     std::atomic<double> m_position{};
