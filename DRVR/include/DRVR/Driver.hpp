@@ -1,7 +1,5 @@
 #ifndef DRVR_INCLUDE_DRVR_DRIVER
 #define DRVR_INCLUDE_DRVR_DRIVER
-#ifndef SRC_WAFER_STAGE_DRIVER
-#define SRC_WAFER_STAGE_DRIVER
 
 #include <atomic>
 #include <chrono>
@@ -41,6 +39,3 @@ private:
 };
 
 #endif // SRC_WAFER_STAGE_DRIVER
-
-
-#endif // DRVR_INCLUDE_DRVR_DRIVER

@@ -1,7 +1,5 @@
 #ifndef UI_INCLUDE_UI_USER_INTERFACE
 #define UI_INCLUDE_UI_USER_INTERFACE
-#ifndef SRC_UI
-#define SRC_UI
 
 #include "DRVR/Driver.hpp"
 #include "DOMN/Move.hpp"
@@ -25,6 +23,3 @@ private:
 };
 
 #endif // SRC_UI
-
-
-#endif // UI_INCLUDE_UI_USER_INTERFACE
