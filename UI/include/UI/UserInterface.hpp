@@ -1,8 +1,10 @@
+#ifndef UI_INCLUDE_UI_USER_INTERFACE
+#define UI_INCLUDE_UI_USER_INTERFACE
 #ifndef SRC_UI
 #define SRC_UI
 
-#include "Driver.hpp"
-#include "Move.hpp"
+#include "DRVR/Driver.hpp"
+#include "DOMN/Move.hpp"
 
 #include <memory>
 #include <chrono>
@@ -23,3 +25,6 @@ private:
 };
 
 #endif // SRC_UI
+
+
+#endif // UI_INCLUDE_UI_USER_INTERFACE

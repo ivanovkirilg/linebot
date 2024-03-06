@@ -1,6 +1,6 @@
-#include "Controller.hpp"
+#include "CTRL/Controller.hpp"
 
-#include "Move.hpp"
+#include "DOMN/Move.hpp"
 
 
 void Controller::executeMove(const move::Move& move)

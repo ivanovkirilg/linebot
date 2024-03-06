@@ -1,6 +1,6 @@
-#include "UserInterface.hpp"
-#include "Driver.hpp"
-#include "Controller.hpp"
+#include "UI/UserInterface.hpp"
+#include "DRVR/Driver.hpp"
+#include "CTRL/Controller.hpp"
 
 #include <chrono>
 #include <iostream>

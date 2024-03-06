@@ -1,3 +1,5 @@
+#ifndef DOMN_INCLUDE_DOMN_MOVE
+#define DOMN_INCLUDE_DOMN_MOVE
 #ifndef SRC_MOVE
 #define SRC_MOVE
 
@@ -26,3 +28,6 @@ inline bool isValid(const Move& move)
 }
 
 #endif // SRC_MOVE
+
+
+#endif // DOMN_INCLUDE_DOMN_MOVE

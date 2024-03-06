@@ -1,8 +1,10 @@
+#ifndef CTRL_INCLUDE_CTRL_CONTROLLER
+#define CTRL_INCLUDE_CTRL_CONTROLLER
 #ifndef SRC_WAFER_STAGE
 #define SRC_WAFER_STAGE
 
-#include "Move.hpp"
-#include "Driver.hpp"
+#include "DOMN/Move.hpp"
+#include "DRVR/Driver.hpp"
 
 #include <memory>
 
@@ -19,3 +21,6 @@ private:
 };
 
 #endif // SRC_WAFER_STAGE
+
+
+#endif // CTRL_INCLUDE_CTRL_CONTROLLER
