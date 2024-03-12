@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(TODO_test)
+project(CTRL_test)
 
-# add_executable(
-#     TODO_test
-#     test_reader.cpp
-# )
-# target_link_libraries(
-#     TODO_test
-#     GTest::gtest_main
-#     ${PROJECT_NAME}_lib
-# )
+add_executable(
+    ${PROJECT_NAME}
+    UT_Controller.cpp
+)
+target_link_libraries(
+    ${PROJECT_NAME}
+    GTest::gmock_main
+    CTRL
+)
 
 include(GoogleTest)
-# gtest_discover_tests(TODO_test)
+gtest_discover_tests(${PROJECT_NAME})
