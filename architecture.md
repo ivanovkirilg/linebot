@@ -1,18 +1,20 @@
 # LineBot Architecture
 
-## Top-level
+## Layer Diagram
 
 ```plantuml
-object main
 
-class Driver
-class Controller
-class UI as "UserInterface"
+rectangle Low {
+    component DOMN
+    component DRVR
+}
+rectangle Mid {
+    component CTRL
+    component UI
+}
+component MAIN
 
-main --> Driver
-main --> Controller
-main --> UI
-
-Controller --> Driver
-UI --> Driver
+MAIN --> Mid
+MAIN --> Low
+Mid --> Low
 ```
