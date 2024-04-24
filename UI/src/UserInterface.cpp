@@ -1,4 +1,4 @@
-#include "UserInterface.hpp"
+#include "UI/UserInterface.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -8,9 +8,9 @@
 static constexpr size_t WIDTH = 80;
 
 
-static void draw(std::weak_ptr<const Driver> driver, std::ostream& output)
+static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 {
-    std::shared_ptr<const Driver> dr = driver.lock();
+    std::shared_ptr<const IDriver> dr = driver.lock();
     if (dr)
     {
         output << '\r' << '|';
@@ -32,7 +32,7 @@ static void draw(std::weak_ptr<const Driver> driver, std::ostream& output)
 
 void UserInterface::run(
         std::chrono::milliseconds refreshRate,
-        std::weak_ptr<const Driver> driver)
+        std::weak_ptr<const IDriver> driver)
 {
     auto job = [this, refreshRate, driver]()
     {

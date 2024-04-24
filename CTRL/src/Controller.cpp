@@ -1,6 +1,9 @@
-#include "Controller.hpp"
+#include "CTRL/Controller.hpp"
 
-#include "Move.hpp"
+#include "DOMN/Move.hpp"
+
+#include <cmath>
+#include <thread>
 
 
 void Controller::executeMove(const move::Move& move)

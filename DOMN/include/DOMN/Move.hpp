@@ -1,5 +1,5 @@
-#ifndef SRC_MOVE
-#define SRC_MOVE
+#ifndef DOMN_INCLUDE_DOMN_MOVE
+#define DOMN_INCLUDE_DOMN_MOVE
 
 namespace move
 {
