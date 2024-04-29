@@ -15,17 +15,26 @@ int main()
 
     Controller controller(driver);
 
-    UserInterface ui;
+    UI::UserInterface ui;
     ui.run(milliseconds(16), driver);
 
-    // FIXME Workaround for background starting slower than first readMove
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-
-    while (true)
+    try
     {
-        move::Move move = ui.readMove();
+        while (true)
+        {
+            move::Move move = ui.readMove();
 
-        controller.executeMove(move);
+            controller.executeMove(move);
+        }
+    }
+    catch (UI::EndOfInputException)
+    {
+        // TODO: This is actually a normal situation, probably shouldn't throw!
+    }
+    catch (UI::InvalidInputException)
+    {
+        std::cout << "\n" "Received too many invalid inputs, quitting."
+                  << std::endl;
     }
 
     ui.terminate();

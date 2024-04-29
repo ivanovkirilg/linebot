@@ -8,7 +8,19 @@
 #include <chrono>
 #include <memory>
 #include <thread>
+#include <stdexcept>
 
+namespace UI
+{
+
+class EndOfInputException : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
+class InvalidInputException : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
 
 class UserInterface
 {
@@ -24,5 +36,7 @@ private:
     std::atomic<bool> m_paused{};
     std::thread m_background;
 };
+
+}
 
 #endif // SRC_UI

@@ -2,11 +2,14 @@
 
 #include <cmath>
 #include <iostream>
-#include <exception>
+#include <sstream>
 
+using namespace UI;
+
+namespace
+{
 
 static constexpr size_t WIDTH = 80;
-
 
 static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 {
@@ -30,6 +33,24 @@ static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
     }
 }
 
+class ScopedOn
+{
+public:
+    ScopedOn(std::atomic<bool>& var) : m_var(var)
+    {
+        m_var = true;
+    }
+    ~ScopedOn()
+    {
+        m_var = false;
+    }
+
+private:
+    std::atomic<bool>& m_var;
+};
+
+} // namespace
+
 void UserInterface::run(
         std::chrono::milliseconds refreshRate,
         std::weak_ptr<const IDriver> driver)
@@ -40,6 +61,7 @@ void UserInterface::run(
         {
             if (not m_paused)
             {
+                ScopedOn outputPause(m_paused);
                 draw(driver, std::cout);
             }
 
@@ -51,6 +73,8 @@ void UserInterface::run(
 
     m_running = true;
     m_background = std::thread(job);
+    // FIXME waiting for background to start
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 void UserInterface::terminate()
@@ -59,28 +83,39 @@ void UserInterface::terminate()
     m_background.join();
 }
 
+static move::Move tryReadMove()
+{
+    std::string line;
+    if (not std::getline(std::cin, line))
+    {
+        throw EndOfInputException("Could not read line");
+    }
+
+    move::Move move;
+    std::istringstream lineStream(line);
+    lineStream >> move.targetPosition >> move.speed;
+
+    return move;
+}
 
 move::Move UserInterface::readMove()
 {
-    m_paused = true;
+    ScopedOn outputPause(m_paused);
 
     std::cout << " Enter target position & speed: ";
 
-    move::Move move;
-    std::cin >> move.targetPosition >> move.speed;
+    move::Move move = tryReadMove();
 
     for (int retries = 0; not move::isValid(move); retries++)
     {
-        if (retries > 5)
+        if (retries > 3)
         {
-            throw std::runtime_error("No valid move entered");
+            throw InvalidInputException("No valid move entered (retried)");
         }
 
         std::cout << " Enter target position [0, 1] & speed: ";
-        std::cin >> move.targetPosition >> move.speed;
+        move = tryReadMove();
     }
-
-    m_paused = false;
 
     return move;
 }
