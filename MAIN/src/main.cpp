@@ -1,6 +1,7 @@
 #include "UI/UserInterface.hpp"
 #include "DRVR/Driver.hpp"
 #include "CTRL/Controller.hpp"
+#include "LOGR/Logger.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -9,6 +10,8 @@
 int main()
 {
     using namespace std::literals;
+
+    LOGR::Trace trace;
 
     auto driver = std::make_shared<Driver>(0.5);
     driver->run(4ms);

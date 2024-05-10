@@ -1,6 +1,7 @@
 #include "CTRL/Controller.hpp"
 
 #include "DOMN/Move.hpp"
+#include "LOGR/Logger.hpp"
 
 #include <cmath>
 #include <thread>
@@ -8,6 +9,7 @@
 
 void Controller::executeMove(const move::Move& move)
 {
+    LOGR::Trace trace(move.targetPosition, move.speed);
     // Stop driver
     m_driver->accelerate(-m_driver->velocity());
 

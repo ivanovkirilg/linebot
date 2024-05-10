@@ -21,6 +21,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_subdirectory(DOMN)
+add_subdirectory(LOGR)
 add_subdirectory(CTRL)
 add_subdirectory(DRVR)
 add_subdirectory(MAIN)
