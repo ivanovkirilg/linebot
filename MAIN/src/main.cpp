@@ -8,24 +8,31 @@
 
 int main()
 {
-    using namespace std::chrono;
+    using namespace std::literals;
 
     auto driver = std::make_shared<Driver>(0.5);
-    driver->run(milliseconds(4));
+    driver->run(4ms);
 
     Controller controller(driver);
 
-    UserInterface ui;
-    ui.run(milliseconds(16), driver);
+    UI::UserInterface ui;
+    ui.run(16ms, driver);
 
-    // FIXME Workaround for background starting slower than first readMove
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-
-    while (true)
+    try
     {
-        move::Move move = ui.readMove();
+        std::optional<move::Move> move = ui.readMove();
 
-        controller.executeMove(move);
+        while (move.has_value())
+        {
+            controller.executeMove(move.value());
+
+            move = ui.readMove();
+        }
+    }
+    catch (UI::InvalidInputException)
+    {
+        std::cout << "\nReceived too many invalid inputs, quitting."
+                  << std::endl;
     }
 
     ui.terminate();

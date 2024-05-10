@@ -2,11 +2,14 @@
 
 #include <cmath>
 #include <iostream>
-#include <exception>
+#include <sstream>
 
+using namespace UI;
+
+namespace
+{
 
 static constexpr size_t WIDTH = 80;
-
 
 static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 {
@@ -30,16 +33,24 @@ static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
     }
 }
 
+} // namespace
+
 void UserInterface::run(
         std::chrono::milliseconds refreshRate,
         std::weak_ptr<const IDriver> driver)
 {
-    auto job = [this, refreshRate, driver]()
+    m_background = std::thread([this, refreshRate, driver]()
     {
+        draw(driver, std::cout);
+
+        m_running = true;
+        m_running.notify_one();
+
         while (m_running && not driver.expired())
         {
-            if (not m_paused)
+            if (m_outputMutex.try_lock())
             {
+                std::lock_guard outLock(m_outputMutex, std::adopt_lock);
                 draw(driver, std::cout);
             }
 
@@ -47,10 +58,9 @@ void UserInterface::run(
         }
 
         m_running = false;
-    };
+    });
 
-    m_running = true;
-    m_background = std::thread(job);
+    m_running.wait(false);
 }
 
 void UserInterface::terminate()
@@ -59,28 +69,39 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-
-move::Move UserInterface::readMove()
+static std::optional<move::Move> tryReadMove()
 {
-    m_paused = true;
+    std::string line;
+    if (not std::getline(std::cin, line))
+    {
+        return std::nullopt;
+    }
+
+    move::Move move;
+    std::istringstream lineStream(line);
+    lineStream >> move.targetPosition >> move.speed;
+
+    return move;
+}
+
+std::optional<move::Move> UserInterface::readMove()
+{
+    std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
 
-    move::Move move;
-    std::cin >> move.targetPosition >> move.speed;
+    std::optional<move::Move> move = tryReadMove();
 
-    for (int retries = 0; not move::isValid(move); retries++)
+    for (int retries = 0; move and not move::isValid(move.value()); retries++)
     {
-        if (retries > 5)
+        if (retries > 3)
         {
-            throw std::runtime_error("No valid move entered");
+            throw InvalidInputException("No valid move entered (retried)");
         }
 
         std::cout << " Enter target position [0, 1] & speed: ";
-        std::cin >> move.targetPosition >> move.speed;
+        move = tryReadMove();
     }
-
-    m_paused = false;
 
     return move;
 }
