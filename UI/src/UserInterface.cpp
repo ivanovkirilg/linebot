@@ -33,22 +33,6 @@ static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
     }
 }
 
-class ScopedOn
-{
-public:
-    ScopedOn(std::atomic<bool>& var) : m_var(var)
-    {
-        m_var = true;
-    }
-    ~ScopedOn()
-    {
-        m_var = false;
-    }
-
-private:
-    std::atomic<bool>& m_var;
-};
-
 } // namespace
 
 void UserInterface::run(
