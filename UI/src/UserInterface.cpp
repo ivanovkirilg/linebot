@@ -55,8 +55,13 @@ void UserInterface::run(
         std::chrono::milliseconds refreshRate,
         std::weak_ptr<const IDriver> driver)
 {
-    auto job = [this, refreshRate, driver]()
+    m_background = std::thread([this, refreshRate, driver]()
     {
+        draw(driver, std::cout);
+
+        m_running = true;
+        m_running.notify_one();
+
         while (m_running && not driver.expired())
         {
             if (m_outputMutex.try_lock())
@@ -69,12 +74,9 @@ void UserInterface::run(
         }
 
         m_running = false;
-    };
+    });
 
-    m_running = true;
-    m_background = std::thread(job);
-    // FIXME waiting for background to start
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    m_running.wait(false);
 }
 
 void UserInterface::terminate()
