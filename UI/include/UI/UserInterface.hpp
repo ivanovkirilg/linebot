@@ -7,6 +7,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <thread>
 #include <stdexcept>
 
@@ -33,7 +34,7 @@ public:
 
 private:
     std::atomic<bool> m_running{};
-    std::atomic<bool> m_paused{};
+    std::mutex m_outputMutex;
     std::thread m_background;
 };
 

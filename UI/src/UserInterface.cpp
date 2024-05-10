@@ -59,9 +59,9 @@ void UserInterface::run(
     {
         while (m_running && not driver.expired())
         {
-            if (not m_paused)
+            if (m_outputMutex.try_lock())
             {
-                ScopedOn outputPause(m_paused);
+                std::lock_guard outLock(m_outputMutex, std::adopt_lock);
                 draw(driver, std::cout);
             }
 
@@ -100,7 +100,7 @@ static move::Move tryReadMove()
 
 move::Move UserInterface::readMove()
 {
-    ScopedOn outputPause(m_paused);
+    std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
 
