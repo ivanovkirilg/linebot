@@ -8,16 +8,13 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <thread>
 #include <stdexcept>
 
 namespace UI
 {
 
-class EndOfInputException : public std::runtime_error
-{
-    using std::runtime_error::runtime_error;
-};
 class InvalidInputException : public std::runtime_error
 {
     using std::runtime_error::runtime_error;
@@ -30,7 +27,7 @@ public:
              std::weak_ptr<const IDriver> driver);
     void terminate();
 
-    move::Move readMove();
+    std::optional<move::Move> readMove();
 
 private:
     std::atomic<bool> m_running{};

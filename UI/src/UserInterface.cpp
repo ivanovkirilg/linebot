@@ -85,12 +85,12 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-static move::Move tryReadMove()
+static std::optional<move::Move> tryReadMove()
 {
     std::string line;
     if (not std::getline(std::cin, line))
     {
-        throw EndOfInputException("Could not read line");
+        return std::nullopt;
     }
 
     move::Move move;
@@ -100,15 +100,15 @@ static move::Move tryReadMove()
     return move;
 }
 
-move::Move UserInterface::readMove()
+std::optional<move::Move> UserInterface::readMove()
 {
     std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
 
-    move::Move move = tryReadMove();
+    std::optional<move::Move> move = tryReadMove();
 
-    for (int retries = 0; not move::isValid(move); retries++)
+    for (int retries = 0; move and not move::isValid(move.value()); retries++)
     {
         if (retries > 3)
         {

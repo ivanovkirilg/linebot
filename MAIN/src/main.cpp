@@ -8,32 +8,30 @@
 
 int main()
 {
-    using namespace std::chrono;
+    using namespace std::literals;
 
     auto driver = std::make_shared<Driver>(0.5);
-    driver->run(milliseconds(4));
+    driver->run(4ms);
 
     Controller controller(driver);
 
     UI::UserInterface ui;
-    ui.run(milliseconds(16), driver);
+    ui.run(16ms, driver);
 
     try
     {
-        while (true)
-        {
-            move::Move move = ui.readMove();
+        std::optional<move::Move> move = ui.readMove();
 
-            controller.executeMove(move);
+        while (move.has_value())
+        {
+            controller.executeMove(move.value());
+
+            move = ui.readMove();
         }
-    }
-    catch (UI::EndOfInputException)
-    {
-        // TODO: This is actually a normal situation, probably shouldn't throw!
     }
     catch (UI::InvalidInputException)
     {
-        std::cout << "\n" "Received too many invalid inputs, quitting."
+        std::cout << "\nReceived too many invalid inputs, quitting."
                   << std::endl;
     }
 
