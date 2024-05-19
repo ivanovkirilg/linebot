@@ -9,10 +9,12 @@ set(INT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 include_directories(${INT_INC_PATH})
 
 add_library(
-    ${PROJECT_NAME} INTERFACE
+    ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Logger.hpp
+
+    ${SRC_PATH}/Logger.cpp
 )
 
-target_include_directories(${PROJECT_NAME} INTERFACE ${EXT_INC_PATH})
+target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})
 
 add_subdirectory(test)
