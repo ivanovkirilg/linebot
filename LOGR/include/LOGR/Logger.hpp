@@ -18,11 +18,20 @@ class Trace
 public:
     Trace(Ts&&... args,
           const std::source_location& loc = std::source_location::current())
+          requires(sizeof...(Ts) > 0)
         : m_loc(loc)
     {
         internal::logfile << loc.function_name() << " v ";
         ((internal::logfile << std::forward<Ts>(args) << " "), ...);
         internal::logfile << "\n";
+    }
+
+    Trace(Ts&&... args,
+          const std::source_location& loc = std::source_location::current())
+          requires(sizeof...(Ts) == 0)
+        : m_loc(loc)
+    {
+        internal::logfile << loc.function_name() << " v\n";
     }
 
     ~Trace()
