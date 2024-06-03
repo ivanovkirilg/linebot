@@ -9,7 +9,7 @@ namespace LOGR
 
 namespace internal
 {
-extern std::ofstream logfile;
+extern thread_local std::ofstream logfile;
 }
 
 template <typename... Ts>
