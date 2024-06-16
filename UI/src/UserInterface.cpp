@@ -1,5 +1,7 @@
 #include "UI/UserInterface.hpp"
 
+#include "LOGR/Logger.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -39,8 +41,11 @@ void UserInterface::run(
         std::chrono::milliseconds refreshRate,
         std::weak_ptr<const IDriver> driver)
 {
+    LOGR::Trace trace;
+    
     m_background = std::thread([this, refreshRate, driver]()
     {
+        LOGR::Trace trace;
         draw(driver, std::cout);
 
         m_running = true;
@@ -71,6 +76,7 @@ void UserInterface::terminate()
 
 static std::optional<move::Move> tryReadMove()
 {
+    LOGR::Trace trace;
     std::string line;
     if (not std::getline(std::cin, line))
     {
@@ -86,6 +92,7 @@ static std::optional<move::Move> tryReadMove()
 
 std::optional<move::Move> UserInterface::readMove()
 {
+    LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
@@ -102,6 +109,8 @@ std::optional<move::Move> UserInterface::readMove()
         std::cout << " Enter target position [0, 1] & speed: ";
         move = tryReadMove();
     }
+
+    // trace.log(move.value());
 
     return move;
 }
