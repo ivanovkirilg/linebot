@@ -7,7 +7,7 @@
 static inline std::string generateLogfileName()
 {
     std::stringstream stream;
-    stream << "LOGR_" << std::this_thread::get_id() << "_trace.txt";
+    stream << "LOGR_" << std::this_thread::get_id() << "_trace.csv";
     return stream.str();
 }
 
