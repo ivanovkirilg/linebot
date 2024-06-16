@@ -3,6 +3,7 @@
 
 #include "DRVR/IDriver.hpp"
 #include "DOMN/Move.hpp"
+#include "LOGR/Logger.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -10,14 +11,14 @@
 #include <mutex>
 #include <optional>
 #include <thread>
-#include <stdexcept>
+
 
 namespace UI
 {
 
-class InvalidInputException : public std::runtime_error
+class InvalidInputException : public LOGR::Exception
 {
-    using std::runtime_error::runtime_error;
+    using LOGR::Exception::Exception;
 };
 
 class UserInterface

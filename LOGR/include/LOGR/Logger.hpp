@@ -1,12 +1,11 @@
 #ifndef LOGR_INCLUDE_LOGR_LOGGER
 #define LOGR_INCLUDE_LOGR_LOGGER
 
-#include <chrono>
-#include <ctime>
+#include <atomic>
 #include <fstream>
-#include <iomanip>
 #include <source_location>
-#include <sstream>
+#include <stdexcept>
+
 
 namespace LOGR
 {
@@ -16,7 +15,31 @@ constexpr char SEPARATOR = ';';
 namespace internal
 {
 extern thread_local std::ofstream logfile;
+
+enum class Severity
+{
+    TRACE,
+    WARNING,
+    EXCEPTION
+};
+
+void logLinePrefix(Severity severity, const std::source_location& loc);
+
 }
+
+class Exception : public std::runtime_error
+{
+public:
+    Exception(const std::string& message,
+        const std::source_location& loc = std::source_location::current());
+
+    void handle(const std::string& message,
+        const std::source_location& loc = std::source_location::current()) const;
+
+private:
+    static std::atomic<unsigned long long> freeId;
+    unsigned long long id{};
+};
 
 template <typename... Ts>
 class Trace
@@ -27,8 +50,8 @@ public:
           requires(sizeof...(Ts) > 0)
         : m_loc(loc)
     {
-        logLinePrefix();
-        internal::logfile << SEPARATOR << "v ";
+        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
+        internal::logfile << "v ";
         ((internal::logfile << std::forward<Ts>(args) << " "), ...);
         internal::logfile << "\n";
     }
@@ -38,43 +61,26 @@ public:
           requires(sizeof...(Ts) == 0)
         : m_loc(loc)
     {
-        logLinePrefix();
-        internal::logfile << SEPARATOR << "v\n";
+        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
+        internal::logfile << "v\n";
     }
 
     ~Trace()
     {
-        logLinePrefix();
-        internal::logfile << SEPARATOR << "^\n";
+        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
+        internal::logfile << "^\n";
     }
 
     template <typename... T1s>
     void log(T1s&&... args)
     {
-        logLinePrefix();
-        internal::logfile << SEPARATOR << "| ";
+        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
+        internal::logfile << "| ";
         ((internal::logfile << std::forward<T1s>(args) << " "), ...);
         internal::logfile << "\n";
     }
 
 private:
-    void logLinePrefix()
-    {
-        using namespace std::chrono;
-        auto now = system_clock::now();
-        auto nowMs = duration_cast<milliseconds>(now.time_since_epoch())
-                     % milliseconds(1s);
-
-        std::time_t nowC = system_clock::to_time_t(now);
-
-        std::ostringstream nowStr;
-
-        nowStr << std::put_time(std::localtime(&nowC), "%F %T")
-               << '.' << std::setfill('0') << std::setw(3) << nowMs.count();
-
-        internal::logfile << nowStr.str() << SEPARATOR << m_loc.function_name();
-    }
-
     std::source_location m_loc;
 };
 

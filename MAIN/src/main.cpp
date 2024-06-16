@@ -32,8 +32,10 @@ int main()
             move = ui.readMove();
         }
     }
-    catch (UI::InvalidInputException)
+    catch (const UI::InvalidInputException& exc)
     {
+        exc.handle("Quitting application");
+
         std::cout << "\nReceived too many invalid inputs, quitting."
                   << std::endl;
     }
