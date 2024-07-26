@@ -2,19 +2,18 @@
 
 #include <netdb.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <unistd.h>
 
 using namespace COMM;
 
 Socket::Socket(int port)
 {
     addrinfo hints;
-    addrinfo* socketAddress = nullptr;
 
     memset(&hints, 0, sizeof(hints));
 
@@ -24,12 +23,13 @@ Socket::Socket(int port)
 
     const std::string portStr = std::to_string(port);
 
-    int result = getaddrinfo(nullptr, portStr.c_str(), &hints, &socketAddress);
+    addrinfo* socketAddress = nullptr;
+    int result = ::getaddrinfo(nullptr, portStr.c_str(), &hints, &socketAddress);
 
     if (result)
     {
         std::cerr << "getaddrinfo() ERROR " << result
-                  << ": " << gai_strerror(result) << std::endl;
+                  << ": " << ::gai_strerror(result) << std::endl;
         throw std::runtime_error("getaddrinfo ERROR");
     }
 
@@ -43,7 +43,7 @@ Socket::Socket(int port)
     if (m_fileDescriptor < 0)
     {
         std::cerr << "socket() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("socket ERROR");
     }
 }
@@ -51,7 +51,11 @@ Socket::Socket(int port)
 Socket::~Socket()
 {
     addrinfo* socketAddress = (addrinfo*) m_addrInfo;
-    ::freeaddrinfo(socketAddress);
+
+    if (socketAddress != nullptr)
+    {
+        ::freeaddrinfo(socketAddress);
+    }
 
     if (m_fileDescriptor > 0)
     {
@@ -60,7 +64,7 @@ Socket::~Socket()
         if (result < 0)
         {
             std::cerr << "close() ERROR " << errno
-                      << ": " << strerror(errno) << std::endl;
+                      << ": " << ::strerror(errno) << std::endl;
         }
     }
 }
@@ -75,7 +79,7 @@ void Socket::bind()
     if (result < 0)
     {
         std::cerr << "bind() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("bind ERROR");
     }
 }
@@ -87,7 +91,7 @@ void Socket::listen(int backlog)
     if (result < 0)
     {
         std::cerr << "listen() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("listen ERROR");
     }
 }
@@ -103,7 +107,7 @@ Connection Socket::accept()
     if (result < 0)
     {
         std::cerr << "accept() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("accept ERROR");
     }
 
@@ -121,7 +125,7 @@ Connection Socket::connect()
     if (result < 0)
     {
         std::cout << "connect() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("connect ERROR");
     }
 
@@ -142,7 +146,7 @@ Connection::~Connection()
     if (result < 0)
     {
         std::cerr << "close() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
     }
 
     m_fileDescriptor = 0;
@@ -160,7 +164,7 @@ void Connection::send(std::string message)
     if (sent < 0)
     {
         std::cout << "send() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("send() ERROR");
     }
     else if (sent == 0)
@@ -185,7 +189,7 @@ std::string Connection::receive()
     if (received < 0)
     {
         std::cout << "recv() ERROR " << errno
-                  << ": " << strerror(errno) << std::endl;
+                  << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("recv() ERROR");
     }
     else if (received == 0)
