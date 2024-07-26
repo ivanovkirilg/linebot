@@ -114,11 +114,12 @@ Connection Socket::accept()
     return result;
 }
 
-Connection Socket::connect()
+Connection Socket::connect(int port)
 {
-    addrinfo* socketAddress = (addrinfo*) m_addrInfo;
+    Socket temp(port);
+    addrinfo* socketAddress = (addrinfo*) temp.m_addrInfo;
 
-    int result = ::connect(m_fileDescriptor,
+    int result = ::connect(temp.m_fileDescriptor,
                            socketAddress->ai_addr,
                            socketAddress->ai_addrlen);
 
@@ -129,9 +130,10 @@ Connection Socket::connect()
         throw std::runtime_error("connect ERROR");
     }
 
-    int fd = m_fileDescriptor;
-    m_fileDescriptor = 0;
-    return Connection(fd);
+    Connection connection(temp.m_fileDescriptor);
+    temp.m_fileDescriptor = 0;
+
+    return connection;
 }
 
 Connection::Connection(int fileDescriptor)

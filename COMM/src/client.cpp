@@ -4,9 +4,7 @@
 
 int main()
 {
-    COMM::Socket serverSocket(9001);
-
-    COMM::Connection server = serverSocket.connect();
+    COMM::Connection server = COMM::Socket::connect(9001);
 
     while (true)
     {

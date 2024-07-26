@@ -10,13 +10,16 @@ namespace COMM
 class Connection
 {
 public:
-    Connection(int fileDescriptor);
     ~Connection();
 
     void send(std::string message);
     std::string receive();
 
     operator bool();
+
+private:
+    Connection(int fileDescriptor);
+    friend class Socket;
 
 private:
     int m_fileDescriptor = 0;
@@ -32,7 +35,7 @@ public:
     void listen(int backlog);
     [[nodiscard]] Connection accept();
 
-    [[nodiscard]] Connection connect();
+    [[nodiscard]] static Connection connect(int port);
 
 private:
     int m_fileDescriptor = 0;
