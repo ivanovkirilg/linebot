@@ -20,6 +20,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+add_subdirectory(COMM)
 add_subdirectory(DOMN)
 add_subdirectory(CTRL)
 add_subdirectory(DRVR)
