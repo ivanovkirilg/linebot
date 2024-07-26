@@ -15,22 +15,8 @@ add_library(
     ${SRC_PATH}/Socket.cpp
 )
 
-add_executable(
-    server
-    ${SRC_PATH}/server.cpp
-)
-target_link_libraries(server PRIVATE ${PROJECT_NAME})
-
-add_executable(
-    client
-    ${SRC_PATH}/client.cpp
-)
-target_link_libraries(client PRIVATE ${PROJECT_NAME})
-
 target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
 )
-
-# target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 add_subdirectory(test)
