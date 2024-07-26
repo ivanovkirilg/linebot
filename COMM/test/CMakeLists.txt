@@ -21,6 +21,11 @@ add_test(NAME serverConnectionTest
                  ${CMAKE_CURRENT_SOURCE_DIR}/test_server_connection.py
                  ${CMAKE_CURRENT_BINARY_DIR}/server)
 
+add_test(NAME clientConnectionTest
+         COMMAND ${Python_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/test_client_connection.py
+                 ${CMAKE_CURRENT_BINARY_DIR}/client)
+
 # add_executable(
 #     TODO_test
 #     test_reader.cpp
