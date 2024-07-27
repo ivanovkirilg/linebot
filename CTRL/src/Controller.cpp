@@ -1,7 +1,7 @@
 #include "CTRL/Controller.hpp"
 
 #include "DOMN/Move.hpp"
-#include "LOGR/Logger.hpp"
+#include "LOGR/Trace.hpp"
 
 #include <cmath>
 #include <thread>

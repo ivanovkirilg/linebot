@@ -3,7 +3,7 @@
 
 #include "DRVR/IDriver.hpp"
 #include "DOMN/Move.hpp"
-#include "LOGR/Logger.hpp"
+#include "LOGR/Exception.hpp"
 
 #include <atomic>
 #include <chrono>

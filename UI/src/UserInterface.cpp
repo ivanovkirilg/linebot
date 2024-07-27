@@ -1,6 +1,6 @@
 #include "UI/UserInterface.hpp"
 
-#include "LOGR/Logger.hpp"
+#include "LOGR/Trace.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -109,8 +109,6 @@ std::optional<move::Move> UserInterface::readMove()
         std::cout << " Enter target position [0, 1] & speed: ";
         move = tryReadMove();
     }
-
-    // trace.log(move.value());
 
     return move;
 }
