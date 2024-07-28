@@ -8,6 +8,8 @@ set(INT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 include_directories(${INT_INC_PATH})
 
+doxygen_add_docs(docs)
+
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Exception.hpp

@@ -20,6 +20,8 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+find_package(Doxygen)
+
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
 add_subdirectory(CTRL)

@@ -10,6 +10,14 @@
 namespace LOGR
 {
 
+///
+/// \brief Log useful info and function execution flow
+///
+/// A `Trace` object automatically logs its creation and destruction,
+/// usually used to mark the start and end of a function.
+///
+/// Use the `log()` function for intermediary information.
+///
 template <typename... Ts>
 class Trace
 {
