@@ -1,6 +1,8 @@
 #include "UI/UserInterface.hpp"
 #include "DRVR/Driver.hpp"
 #include "CTRL/Controller.hpp"
+#include "LOGR/Logger.hpp"
+#include "LOGR/Trace.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -9,6 +11,9 @@
 int main()
 {
     using namespace std::literals;
+    LOGR::Logger logger("MAIN");
+
+    LOGR::Trace trace;
 
     auto driver = std::make_shared<Driver>(0.5);
     driver->run(4ms);
@@ -29,8 +34,10 @@ int main()
             move = ui.readMove();
         }
     }
-    catch (UI::InvalidInputException)
+    catch (const UI::InvalidInputException& exc)
     {
+        exc.handle("Quitting application");
+
         std::cout << "\nReceived too many invalid inputs, quitting."
                   << std::endl;
     }
