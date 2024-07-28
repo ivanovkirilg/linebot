@@ -14,6 +14,7 @@ add_library(
     ${EXT_INC_PATH}/${PROJECT_NAME}/internal.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Logger.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Trace.hpp
+    ${EXT_INC_PATH}/${PROJECT_NAME}/Warning.hpp
 
     ${SRC_PATH}/Exception.cpp
     ${SRC_PATH}/internal.cpp

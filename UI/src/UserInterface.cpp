@@ -1,6 +1,7 @@
 #include "UI/UserInterface.hpp"
 
 #include "LOGR/Trace.hpp"
+#include "LOGR/Warning.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -105,6 +106,8 @@ std::optional<move::Move> UserInterface::readMove()
         {
             throw InvalidInputException("No valid move entered (retried)");
         }
+
+        LOGR::Warning("Received invalid move");
 
         std::cout << " Enter target position [0, 1] & speed: ";
         move = tryReadMove();
