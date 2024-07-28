@@ -19,7 +19,7 @@ public:
           requires(sizeof...(Ts) > 0)
         : m_loc(loc)
     {
-        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
@@ -31,14 +31,14 @@ public:
           requires(sizeof...(Ts) == 0)
         : m_loc(loc)
     {
-        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v\n";
         Logger::queueLogLine(line.str());
     }
 
     ~Trace()
     {
-        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "^\n";
         Logger::queueLogLine(line.str());
     }
@@ -46,7 +46,7 @@ public:
     template <typename... T1s>
     void log(T1s&&... args)
     {
-        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "|";
         ((line << " " << std::forward<T1s>(args)), ...);
         line << "\n";

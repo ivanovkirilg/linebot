@@ -7,7 +7,7 @@
 
 
 std::ostringstream LOGR::internal::startLine(
-    Severity severity,
+    Level level,
     const std::source_location& loc)
 {
     using namespace std::chrono;
@@ -22,7 +22,7 @@ std::ostringstream LOGR::internal::startLine(
            << nowMicroSec.count();
 
     std::ostringstream line;
-    line << static_cast<int>(severity) << SEPARATOR
+    line << static_cast<int>(level)    << SEPARATOR
          << nowStr.str()               << SEPARATOR
          << std::this_thread::get_id() << SEPARATOR
          << loc.file_name()            << SEPARATOR

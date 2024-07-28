@@ -15,7 +15,7 @@ LOGR::Exception::Exception(const std::string& message,
     const std::source_location& loc)
     : std::runtime_error(message), id(freeId++)
 {
-    auto line = internal::startLine(internal::Severity::EXCEPTION, loc);
+    auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "> [" << id << "] " << this->what() << "\n";
     Logger::queueLogLine(line.str());
 }
@@ -23,7 +23,7 @@ LOGR::Exception::Exception(const std::string& message,
 void LOGR::Exception::handle(const std::string& message,
     const std::source_location& loc) const
 {
-    auto line = internal::startLine(internal::Severity::EXCEPTION, loc);
+    auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "< [" << id << "] " << message << "\n";
     Logger::queueLogLine(line.str());
 }

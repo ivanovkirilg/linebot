@@ -15,14 +15,14 @@ constexpr char SEPARATOR = ';';
 
 extern thread_local std::ofstream logfile;
 
-enum class Severity
+enum class Level
 {
     TRACE,
     WARNING,
     EXCEPTION
 };
 
-std::ostringstream startLine(Severity severity, const std::source_location& loc);
+std::ostringstream startLine(Level level, const std::source_location& loc);
 
 }
 

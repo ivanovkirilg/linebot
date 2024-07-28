@@ -17,7 +17,7 @@ public:
     Warning(Ts&&... args,
         const std::source_location& loc = std::source_location::current())
     {
-        auto line = internal::startLine(internal::Severity::WARNING, loc);
+        auto line = internal::startLine(internal::Level::WARNING, loc);
         line << "!";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
