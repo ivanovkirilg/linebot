@@ -1,22 +1,12 @@
 #include "LOGR/internal.hpp"
 
 #include <chrono>
-#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <thread>
 
 
-static inline std::string generateLogfileName()
-{
-    std::stringstream stream;
-    stream << "LOGR_" << std::this_thread::get_id() << ".csv";
-    return stream.str();
-}
-
-thread_local std::ofstream LOGR::internal::logfile(generateLogfileName());
-
-void LOGR::internal::logLinePrefix(
+std::ostringstream LOGR::internal::startLine(
     Severity severity,
     const std::source_location& loc)
 {
@@ -28,9 +18,17 @@ void LOGR::internal::logLinePrefix(
     std::ostringstream nowStr;
 
     nowStr << nowSec.count() << '.'
-           << std::setfill('0') << std::setw(6) << nowMicroSec.count();
+           << std::setfill('0') << std::setw(6)
+           << nowMicroSec.count();
 
-    internal::logfile << static_cast<int>(severity) << SEPARATOR
-                      << nowStr.str() << SEPARATOR
-                      << loc.function_name() << SEPARATOR;
+    std::ostringstream line;
+    line << static_cast<int>(severity) << SEPARATOR
+         << nowStr.str()               << SEPARATOR
+         << std::this_thread::get_id() << SEPARATOR
+         << loc.file_name()            << SEPARATOR
+         << loc.line()                 << SEPARATOR
+         << loc.function_name()        << SEPARATOR
+         ;
+
+    return line;
 }

@@ -4,6 +4,7 @@
 #include <source_location>
 
 #include "internal.hpp"
+#include "Logger.hpp"
 
 
 namespace LOGR
@@ -18,10 +19,11 @@ public:
           requires(sizeof...(Ts) > 0)
         : m_loc(loc)
     {
-        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
-        internal::logfile << "v";
-        ((internal::logfile << " " << std::forward<Ts>(args)), ...);
-        internal::logfile << "\n";
+        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        line << "v";
+        ((line << " " << std::forward<Ts>(args)), ...);
+        line << "\n";
+        Logger::queueLogLine(line.str());
     }
 
     Trace(Ts&&... args,
@@ -29,23 +31,26 @@ public:
           requires(sizeof...(Ts) == 0)
         : m_loc(loc)
     {
-        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
-        internal::logfile << "v\n";
+        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        line << "v\n";
+        Logger::queueLogLine(line.str());
     }
 
     ~Trace()
     {
-        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
-        internal::logfile << "^\n";
+        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        line << "^\n";
+        Logger::queueLogLine(line.str());
     }
 
     template <typename... T1s>
     void log(T1s&&... args)
     {
-        internal::logLinePrefix(internal::Severity::TRACE, m_loc);
-        internal::logfile << "|";
-        ((internal::logfile << " " << std::forward<T1s>(args)), ...);
-        internal::logfile << "\n";
+        auto line = internal::startLine(internal::Severity::TRACE, m_loc);
+        line << "|";
+        ((line << " " << std::forward<T1s>(args)), ...);
+        line << "\n";
+        Logger::queueLogLine(line.str());
     }
 
 private:

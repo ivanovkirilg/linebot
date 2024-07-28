@@ -12,10 +12,12 @@ add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Exception.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/internal.hpp
+    ${EXT_INC_PATH}/${PROJECT_NAME}/Logger.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Trace.hpp
 
     ${SRC_PATH}/Exception.cpp
     ${SRC_PATH}/internal.cpp
+    ${SRC_PATH}/Logger.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})

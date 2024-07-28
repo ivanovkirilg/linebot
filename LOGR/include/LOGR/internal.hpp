@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <source_location>
+#include <sstream>
 
 
 namespace LOGR
@@ -21,7 +22,7 @@ enum class Severity
     EXCEPTION
 };
 
-void logLinePrefix(Severity severity, const std::source_location& loc);
+std::ostringstream startLine(Severity severity, const std::source_location& loc);
 
 }
 
