@@ -10,7 +10,7 @@
 #include <thread>
 #include <queue>
 
-#include "ILogger.hpp"
+#include "LOGR/ILogger.hpp"
 
 
 namespace LOGR
@@ -34,11 +34,11 @@ class LoggerNotSet : public std::runtime_error
 ///
 /// All logging is asynchronous and safe to use from multiple threads.
 ///
-class Logger : public ILogger
+class LoggerImpl : public ILogger
 {
 public:
-    Logger(const std::string& taskName);
-    ~Logger();
+    LoggerImpl(const std::string& taskName);
+    ~LoggerImpl();
 
     virtual void queueLogLine(const std::string& line) override;
 
@@ -55,7 +55,7 @@ private:
     std::thread m_ioThread;
     std::atomic<bool> m_keepLogging;
 
-    static Logger *m_logger;
+    static LoggerImpl *m_logger;
 };
 
 }

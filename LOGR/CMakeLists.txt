@@ -15,14 +15,15 @@ add_library(
     ${EXT_INC_PATH}/${PROJECT_NAME}/Exception.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/internal.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/ILogger.hpp
-    ${EXT_INC_PATH}/${PROJECT_NAME}/Logger.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Trace.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Warning.hpp
+
+    ${INT_INC_PATH}/LoggerImpl.hpp
 
     ${SRC_PATH}/Exception.cpp
     ${SRC_PATH}/internal.cpp
     ${SRC_PATH}/ILogger.cpp
-    ${SRC_PATH}/Logger.cpp
+    ${SRC_PATH}/LoggerImpl.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})

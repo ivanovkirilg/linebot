@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "LOGR/Logger.hpp"
+#include "LoggerImpl.hpp"
 #include "LOGR/internal.hpp"
 
 
@@ -38,7 +38,7 @@ std::shared_ptr<ILogger> ILogger::create(const std::string& taskName)
                                "per executable (or at least at one time).");
     }
 
-    auto logger = std::make_shared<Logger>(taskName);
+    auto logger = std::make_shared<LoggerImpl>(taskName);
     m_instance = logger;
     return logger;
 }

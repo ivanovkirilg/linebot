@@ -6,7 +6,7 @@
 #include <string>
 
 #include "LOGR/internal.hpp"
-#include "LOGR/Logger.hpp"
+#include "LoggerImpl.hpp"
 
 
 std::atomic<unsigned long long> LOGR::Exception::freeId = 1;
@@ -17,7 +17,7 @@ LOGR::Exception::Exception(const std::string& message,
 {
     auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "> [" << id << "] " << this->what() << "\n";
-    Logger::instance()->queueLogLine(line.str());
+    LoggerImpl::instance()->queueLogLine(line.str());
 }
 
 void LOGR::Exception::handle(const std::string& message,
@@ -25,5 +25,5 @@ void LOGR::Exception::handle(const std::string& message,
 {
     auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "< [" << id << "] " << message << "\n";
-    Logger::instance()->queueLogLine(line.str());
+    LoggerImpl::instance()->queueLogLine(line.str());
 }

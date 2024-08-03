@@ -4,7 +4,7 @@
 #include <source_location>
 
 #include "internal.hpp"
-#include "Logger.hpp"
+#include "ILogger.hpp"
 
 
 namespace LOGR
@@ -31,7 +31,7 @@ public:
         line << "v";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     Trace(Ts&&... args,
@@ -41,14 +41,14 @@ public:
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v\n";
-        Logger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     ~Trace()
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "^\n";
-        Logger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     template <typename... T1s>
@@ -58,7 +58,7 @@ public:
         line << "|";
         ((line << " " << std::forward<T1s>(args)), ...);
         line << "\n";
-        Logger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
 private:

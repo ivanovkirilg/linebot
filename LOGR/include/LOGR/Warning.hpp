@@ -4,7 +4,7 @@
 #include <source_location>
 
 #include "LOGR/internal.hpp"
-#include "LOGR/Logger.hpp"
+#include "ILogger.hpp"
 
 
 namespace LOGR
@@ -30,7 +30,7 @@ public:
         line << "!";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 };
 
