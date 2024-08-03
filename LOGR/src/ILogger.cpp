@@ -15,8 +15,8 @@ std::shared_ptr<ILogger> ILogger::create(const std::string& taskName)
 {
     if (m_instance.use_count() > 0)
     {
-        throw LoggerAlreadySet("You must create exactly one Logger object "
-                               "per executable (or at least at one time).");
+        throw LoggerAlreadySet(
+            "Only one Logger per executable can exist at a time.");
     }
 
     auto logger = std::make_shared<LoggerImpl>(taskName);
@@ -29,8 +29,8 @@ std::shared_ptr<ILogger> ILogger::instance()
     auto instance = m_instance.lock();
     if (not instance)
     {
-        throw LoggerNotSet("You must create exactly one Logger object "
-                           "per executable (or at least at one time).");
+        throw LoggerNotSet(
+            "A Logger object must be created before logging.");
     }
     return instance;
 }
