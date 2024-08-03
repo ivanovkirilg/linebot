@@ -30,6 +30,7 @@ class ILogger
 {
 public:
     static std::shared_ptr<ILogger> create(const std::string& taskName);
+    virtual ~ILogger() = default;
 
 protected:
     template<typename... Args>
@@ -52,7 +53,7 @@ protected:
 ///
 /// All logging calls are thread-safe, but blocking unlike in production.
 ///
-class ILoggerStub : ILogger
+class ILoggerStub : public ILogger
 {
 public:
     static std::shared_ptr<ILogger> create(const std::string& taskName);
