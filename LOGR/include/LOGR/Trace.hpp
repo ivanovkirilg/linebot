@@ -11,7 +11,7 @@ namespace LOGR
 {
 
 ///
-/// \brief Log useful info and function execution flow
+/// \brief Log function execution flow and other useful info.
 ///
 /// A `Trace` object automatically logs its creation and destruction,
 /// usually used to mark the start and end of a function.

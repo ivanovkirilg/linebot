@@ -11,7 +11,7 @@ namespace LOGR
 {
 
 ///
-/// \brief Log a potentially problematic situation
+/// \brief Log a potentially problematic situation.
 ///
 /// A `Warning` object immediately logs the message (marked as a warning)
 /// and is useless afterwards - it is meant to be created as a temporary.

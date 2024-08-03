@@ -16,23 +16,8 @@
 namespace LOGR
 {
 
-class LoggerAlreadySet : public std::runtime_error
-{
-    using std::runtime_error::runtime_error;
-};
-
-class LoggerNotSet : public std::runtime_error
-{
-    using std::runtime_error::runtime_error;
-};
-
 ///
-/// \brief Manage a log-file per 'task' / process
-///
-/// You are expected to create a single `Logger` object in your `main()`
-/// function, which enables the use of the other logging classes.
-///
-/// All logging is asynchronous and safe to use from multiple threads.
+/// \brief The production ILogger implementation.
 ///
 class LoggerImpl : public ILogger
 {

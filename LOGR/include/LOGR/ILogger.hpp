@@ -7,8 +7,18 @@
 namespace LOGR
 {
 
+class LoggerNotSet : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
+
+class LoggerAlreadySet : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
+
 ///
-/// \brief Manage a log-file per 'task' / process
+/// \brief Manage a log-file per 'task' / process.
 ///
 /// You are expected to `create()` a single `Logger` object in your `main()`
 /// function, which enables the use of the other logging classes for this
@@ -35,10 +45,10 @@ protected:
 };
 
 ///
-/// \brief Stub for unit-tests that can log to stderr
+/// \brief Stub for unit-tests, logs to stderr.
 ///
 /// Use this `create()` instead of the production one to enable your system
-/// under test to use the other logging classes
+/// under test to use the other logging classes.
 ///
 /// All logging calls are thread-safe, but blocking unlike in production.
 ///
