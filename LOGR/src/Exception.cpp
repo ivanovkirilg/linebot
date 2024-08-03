@@ -17,7 +17,7 @@ LOGR::Exception::Exception(const std::string& message,
 {
     auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "> [" << id << "] " << this->what() << "\n";
-    Logger::queueLogLine(line.str());
+    Logger::instance()->queueLogLine(line.str());
 }
 
 void LOGR::Exception::handle(const std::string& message,
@@ -25,5 +25,5 @@ void LOGR::Exception::handle(const std::string& message,
 {
     auto line = internal::startLine(internal::Level::EXCEPTION, loc);
     line << "< [" << id << "] " << message << "\n";
-    Logger::queueLogLine(line.str());
+    Logger::instance()->queueLogLine(line.str());
 }

@@ -30,7 +30,7 @@ public:
         line << "!";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        Logger::instance()->queueLogLine(line.str());
     }
 };
 

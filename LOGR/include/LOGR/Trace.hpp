@@ -31,7 +31,7 @@ public:
         line << "v";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        Logger::instance()->queueLogLine(line.str());
     }
 
     Trace(Ts&&... args,
@@ -41,14 +41,14 @@ public:
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v\n";
-        Logger::queueLogLine(line.str());
+        Logger::instance()->queueLogLine(line.str());
     }
 
     ~Trace()
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "^\n";
-        Logger::queueLogLine(line.str());
+        Logger::instance()->queueLogLine(line.str());
     }
 
     template <typename... T1s>
@@ -58,7 +58,7 @@ public:
         line << "|";
         ((line << " " << std::forward<T1s>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        Logger::instance()->queueLogLine(line.str());
     }
 
 private:

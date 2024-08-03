@@ -2,6 +2,7 @@
 #include "DRVR/Driver.hpp"
 #include "CTRL/Controller.hpp"
 #include "LOGR/Logger.hpp"
+#include "LOGR/ILogger.hpp"
 #include "LOGR/Trace.hpp"
 
 #include <chrono>
@@ -11,7 +12,7 @@
 int main()
 {
     using namespace std::literals;
-    LOGR::Logger logger("MAIN");
+    auto logger = LOGR::ILogger::create("MAIN");
 
     LOGR::Trace trace;
 
