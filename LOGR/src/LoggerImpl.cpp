@@ -1,4 +1,4 @@
-#include "LOGR/Logger.hpp"
+#include "LoggerImpl.hpp"
 
 #include <chrono>
 #include <sstream>
@@ -7,7 +7,7 @@
 namespace LOGR
 {
 
-Logger * Logger::m_logger = nullptr;
+LoggerImpl * LoggerImpl::m_logger = nullptr;
 
 static inline std::string generateLogfileName(const std::string& taskName)
 {
@@ -20,7 +20,7 @@ static inline std::string generateLogfileName(const std::string& taskName)
     return stream.str();
 }
 
-void Logger::queueLogLine(const std::string& line)
+void LoggerImpl::queueLogLine(const std::string& line)
 {
     if (not m_logger)
     {
@@ -33,7 +33,7 @@ void Logger::queueLogLine(const std::string& line)
     m_logger->m_toLog.emplace(line);
 }
 
-void Logger::logSome(size_t nrLinesToLog)
+void LoggerImpl::logSome(size_t nrLinesToLog)
 {
     std::vector<std::string> toLog;
     {
@@ -53,7 +53,7 @@ void Logger::logSome(size_t nrLinesToLog)
     }
 }
 
-Logger::Logger(const std::string& taskName)
+LoggerImpl::LoggerImpl(const std::string& taskName)
     : m_taskName(taskName),
       m_logFile(generateLogfileName(taskName)),
       m_keepLogging(true)
@@ -76,7 +76,7 @@ Logger::Logger(const std::string& taskName)
     m_ioThread = std::thread(ioJob);
 }
 
-Logger::~Logger()
+LoggerImpl::~LoggerImpl()
 {
     m_keepLogging = false;
     m_ioThread.join();

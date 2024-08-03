@@ -4,14 +4,14 @@
 #include <source_location>
 
 #include "LOGR/internal.hpp"
-#include "LOGR/Logger.hpp"
+#include "ILogger.hpp"
 
 
 namespace LOGR
 {
 
 ///
-/// \brief Log a potentially problematic situation
+/// \brief Log a potentially problematic situation.
 ///
 /// A `Warning` object immediately logs the message (marked as a warning)
 /// and is useless afterwards - it is meant to be created as a temporary.
@@ -30,7 +30,7 @@ public:
         line << "!";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 };
 

@@ -4,14 +4,14 @@
 #include <source_location>
 
 #include "internal.hpp"
-#include "Logger.hpp"
+#include "ILogger.hpp"
 
 
 namespace LOGR
 {
 
 ///
-/// \brief Log useful info and function execution flow
+/// \brief Log function execution flow and other useful info.
 ///
 /// A `Trace` object automatically logs its creation and destruction,
 /// usually used to mark the start and end of a function.
@@ -31,7 +31,7 @@ public:
         line << "v";
         ((line << " " << std::forward<Ts>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     Trace(Ts&&... args,
@@ -41,14 +41,14 @@ public:
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v\n";
-        Logger::queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     ~Trace()
     {
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "^\n";
-        Logger::queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
     template <typename... T1s>
@@ -58,7 +58,7 @@ public:
         line << "|";
         ((line << " " << std::forward<T1s>(args)), ...);
         line << "\n";
-        Logger::queueLogLine(line.str());
+        ILogger::instance()->queueLogLine(line.str());
     }
 
 private:
