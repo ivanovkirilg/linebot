@@ -35,7 +35,7 @@ jobs:
             cpp_compiler: g++
           - os: ubuntu-latest
             c_compiler: clang
-            cpp_compiler: clang++-15
+            cpp_compiler: clang++-18
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -46,6 +46,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - if: ${{ startsWith(matrix.cpp_compiler, "clang") }}
+      name: Install newer clang
+      run: |
+        sudo apt install clang++-18 -y
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
