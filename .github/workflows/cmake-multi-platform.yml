@@ -48,7 +48,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - if: ${{ startsWith(matrix.cpp_compiler, "clang") }}
+    - if: ${{ startsWith(matrix.cpp_compiler, 'clang') }}
       name: Install newer clang
       run: |
         sudo apt install clang++-18 -y
