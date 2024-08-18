@@ -51,6 +51,7 @@ jobs:
     - if: ${{ startsWith(matrix.cpp_compiler, 'clang') }}
       name: Install newer clang
       run: |
+        sudo apt update
         sudo apt install clang++-18 -y
 
     - name: Set reusable strings
