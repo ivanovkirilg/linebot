@@ -21,4 +21,18 @@ target_include_directories(
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
+add_executable(
+    ${PROJECT_NAME}_main
+    ${SRC_PATH}/Driver_main.cpp
+)
+
+target_include_directories(
+    ${PROJECT_NAME}_main PRIVATE ${EXT_INC_PATH}
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}_main PRIVATE COMM
+)
+
+
 add_subdirectory(test)
