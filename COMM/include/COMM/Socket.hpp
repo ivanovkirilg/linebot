@@ -1,7 +1,7 @@
 #ifndef COMM_INCLUDE_COMM_SOCKET
 #define COMM_INCLUDE_COMM_SOCKET
 
-#include <string>
+#include <vector>
 
 
 namespace COMM
@@ -12,8 +12,8 @@ class Connection
 public:
     ~Connection();
 
-    void send(std::string message);
-    std::string receive();
+    void send(std::vector<std::byte> message);
+    std::vector<std::byte> receive();
 
     operator bool();
 

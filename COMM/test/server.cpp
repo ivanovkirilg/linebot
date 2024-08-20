@@ -18,8 +18,7 @@ int main(int argc, char* argv[])
 
     COMM::Connection client = socket.accept();
 
-    std::string message;
-    message = client.receive();
+    std::vector<std::byte> buffer = client.receive();
 
-    client.send(message);
+    client.send(buffer);
 }

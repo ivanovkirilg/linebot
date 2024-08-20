@@ -10,11 +10,13 @@ class TestDriverServer
 {
 public:
     std::vector<std::byte> request(
-        const int methodCode,
         const std::vector<std::byte>& inBuffer)
     {
         auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{});
         auto [reply, out] = zpp::bits::data_out(zpp::bits::endian::network{});
+
+        int methodCode = -1;
+        in(methodCode).or_throw();
 
         switch (methodCode)
         {
@@ -52,14 +54,16 @@ public:
     void set(double speed)
     {
         auto [inargs, out] = zpp::bits::data_out(zpp::bits::endian::network{});
+        out(0).or_throw();
         out(speed).or_throw();
-        auto outargs = m_serverConnection->request(0, inargs);
+        auto outargs = m_serverConnection->request(inargs);
     }
 
     void get(double& speed)
     {
         auto [inargs, out] = zpp::bits::data_out(zpp::bits::endian::network{});
-        auto outargs = m_serverConnection->request(1, inargs);
+        out(1).or_throw();
+        auto outargs = m_serverConnection->request(inargs);
         auto in = zpp::bits::in(outargs, zpp::bits::endian::network{});
         in(speed).or_throw();
     }

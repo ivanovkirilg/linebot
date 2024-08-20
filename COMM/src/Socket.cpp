@@ -4,10 +4,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <array>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using namespace COMM;
 
@@ -159,7 +161,7 @@ Connection::operator bool()
     return m_fileDescriptor != 0;
 }
 
-void Connection::send(std::string message)
+void Connection::send(std::vector<std::byte> message)
 {
     int sent = ::send(m_fileDescriptor, message.data(), message.size(), 0);
 
@@ -181,12 +183,12 @@ void Connection::send(std::string message)
     }
 }
 
-std::string Connection::receive()
+std::vector<std::byte> Connection::receive()
 {
     constexpr const size_t CHUNK = 1024;
-    char buffer[CHUNK];
+    std::array<std::byte, CHUNK> buffer;
 
-    ssize_t received = ::recv(m_fileDescriptor, buffer, CHUNK, 0);
+    ssize_t received = ::recv(m_fileDescriptor, buffer.data(), buffer.size(), 0);
 
     if (received < 0)
     {
@@ -205,9 +207,9 @@ std::string Connection::receive()
         throw std::runtime_error("TODO receive rest of message");
     }
 
-    buffer[received] = '\0';
+    std::vector<std::byte> message(received);
 
-    return std::string(buffer);
+    std::copy(buffer.begin(), buffer.begin() + received, message.begin());
+
+    return message;
 }
-
-
