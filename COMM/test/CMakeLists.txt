@@ -30,13 +30,13 @@ add_test(NAME clientConnectionTest
 
 add_executable(
     interface_server
-    test_server_client/interface_server.cpp
+    test_interface/interface_server.cpp
 )
 target_link_libraries(interface_server PRIVATE COMM)
 
 add_test(NAME serverInterfaceTest
          COMMAND ${Python_EXECUTABLE}
-                 ${CMAKE_CURRENT_SOURCE_DIR}/test_server_client/test_interface_server.py
+                 ${CMAKE_CURRENT_SOURCE_DIR}/test_interface/test_interface_server.py
                  ${CMAKE_CURRENT_BINARY_DIR}/interface_server)
 
 
