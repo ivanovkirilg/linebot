@@ -16,9 +16,10 @@ constexpr int ERROR = 1;
 class TestDriverServer
 {
 public:
-    std::vector<std::byte> handleRequest(
-        const std::vector<std::byte>& inBuffer)
+    void handleRequest(
+        COMM::Connection& client)
     {
+        std::vector<std::byte> inBuffer = client.receive();
         auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{});
         auto [reply, out] = zpp::bits::data_out(zpp::bits::endian::network{});
 
@@ -46,20 +47,16 @@ public:
             default:
             {
                 out(ERROR).or_throw();
-                // throw std::runtime_error("Bad error code " + std::to_string(methodCode));
             }
         }
 
         if (not in.remaining_data().empty())
         {
-            // throw std::runtime_error("Leftover data "
-            //     + std::to_string(in.remaining_data().size())
-            // );
             out.reset();
             out(ERROR).or_throw();
         }
 
-        return reply;
+        client.send(reply);
     }
 
 protected:
@@ -103,8 +100,6 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < nrOfRequests; i++)
     {
-        auto request = client.receive();
-        auto reply = driver.handleRequest(request);
-        client.send(reply);
+        driver.handleRequest(client);
     }
 }
