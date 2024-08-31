@@ -4,7 +4,7 @@ project(LOGR_test)
 
 add_executable(
     ${PROJECT_NAME}
-    test_Logger.cpp
+    FT_Logger.cpp
 )
 target_link_libraries(
     ${PROJECT_NAME}

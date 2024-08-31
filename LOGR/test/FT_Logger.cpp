@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <string>
 
 #include <ctime>
@@ -23,20 +22,20 @@ public:
 
 TEST(TestLoggerFunctional, CreatesLogfile)
 {
-    auto t = ::time(nullptr);
-    std::string expectedFile = "LOGR_TEST_" + std::to_string(t) + ".csv";
+    const time_t creationTime = ::time(nullptr);
 
     LOGR::ILogger::create("TEST");
 
+    const std::string expectedFile = "LOGR_TEST_"
+                                     + std::to_string(creationTime) + ".csv";
     ASSERT_TRUE(std::filesystem::exists(expectedFile));
 }
 
 TEST(TestLoggerFunctional, LogsSimpleLines)
 {
-    auto t = ::time(nullptr);
-    std::string expectedFile = "LOGR_TEST_" + std::to_string(t) + ".csv";
+    const std::array<std::string, 2> lines = { "hello", "world" };
 
-    std::array<std::string, 2> lines = { "hello", "world" };
+    const time_t creationTime = ::time(nullptr);
 
     {
         auto logger = LOGR::ILogger::create("TEST");
@@ -47,8 +46,9 @@ TEST(TestLoggerFunctional, LogsSimpleLines)
         }
     }
 
+    const std::string expectedFile = "LOGR_TEST_"
+                                     + std::to_string(creationTime) + ".csv";
     std::ifstream file(expectedFile);
-    std::string line;
 
     for (const auto& line : lines)
     {
