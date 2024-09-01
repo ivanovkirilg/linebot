@@ -4,6 +4,7 @@
 #include "LOGR/Warning.hpp"
 
 #include <gtest/gtest.h>
+
 #include <filesystem>
 #include <fstream>
 #include <thread>
@@ -12,12 +13,18 @@
 #include <ctime>
 #include <cstdio>
 
+
+using namespace LOGR;
+using namespace internal;
+using src_loc = std::source_location;
+
+
 namespace
 {
 
 struct LogLine
 {
-    LOGR::internal::Level level;
+    Level level;
     double timestamp;
     std::string threadId;
     std::string file;
@@ -42,25 +49,19 @@ LogLine parse(const std::string& line)
     sscanf(line.c_str(), " %d;%lf;%[^;];%[^;];%li;%[^;];%[^;] ",
            &level, &timestamp, threadId, file, &lineNr, function, message);
 
-    fields.level = static_cast<LOGR::internal::Level>(level);
-    fields.timestamp = timestamp;
-    fields.threadId = threadId;
-    fields.file = file;
-    fields.line = lineNr;
-    fields.function = function;
-    fields.message = message;
-
-    return fields;
+    return LogLine {
+        static_cast<Level>(level),
+        timestamp, threadId, file, lineNr, function, message
+    };
 }
 
-}
-
+} // anonymous namespace
 
 TEST(TestLoggerFunctional, CreatesLogfile)
 {
     const time_t creationTime = ::time(nullptr);
 
-    LOGR::ILogger::create("TEST");
+    ILogger::create("TEST");
 
     const std::string expectedFile = "LOGR_TEST_"
                                      + std::to_string(creationTime) + ".csv";
@@ -76,19 +77,19 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
 
     const time_t creationTime = ::time(nullptr);
     {
-        auto logger = LOGR::ILogger::create("TEST");
+        auto logger = ILogger::create("TEST");
 
-        LOGR::Trace trace("trace");
-        expectedTraceLocation = std::source_location::current().line() - 1;
+        Trace trace("trace");
+        expectedTraceLocation = src_loc::current().line() - 1;
 
-        LOGR::Warning warn("warning");
-        expectedWarnLocation = std::source_location::current().line() - 1;
+        Warning warn("warning");
+        expectedWarnLocation = src_loc::current().line() - 1;
 
-        LOGR::Exception exc("exception");
-        expectedExcLocation = std::source_location::current().line() - 1;
+        Exception exc("exception");
+        expectedExcLocation = src_loc::current().line() - 1;
 
         exc.handle("handle");
-        expectedHandleLocation = std::source_location::current().line() - 1;
+        expectedHandleLocation = src_loc::current().line() - 1;
     }
 
     const std::string expectedFile = "LOGR_TEST_"
@@ -104,55 +105,55 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     LOGR::internal::Level::TRACE);
+    EXPECT_EQ(  log.level,     Level::TRACE);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
-    EXPECT_EQ(  log.file,      std::source_location::current().file_name());
+    EXPECT_EQ(  log.file,      src_loc::current().file_name());
     EXPECT_EQ(  log.line,      expectedTraceLocation);
-    EXPECT_EQ(  log.function,  std::source_location::current().function_name());
+    EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "v trace");
 
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     LOGR::internal::Level::WARNING);
+    EXPECT_EQ(  log.level,     Level::WARNING);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
-    EXPECT_EQ(  log.file,      std::source_location::current().file_name());
+    EXPECT_EQ(  log.file,      src_loc::current().file_name());
     EXPECT_EQ(  log.line,      expectedWarnLocation);
-    EXPECT_EQ(  log.function,  std::source_location::current().function_name());
+    EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "! warning");
 
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     LOGR::internal::Level::EXCEPTION);
+    EXPECT_EQ(  log.level,     Level::EXCEPTION);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
-    EXPECT_EQ(  log.file,      std::source_location::current().file_name());
+    EXPECT_EQ(  log.file,      src_loc::current().file_name());
     EXPECT_EQ(  log.line,      expectedExcLocation);
-    EXPECT_EQ(  log.function,  std::source_location::current().function_name());
+    EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "> [1] exception");
 
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     LOGR::internal::Level::EXCEPTION);
+    EXPECT_EQ(  log.level,     Level::EXCEPTION);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
-    EXPECT_EQ(  log.file,      std::source_location::current().file_name());
+    EXPECT_EQ(  log.file,      src_loc::current().file_name());
     EXPECT_EQ(  log.line,      expectedHandleLocation);
-    EXPECT_EQ(  log.function,  std::source_location::current().function_name());
+    EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "< [1] handle");
 
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     LOGR::internal::Level::TRACE);
+    EXPECT_EQ(  log.level,     Level::TRACE);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
-    EXPECT_EQ(  log.file,      std::source_location::current().file_name());
+    EXPECT_EQ(  log.file,      src_loc::current().file_name());
     EXPECT_EQ(  log.line,      expectedTraceLocation);
-    EXPECT_EQ(  log.function,  std::source_location::current().function_name());
+    EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "^");
 }
