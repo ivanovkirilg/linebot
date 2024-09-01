@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-find_package(Doxygen)
+find_package(Doxygen QUIET)
 
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
