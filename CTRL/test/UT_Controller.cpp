@@ -1,6 +1,7 @@
 #include "CTRL/Controller.hpp"
 
 #include "DRVR/IDriver.hpp"
+#include "LOGR/ILogger.hpp"
 
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
@@ -24,6 +25,7 @@ public:
 
 TEST(TestController, ExecuteMoveTogglesLogging)
 {
+    auto logr = LOGR::ILoggerStub::create("CTRL_UT");
     auto driverMock = std::make_shared<NiceMock<DriverMock>>();
 
     Controller controller(driverMock);

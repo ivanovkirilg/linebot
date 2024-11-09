@@ -17,6 +17,6 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE DOMN CTRL DRVR UI)
+target_link_libraries(${PROJECT_NAME} PRIVATE DOMN LOGR CTRL DRVR UI)
 
 add_subdirectory(test)

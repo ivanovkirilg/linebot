@@ -20,8 +20,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+find_package(Doxygen QUIET)
+
 add_subdirectory(COMM)
 add_subdirectory(DOMN)
+add_subdirectory(LOGR)
 add_subdirectory(CTRL)
 add_subdirectory(DRVR)
 add_subdirectory(MAIN)
