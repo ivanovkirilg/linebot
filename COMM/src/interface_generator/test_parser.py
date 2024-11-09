@@ -1,7 +1,7 @@
 import unittest
 
 import parser
-from parser import Token, TokenKind, PunctuationKind
+from parser import *
 
 
 class TestParser(unittest.TestCase):
@@ -10,30 +10,30 @@ class TestParser(unittest.TestCase):
 
         tokens = parser.tokenize(tu)
 
-        spellings = [tok.spelling for tok in tokens]
-        kinds = [tok.kind for tok in tokens]
+        expected = [
+            WordToken('hello'),
+            WordToken('world'),
+            WordToken('how'),
+            WordToken('are'),
+            WordToken('you')
+        ]
 
-        self.assertEqual(spellings, ['hello', 'world', 'how', 'are', 'you'])
-        self.assertEqual(kinds, [parser.TokenKind.WORD] * 5)
+        self.assertEqual(tokens, expected)
 
     def test_space_delimited_punctuation(self):
         tu = '(' + '\t' + ')' + '\n' + ',' + ' ' + ';' + '  ' + ','
 
         tokens = parser.tokenize(tu)
 
-        spellings = [tok.spelling for tok in tokens]
-        kinds = [tok.kind for tok in tokens]
-        punctKinds = [tok.punctKind for tok in tokens]
+        expected = [
+            PunctuationToken('(', PunctuationKind.OPEN_PAREN),
+            PunctuationToken(')', PunctuationKind.CLOSE_PAREN),
+            PunctuationToken(',', PunctuationKind.COMMA),
+            PunctuationToken(';', PunctuationKind.SEMICOLON),
+            PunctuationToken(',', PunctuationKind.COMMA),
+        ]
 
-        self.assertEqual(spellings, ['(', ')', ',', ';', ','])
-        self.assertEqual(kinds, [parser.TokenKind.PUNCTUATION] * 5)
-        self.assertEqual(punctKinds, [
-            parser.PunctuationKind.OPEN_PAREN,
-            parser.PunctuationKind.CLOSE_PAREN,
-            parser.PunctuationKind.COMMA,
-            parser.PunctuationKind.SEMICOLON,
-            parser.PunctuationKind.COMMA,
-        ])
+        self.assertEqual(tokens, expected)
 
     def test_unsupported_punctuation(self):
         tu = 'hello!'
@@ -50,15 +50,15 @@ class TestParser(unittest.TestCase):
         tokens = parser.tokenize(tu)
 
         expected = [
-            Token(TokenKind.WORD,'hello'),
-            Token(TokenKind.PUNCTUATION,',', punctKind=PunctuationKind.COMMA),
-            Token(TokenKind.WORD,'world'),
-            Token(TokenKind.PUNCTUATION,';', punctKind=PunctuationKind.SEMICOLON),
-            Token(TokenKind.WORD,'how'),
-            Token(TokenKind.PUNCTUATION,'(', punctKind=PunctuationKind.OPEN_PAREN),
-            Token(TokenKind.WORD,'are'),
-            Token(TokenKind.PUNCTUATION,')', punctKind=PunctuationKind.CLOSE_PAREN),
-            Token(TokenKind.WORD,'you')
+            WordToken('hello'),
+            PunctuationToken(',', PunctuationKind.COMMA),
+            WordToken('world'),
+            PunctuationToken(';', PunctuationKind.SEMICOLON),
+            WordToken('how'),
+            PunctuationToken('(', PunctuationKind.OPEN_PAREN),
+            WordToken('are'),
+            PunctuationToken(')', PunctuationKind.CLOSE_PAREN),
+            WordToken('you')
         ]
 
         self.assertEqual(tokens, expected)
@@ -69,14 +69,14 @@ class TestParser(unittest.TestCase):
         tokens = parser.tokenize(tu)
 
         expected = [
-            Token(TokenKind.INT,   '0',        0),
-            Token(TokenKind.INT,   '+123',    +123),
-            Token(TokenKind.INT,   '-456',    -456),
-            Token(TokenKind.FLOAT, '7.8',      7.8),
-            Token(TokenKind.FLOAT, '-9.0',    -9.0),
-            Token(TokenKind.FLOAT, '2.2e-3',   2.2e-3),
-            Token(TokenKind.FLOAT, '-3.3E+4', -3.3E+4),
-            Token(TokenKind.FLOAT, '.5',        .5)
+            IntegerToken('0',        0),
+            IntegerToken('+123',    +123),
+            IntegerToken('-456',    -456),
+            FloatToken(  '7.8',      7.8),
+            FloatToken(  '-9.0',    -9.0),
+            FloatToken(  '2.2e-3',   2.2e-3),
+            FloatToken(  '-3.3E+4', -3.3E+4),
+            FloatToken(  '.5',        .5)
         ]
 
         self.assertEqual(tokens, expected)
