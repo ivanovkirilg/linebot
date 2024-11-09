@@ -7,8 +7,8 @@ import re
 class TokenKind(Enum):
     WORD = auto()
     PUNCTUATION = auto()
-    LITERAL = auto()
-    OPERATOR = auto()
+    FLOAT = auto()
+    INT = auto()
 
 class PunctuationKind(Enum):
     OPEN_PAREN = auto()
@@ -16,6 +16,18 @@ class PunctuationKind(Enum):
     COMMA = auto()
     SEMICOLON = auto()
 
+class NumberKind(Enum):
+    INTEGER = auto()
+    FLOATING_POINT = auto()
+
+@dataclass
+class Punctuation:
+    kind: PunctuationKind
+
+@dataclass
+class Number:
+    kind: NumberKind
+    value: int | float
 
 @dataclass
 class Token:
@@ -43,19 +55,25 @@ def create_punct_token(spelling):
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
+    word_regex = '[a-zA-Z][a-zA-Z0-9_]*'
+    int_regex = '[-+]?\d+'
+    float_regex = '[-+]?\d*\.\d+([eE][-+]?\d+)?'
     punct_regex = re.escape(string.punctuation)
-    num_regex = '[0-9]+'
 
-    regex = f'(?P<word>\w+)|(?P<punct>[{punct_regex}])|(?P<num>{num_regex})'
-    separated_tokens = list(re.finditer(regex, translation_unit))
-    # print(separated_tokens)
+    regex = f'(?P<word>{word_regex})|(?P<float>{float_regex})|(?P<int>{int_regex})|(?P<punct>[{punct_regex}])'
 
-    for token in [tok.group() for tok in separated_tokens]:
-        if token.isalpha():
-            tokens.append(Token(TokenKind.WORD, token))
-        elif token in string.punctuation:
-            tokens.append(create_punct_token(token))
+    for match in re.finditer(regex, translation_unit):
+        spelling = match.group()
+
+        if match.group('word'):
+            tokens.append(Token(TokenKind.WORD, spelling))
+        elif match.group('punct'):
+            tokens.append(create_punct_token(spelling))
+        elif match.group('float'):
+            tokens.append(Token(TokenKind.FLOAT, spelling, float(spelling)))
+        elif match.group('int'):
+            tokens.append(Token(TokenKind.INT, spelling, int(spelling)))
         else:
-            raise ValueError("Token kind not supported for: " + token)
+            raise ValueError("Token kind not supported for: " + spelling)
 
     return tokens
