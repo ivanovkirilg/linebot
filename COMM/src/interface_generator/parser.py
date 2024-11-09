@@ -55,12 +55,27 @@ def create_punct_token(spelling):
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
+    # Letters, digits, underscore;
+    # beginning with a letter
     word_regex = '[a-zA-Z][a-zA-Z0-9_]*'
-    int_regex = '[-+]?\d+'
+
+    # Digits preceded by a point,
+    # optionally preceded by a whole part,
+    # optionally preceded by a sign,
+    # optionally an exponent
     float_regex = '[-+]?\d*\.\d+([eE][-+]?\d+)?'
+
+    # Digits, optionally preceded by a sign
+    int_regex = '[-+]?\d+'
+
+    # Any punctuation; but only some are supported
     punct_regex = re.escape(string.punctuation)
 
-    regex = f'(?P<word>{word_regex})|(?P<float>{float_regex})|(?P<int>{int_regex})|(?P<punct>[{punct_regex}])'
+    regex = '|'.join( [ f'(?P<word>{word_regex})',
+                        f'(?P<float>{float_regex})',
+                        f'(?P<int>{int_regex})',
+                        f'(?P<punct>[{punct_regex}])'
+                    ] )
 
     for match in re.finditer(regex, translation_unit):
         spelling = match.group()
