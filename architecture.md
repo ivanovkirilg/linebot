@@ -4,17 +4,26 @@
 
 ```plantuml
 
-rectangle Low {
+rectangle basic {
     component DOMN
+    component LOGR
+}
+
+rectangle control {
     component DRVR
 }
-rectangle Mid {
+
+rectangle service {
     component CTRL
     component UI
 }
+
 component MAIN
 
-MAIN --> Mid
-MAIN --> Low
-Mid --> Low
+MAIN --> service
+MAIN --> control
+MAIN --> basic
+service --> control
+service --> basic
+control --> basic
 ```
