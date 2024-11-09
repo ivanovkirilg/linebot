@@ -1,6 +1,7 @@
 import unittest
 
 import parser
+from parser import Token, TokenKind, PunctuationKind
 
 class TestParser(unittest.TestCase):
     def test_space_delimited_words(self):
@@ -32,4 +33,32 @@ class TestParser(unittest.TestCase):
             parser.PunctuationKind.SEMICOLON,
             parser.PunctuationKind.COMMA,
         ])
+
+    def test_unsupported_punctuation(self):
+        tu = 'hello!'
+
+        with self.assertRaises(ValueError) as exc_context:
+            _ = parser.tokenize(tu)
+
+        self.assertIn('punct', str(exc_context.exception))
+        self.assertIn('!', str(exc_context.exception))
+
+    def test_punctuation_delimited_words(self):
+        tu = 'hello,world;how(are)you'
+
+        tokens = parser.tokenize(tu)
+
+        expected = [
+            Token(TokenKind.WORD,'hello'),
+            Token(TokenKind.PUNCTUATION,',', punctKind=PunctuationKind.COMMA),
+            Token(TokenKind.WORD,'world'),
+            Token(TokenKind.PUNCTUATION,';', punctKind=PunctuationKind.SEMICOLON),
+            Token(TokenKind.WORD,'how'),
+            Token(TokenKind.PUNCTUATION,'(', punctKind=PunctuationKind.OPEN_PAREN),
+            Token(TokenKind.WORD,'are'),
+            Token(TokenKind.PUNCTUATION,')', punctKind=PunctuationKind.CLOSE_PAREN),
+            Token(TokenKind.WORD,'you')
+        ]
+
+        self.assertEqual(tokens, expected)
 
