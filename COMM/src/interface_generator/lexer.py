@@ -3,21 +3,6 @@ import re
 
 from tokens import *
 
-def create_punct_token(spelling):
-    match spelling:
-        case '(':
-            return PunctuationToken(spelling, PunctuationKind.OPEN_PAREN)
-        case ')':
-            return PunctuationToken(spelling, PunctuationKind.CLOSE_PAREN)
-        case ',':
-            return PunctuationToken(spelling, PunctuationKind.COMMA)
-        case ';':
-            return PunctuationToken(spelling, PunctuationKind.SEMICOLON)
-        case '->':
-            return PunctuationToken(spelling, PunctuationKind.RIGHT_ARROW)
-        case _:
-            raise ValueError(f'Unsupported punctuation {spelling}')
-
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
@@ -56,19 +41,19 @@ def tokenize(translation_unit: str) -> list[Token]:
         spelling = match.group()
 
         if match.group('keyword'):
-            tokens.append(KeywordToken(spelling, KEYWORDS[spelling]))
+            tokens.append(KeywordToken(spelling))
 
         elif match.group('word'):
             tokens.append(WordToken(spelling))
 
         elif match.group('punct'):
-            tokens.append(create_punct_token(spelling))
+            tokens.append(PunctuationToken(spelling))
 
         elif match.group('float'):
-            tokens.append(FloatToken(spelling, float(spelling)))
+            tokens.append(FloatToken(spelling))
 
         elif match.group('int'):
-            tokens.append(IntegerToken(spelling, int(spelling)))
+            tokens.append(IntegerToken(spelling))
 
         else:
             raise ValueError("Token kind not supported for: " + spelling)

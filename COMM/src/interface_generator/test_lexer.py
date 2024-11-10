@@ -5,6 +5,10 @@ from tokens import *
 
 
 class TestLexer(unittest.TestCase):
+    '''
+    Keyword/punctuation/number tokens can be created via spelling directly,
+    but their kinds/values are specified to make sure they are correct.
+    '''
     def test_space_delimited_words(self):
         tu = 'hello' + '\t' + 'world' + '\n' + 'how' + ' ' + 'are' + '  ' + 'you'
 
