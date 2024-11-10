@@ -1,7 +1,7 @@
 import unittest
 
 import lexer as lexer
-from lexer import *
+from tokens import *
 
 
 class TestLexer(unittest.TestCase):
