@@ -21,16 +21,16 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(tokens, expected)
 
     def test_space_delimited_punctuation(self):
-        tu = '(' + '\t' + ')' + '\n' + ',' + ' ' + ';' + '  ' + ','
+        tu = '(' + '\t' + ')' + '\n' + ',' + ' ' + ';' + '  ' + '->'
 
         tokens = lexer.tokenize(tu)
 
         expected = [
-            PunctuationToken('(', PunctuationKind.OPEN_PAREN),
-            PunctuationToken(')', PunctuationKind.CLOSE_PAREN),
-            PunctuationToken(',', PunctuationKind.COMMA),
-            PunctuationToken(';', PunctuationKind.SEMICOLON),
-            PunctuationToken(',', PunctuationKind.COMMA),
+            PunctuationToken('(',  PunctuationKind.OPEN_PAREN),
+            PunctuationToken(')',  PunctuationKind.CLOSE_PAREN),
+            PunctuationToken(',',  PunctuationKind.COMMA),
+            PunctuationToken(';',  PunctuationKind.SEMICOLON),
+            PunctuationToken('->', PunctuationKind.RIGHT_ARROW),
         ]
 
         self.assertEqual(tokens, expected)

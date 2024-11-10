@@ -9,6 +9,7 @@ class PunctuationKind(Enum):
     CLOSE_PAREN = auto()
     COMMA = auto()
     SEMICOLON = auto()
+    RIGHT_ARROW = auto()
 
 class KeywordKind(Enum):
     METHOD = auto()
@@ -56,12 +57,15 @@ def create_punct_token(spelling):
             return PunctuationToken(spelling, PunctuationKind.COMMA)
         case ';':
             return PunctuationToken(spelling, PunctuationKind.SEMICOLON)
+        case '->':
+            return PunctuationToken(spelling, PunctuationKind.RIGHT_ARROW)
         case _:
             raise ValueError(f'Unsupported punctuation {spelling}')
 
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
+    # method, in, out
     keyword_regex = r"\bmethod\b|\bin\b|\bout\b"
 
     # Letters, digits, underscore;
@@ -77,8 +81,10 @@ def tokenize(translation_unit: str) -> list[Token]:
     # Digits, optionally preceded by a sign
     int_regex = '[-+]?\d+'
 
-    # Any punctuation; but only some are supported
-    punct_regex = re.escape(string.punctuation)
+    # Any punctuation symbol,
+    # but only some are supported;
+    # '->' as a special case
+    punct_regex = f'->|[{ re.escape(string.punctuation) }]'
 
     regex = '|'.join(
         [
@@ -86,7 +92,7 @@ def tokenize(translation_unit: str) -> list[Token]:
             f'(?P<word>{word_regex})',
             f'(?P<float>{float_regex})',
             f'(?P<int>{int_regex})',
-            f'(?P<punct>[{punct_regex}])'
+            f'(?P<punct>{punct_regex})'
         ]
     )
 

@@ -10,6 +10,10 @@
 // method set(in double speed);
 // method get(out double speed);
 
+// method get_speed() -> double speed;
+// or
+// method get_speed() -> double;
+
 constexpr int OK = 0;
 constexpr int ERROR = 1;
 
