@@ -1,7 +1,7 @@
 import unittest
 
-import interface_generator.lexer as lexer
-from interface_generator.lexer import *
+import lexer as lexer
+from lexer import *
 
 
 class TestLexer(unittest.TestCase):
