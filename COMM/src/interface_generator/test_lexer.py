@@ -80,3 +80,24 @@ class TestLexer(unittest.TestCase):
         ]
 
         self.assertEqual(tokens, expected)
+
+    def test_keywords_vs_words(self):
+        tu = '''method methodological METHOD
+                in inn IN
+                out outage OUT'''
+
+        tokens = lexer.tokenize(tu)
+
+        expected = [
+            KeywordToken('method', KeywordKind.METHOD),
+            WordToken('methodological'),
+            WordToken('METHOD'),
+            KeywordToken('in', KeywordKind.IN),
+            WordToken('inn'),
+            WordToken('IN'),
+            KeywordToken('out', KeywordKind.OUT),
+            WordToken('outage'),
+            WordToken('OUT')
+        ]
+
+        self.assertEqual(tokens, expected)

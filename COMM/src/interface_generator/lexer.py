@@ -10,6 +10,17 @@ class PunctuationKind(Enum):
     COMMA = auto()
     SEMICOLON = auto()
 
+class KeywordKind(Enum):
+    METHOD = auto()
+    IN = auto()
+    OUT = auto()
+
+KEYWORDS = {
+    'method': KeywordKind.METHOD,
+    'in': KeywordKind.IN,
+    'out': KeywordKind.OUT,
+}
+
 @dataclass
 class Token:
     spelling: str
@@ -17,6 +28,10 @@ class Token:
 @dataclass
 class WordToken(Token):
     pass
+
+@dataclass
+class KeywordToken(WordToken):
+    kind: KeywordKind
 
 @dataclass
 class PunctuationToken(Token):
@@ -47,6 +62,8 @@ def create_punct_token(spelling):
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
+    keyword_regex = r"\bmethod\b|\bin\b|\bout\b"
+
     # Letters, digits, underscore;
     # beginning with a letter
     word_regex = '[a-zA-Z][a-zA-Z0-9_]*'
@@ -63,23 +80,34 @@ def tokenize(translation_unit: str) -> list[Token]:
     # Any punctuation; but only some are supported
     punct_regex = re.escape(string.punctuation)
 
-    regex = '|'.join( [ f'(?P<word>{word_regex})',
-                        f'(?P<float>{float_regex})',
-                        f'(?P<int>{int_regex})',
-                        f'(?P<punct>[{punct_regex}])'
-                    ] )
+    regex = '|'.join(
+        [
+            f'(?P<keyword>{keyword_regex})',
+            f'(?P<word>{word_regex})',
+            f'(?P<float>{float_regex})',
+            f'(?P<int>{int_regex})',
+            f'(?P<punct>[{punct_regex}])'
+        ]
+    )
 
     for match in re.finditer(regex, translation_unit):
         spelling = match.group()
 
-        if match.group('word'):
+        if match.group('keyword'):
+            tokens.append(KeywordToken(spelling, KEYWORDS[spelling]))
+
+        elif match.group('word'):
             tokens.append(WordToken(spelling))
+
         elif match.group('punct'):
             tokens.append(create_punct_token(spelling))
+
         elif match.group('float'):
             tokens.append(FloatToken(spelling, float(spelling)))
+
         elif match.group('int'):
             tokens.append(IntegerToken(spelling, int(spelling)))
+
         else:
             raise ValueError("Token kind not supported for: " + spelling)
 
