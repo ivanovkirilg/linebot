@@ -1,7 +1,7 @@
 import string
 import re
 
-from tokens import *
+from .tokens import *
 
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []

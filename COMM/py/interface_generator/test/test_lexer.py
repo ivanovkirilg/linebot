@@ -1,7 +1,7 @@
 import unittest
 
-import lexer as lexer
-from tokens import *
+from ..lexer import tokenize
+from ..tokens import *
 
 
 class TestLexer(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestLexer(unittest.TestCase):
     def test_space_delimited_words(self):
         tu = 'hello' + '\t' + 'world' + '\n' + 'how' + ' ' + 'are' + '  ' + 'you'
 
-        tokens = lexer.tokenize(tu)
+        tokens = tokenize(tu)
 
         expected = [
             WordToken('hello'),
@@ -27,7 +27,7 @@ class TestLexer(unittest.TestCase):
     def test_space_delimited_punctuation(self):
         tu = '(' + '\t' + ')' + '\n' + ',' + ' ' + ';' + '  ' + '->'
 
-        tokens = lexer.tokenize(tu)
+        tokens = tokenize(tu)
 
         expected = [
             PunctuationToken('(',  PunctuationKind.OPEN_PAREN),
@@ -43,7 +43,7 @@ class TestLexer(unittest.TestCase):
         tu = 'hello!'
 
         with self.assertRaises(ValueError) as exc_context:
-            _ = lexer.tokenize(tu)
+            _ = tokenize(tu)
 
         self.assertIn('punct', str(exc_context.exception))
         self.assertIn('!', str(exc_context.exception))
@@ -51,7 +51,7 @@ class TestLexer(unittest.TestCase):
     def test_punctuation_delimited_words(self):
         tu = 'hello,world;how(are)you'
 
-        tokens = lexer.tokenize(tu)
+        tokens = tokenize(tu)
 
         expected = [
             WordToken('hello'),
@@ -70,7 +70,7 @@ class TestLexer(unittest.TestCase):
     def test_numbers(self):
         tu = '0 +123 -456 7.8 -9.0 2.2e-3 -3.3E+4 .5'
 
-        tokens = lexer.tokenize(tu)
+        tokens = tokenize(tu)
 
         expected = [
             IntegerToken('0',        0),
@@ -90,7 +90,7 @@ class TestLexer(unittest.TestCase):
                 in inn IN
                 out outage OUT'''
 
-        tokens = lexer.tokenize(tu)
+        tokens = tokenize(tu)
 
         expected = [
             KeywordToken('method', KeywordKind.METHOD),

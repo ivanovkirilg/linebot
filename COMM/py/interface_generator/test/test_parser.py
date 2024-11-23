@@ -1,8 +1,8 @@
 import unittest
 
-import parser as parser
-from tokens import *
-from syntax_tree import *
+from ..parser import parse
+from ..tokens import *
+from ..syntax_tree import *
 
 
 class TestLexer(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestLexer(unittest.TestCase):
             PunctuationToken(';', PunctuationKind.SEMICOLON),
         ]
 
-        synt_tree = parser.parse(tokens)
+        synt_tree = parse(tokens)
 
         expected = [
             MethodDeclaration('do_sth',

@@ -1,0 +1,3 @@
+method init();
+method set(in double speed);
+method get(out double speed);
