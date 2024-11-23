@@ -30,7 +30,7 @@ C++ source and header files have PascalCase names and `.cpp`/`.hpp` extensions.
   - `UT_` unit tests
   - `FT_` functional tests
   - `IT_` integration tests
-  - _TODO: write testing guidelines._
+  - _See [Testing Guidelines](/docs/testing_guidelines) for more info_.
 
 
 ## Namespaces
