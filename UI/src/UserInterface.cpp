@@ -46,7 +46,7 @@ void UserInterface::run(
     
     m_background = std::thread([this, refreshRate, driver]()
     {
-        LOGR::Trace trace;
+        LOGR::Trace bgTrace;
         draw(driver, std::cout);
 
         m_running = true;
