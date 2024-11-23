@@ -5,15 +5,18 @@
 The codebase is organized in Components named by an even number of uppercase
 letters which convey one or two words corresponding to the responsibility or
 functionality implemented.
-- Examples: LOGR for 'Logger', UI for 'User Interface.
+- Examples: LOGR for 'Logger', UI for 'User Interface'.
 - XMPL is used as an 'Example' Component in documentation;
-  - For multiple exmaples, use XMPA, XMPB, etc. (pronounced Example-A etc.).
+  - For multiple examples, use XMPA, XMPB, etc. (pronounced Example-A etc.).
 
 A Component has the following structure:
 - `XMPL/`
   - `inc/` internal header files, not accessible outside the Component
   - `include/XMPL/` externally accessible header files
-  - `src/` source code
+  - `py/` single-file scripts
+    - `example_package/` python package source code
+      - `test/` per-package test code
+  - `src/` C++ source code
   - `test/` test code
     - `CMakeLists.txt` test targets
   - `CMakeLists.txt` non-test targets
@@ -32,6 +35,7 @@ C++ source and header files have PascalCase names and `.cpp`/`.hpp` extensions.
   - `IT_` integration tests
   - _See [Testing Guidelines](/docs/testing_guidelines) for more info_.
 
+Python packages, modules, and scripts have snake_case names.
 
 ## Namespaces
 
