@@ -27,6 +27,7 @@ add_library(
     ${SRC_PATH}/ILogger.cpp
     ${SRC_PATH}/LoggerImpl.cpp
 )
+enable_target_warnings(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})
 
