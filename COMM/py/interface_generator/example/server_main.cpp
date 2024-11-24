@@ -1,7 +1,7 @@
 // server-side hand-coded file
 
 #include "Driver.hpp"
-#include "Socket.hpp"
+#include "COMM/Socket.hpp"
 
 #include <cassert>
 

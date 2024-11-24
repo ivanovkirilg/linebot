@@ -3,7 +3,7 @@
 #ifndef COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_CLIENT
 #define COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_CLIENT
 
-#include "Socket.hpp"
+#include "COMM/Socket.hpp"
 
 
 class DriverClient
