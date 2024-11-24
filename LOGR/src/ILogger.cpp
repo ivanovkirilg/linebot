@@ -24,6 +24,11 @@ std::shared_ptr<ILogger> ILogger::create(const std::string& taskName)
     return logger;
 }
 
+bool ILogger::isSet()
+{
+    return m_instance.use_count();
+}
+
 std::shared_ptr<ILogger> ILogger::instance()
 {
     auto instance = m_instance.lock();

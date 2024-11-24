@@ -32,6 +32,8 @@ class ILogger
 {
 public:
     static std::shared_ptr<ILogger> create(const std::string& taskName);
+    static bool isSet();
+
     virtual ~ILogger() = default;
 
 protected:

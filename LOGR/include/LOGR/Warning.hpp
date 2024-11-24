@@ -3,7 +3,7 @@
 
 #include <source_location>
 
-#include "LOGR/internal.hpp"
+#include "internal.hpp"
 #include "ILogger.hpp"
 
 
