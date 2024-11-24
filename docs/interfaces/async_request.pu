@@ -1,0 +1,22 @@
+@startuml
+
+title Handle Requests Asynchronously
+
+!include _participants.pu
+
+cl_main -> cl_obj++: method(params)
+  cl_obj -> srv_watch++: request()
+    srv_watch -> srv_obj++ #aqua: lock(mutex)
+      srv_main -x srv_obj: //some call//
+      activate srv_main #pink
+      note right: blocked
+      srv_watch -> srv_obj++: method(params)
+        srv_obj -> srv_obj: //handle//\n//request//
+      srv_watch <-- srv_obj--:
+    deactivate srv_obj
+    srv_main -> srv_obj: //some call//
+    deactivate srv_main
+  return
+return
+
+@enduml

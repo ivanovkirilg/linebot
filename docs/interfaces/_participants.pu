@@ -1,0 +1,14 @@
+@startuml
+
+box client
+  participant cl_main as "Main thread"
+  entity cl_obj as "Client Object"
+end box
+
+box server
+  participant srv_watch as "Watcher thread"
+  entity srv_obj as "Server Object"
+  participant srv_main as "Main thread"
+end box
+
+@enduml

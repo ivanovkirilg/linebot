@@ -1,0 +1,25 @@
+@startuml
+
+title Handle Requests Synchronously
+
+!include _participants.pu
+
+cl_main -> cl_obj++: method(params)
+  cl_obj -> srv_watch++: request()
+    srv_watch -> srv_obj++: queue(\nmethod, params)
+    srv_watch <-- srv_obj--:
+    srv_watch -> srv_obj: wait()
+    activate srv_watch #pink
+    srv_main -> srv_obj: //some call//
+  srv_main -> srv_obj++: requestLoop()
+    srv_obj -> srv_obj++: //handle//\n//request//
+    srv_obj -> srv_watch--: notify_one()
+    deactivate srv_watch
+  cl_obj <-- srv_watch--:
+cl_main <-- cl_obj--:
+
+...
+
+srv_main <-- srv_obj--:
+
+@enduml

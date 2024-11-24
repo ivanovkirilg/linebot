@@ -1,0 +1,31 @@
+@startuml
+
+title Establishing a Connection
+
+!include _participants.pu
+
+create srv_obj
+srv_main -> srv_obj:
+srv_main -> srv_obj++: bind(address)
+create srv_watch
+srv_obj -> srv_watch--: //spawn//
+srv_watch -> srv_watch++: accept()
+srv_main -> srv_main: //perform main//\n//business//
+
+create cl_obj
+cl_main -> cl_obj: (address)
+cl_obj -> srv_watch: connect()
+cl_obj <-- srv_watch: handle
+deactivate
+
+loop
+  srv_watch -> srv_watch: //monitor connections//
+  srv_watch -> srv_watch: accept()
+
+  ' |||
+
+  cl_obj -> srv_watch: disconnect(handle)
+  destroy cl_obj
+end loop
+
+@enduml
