@@ -31,9 +31,11 @@ public:
     void handle(const std::string& message,
         const std::source_location& loc = std::source_location::current()) const;
 
+    long long id() const;
+
 private:
     static std::atomic<unsigned long long> freeId;
-    unsigned long long id{};
+    unsigned long long m_id{};
 };
 
 }
