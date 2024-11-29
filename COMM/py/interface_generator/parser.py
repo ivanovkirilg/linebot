@@ -30,12 +30,12 @@ def parse_parameters(parameter_tokens: Iterable[Token], out_params: List[Paramet
 def parse(tokens):
     match tokens:
         case [
-                KeywordToken('method', KeywordKind.METHOD),
+                KeywordToken('method'),
                 WordToken() as name,
-                PunctuationToken('(', PunctuationKind.OPEN_PAREN),
+                PunctuationToken('('),
                 *param_tokens,
-                PunctuationToken(')', PunctuationKind.CLOSE_PAREN),
-                PunctuationToken(';', PunctuationKind.SEMICOLON)
+                PunctuationToken(')'),
+                PunctuationToken(';')
             ]:
             parameters = []
             parse_parameters(param_tokens, parameters)
