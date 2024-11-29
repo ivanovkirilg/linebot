@@ -19,4 +19,7 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
 )
 
+target_link_libraries(${PROJECT_NAME} LOGR)
+
 add_subdirectory(test)
+add_subdirectory(py/interface_generator/example)

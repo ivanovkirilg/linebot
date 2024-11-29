@@ -5,11 +5,16 @@
 
 #include "COMM/Socket.hpp"
 
+#include "Server.hpp"
 
-class DriverServer
+
+class DriverServer : public Server
 {
 public:
-    void handleRequest(COMM::Connection& client);
+    using Server::Server;
+
+    // TODO Extract to class or interface `Server`?
+    void handleRequest(COMM::Connection& client) override;
 
 protected:
     virtual void set(double speed) = 0;

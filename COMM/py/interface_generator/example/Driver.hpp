@@ -9,6 +9,8 @@
 class Driver : public DriverServer
 {
 public:
+    using DriverServer::DriverServer;
+
     virtual void set(double speed) override;
     virtual void get(double& speed) override;
 

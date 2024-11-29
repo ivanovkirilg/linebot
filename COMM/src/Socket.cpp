@@ -1,6 +1,7 @@
 #include "COMM/Socket.hpp"
 
 #include <netdb.h>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -13,7 +14,30 @@
 
 using namespace COMM;
 
+namespace
+{
+
+int getPort(int socketFileDescriptor)
+{
+    sockaddr_in actualAddr = {0};
+    socklen_t size = sizeof(actualAddr);
+    int result = ::getsockname(socketFileDescriptor,
+                               (sockaddr*) &actualAddr, &size);
+
+    if (result < 0)
+    {
+        std::cerr << "getsockname() ERROR " << errno
+                  << ": " << ::strerror(errno) << std::endl;
+        throw std::runtime_error("getsockname ERROR");
+    }
+
+    return actualAddr.sin_port;
+}
+
+}
+
 Socket::Socket(int port)
+    : m_port(port)
 {
     addrinfo hints;
 
@@ -71,6 +95,16 @@ Socket::~Socket()
     }
 }
 
+int Socket::port() const
+{
+    return m_port;
+}
+
+int Socket::fileDescriptor()
+{
+    return m_fileDescriptor;
+}
+
 void Socket::bind()
 {
     addrinfo* socketAddress = (addrinfo*) m_addrInfo;
@@ -83,6 +117,11 @@ void Socket::bind()
         std::cerr << "bind() ERROR " << errno
                   << ": " << ::strerror(errno) << std::endl;
         throw std::runtime_error("bind ERROR");
+    }
+
+    if (m_port == 0)
+    {
+        m_port = getPort(m_fileDescriptor);
     }
 }
 
@@ -145,20 +184,40 @@ Connection::Connection(int fileDescriptor)
 
 Connection::~Connection()
 {
-    int result = ::close(m_fileDescriptor);
-
-    if (result < 0)
+    if (m_fileDescriptor > 0)
     {
-        std::cerr << "close() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-    }
+        int result = ::close(m_fileDescriptor);
 
-    m_fileDescriptor = 0;
+        if (result < 0)
+        {
+            std::cerr << "close() ERROR " << errno
+                      << ": " << ::strerror(errno) << std::endl;
+        }
+
+        m_fileDescriptor = 0;
+    }
+}
+
+Connection::Connection(Connection&& other)
+{
+    *this = std::move(other);
+}
+
+Connection& Connection::operator=(Connection&& other)
+{
+    m_fileDescriptor = other.m_fileDescriptor;
+    other.m_fileDescriptor = 0;
+    return *this;
 }
 
 Connection::operator bool()
 {
     return m_fileDescriptor != 0;
+}
+
+int Connection::fileDescriptor()
+{
+    return m_fileDescriptor;
 }
 
 void Connection::send(std::vector<std::byte> message)
@@ -174,7 +233,7 @@ void Connection::send(std::vector<std::byte> message)
     else if (sent == 0)
     {
         std::cout << "Connection closed" << std::endl;
-        throw std::runtime_error("send() Connection closed");
+        throw COMM::ConnectionClosedException("send() Connection closed");
     }
     else if (sent < message.size())
     {
@@ -199,7 +258,7 @@ std::vector<std::byte> Connection::receive()
     else if (received == 0)
     {
         std::cout << "Connection closed" << std::endl;
-        throw std::runtime_error("recv() Connection closed");
+        throw COMM::ConnectionClosedException("recv() Connection closed");
     }
     else if (received == CHUNK)
     {
@@ -212,4 +271,81 @@ std::vector<std::byte> Connection::receive()
     std::copy(buffer.begin(), buffer.begin() + received, message.begin());
 
     return message;
+}
+
+Watcher::Watcher()
+{
+    m_epollFileDescriptor = ::epoll_create(1); // Must be > 0, but is ignored
+
+    if (m_epollFileDescriptor < 0)
+    {
+        std::cout << "epoll_create() ERROR " << errno
+                  << ": " << ::strerror(errno) << std::endl;
+        throw std::runtime_error("epoll_create() ERROR");
+    }
+}
+
+Watcher::~Watcher()
+{
+    if (m_epollFileDescriptor >= 0) // TODO is this right?
+    {
+        int result = ::close(m_epollFileDescriptor);
+
+        if (result != 0)
+        {
+            std::cout << "close() ERROR " << errno
+                      << ": " << ::strerror(errno) << std::endl;
+        }
+    }
+}
+
+void Watcher::watch(std::shared_ptr<IWatchable> watchable)
+{
+    epoll_event event = {
+        .events = EPOLLIN,
+        .data = {
+            .fd = watchable->fileDescriptor()
+        }
+    };
+
+    int result = ::epoll_ctl(m_epollFileDescriptor, EPOLL_CTL_ADD,
+                             watchable->fileDescriptor(), &event);
+
+    if (result != 0)
+    {
+        std::cout << "epoll_ctl() ERROR " << errno
+                  << ": " << ::strerror(errno) << std::endl;
+        throw std::runtime_error("epoll_ctl() ERROR");
+    }
+    m_watched.emplace(watchable->fileDescriptor(), watchable);
+}
+
+void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
+{
+    m_watched.erase(watchable->fileDescriptor());
+}
+
+std::vector<std::shared_ptr<IWatchable>> Watcher::wait(int msTimeout)
+{
+    constexpr size_t maxEvents = 10;
+    epoll_event events[maxEvents] = {0};
+
+    int result = ::epoll_wait(m_epollFileDescriptor, events, maxEvents, msTimeout);
+
+    if (result < 0)
+    {
+        std::cout << "epoll_wait() ERROR " << errno
+                  << ": " << ::strerror(errno) << std::endl;
+        throw std::runtime_error("epoll_wait() ERROR");
+    }
+
+    std::vector<std::shared_ptr<IWatchable>> ready;
+    for (int i = 0; i < result; i++)
+    {
+        auto it = m_watched.find(events[i].data.fd);
+
+        ready.push_back(it->second);
+    }
+
+    return ready;
 }

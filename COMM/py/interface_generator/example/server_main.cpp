@@ -1,31 +1,20 @@
 // server-side hand-coded file
 
 #include "Driver.hpp"
-#include "COMM/Socket.hpp"
 
 #include <cassert>
 
-#include <iostream>
-
+#include "LOGR/ILogger.hpp"
 
 int main(int argc, char *argv[])
 {
-    assert(argc == 3);
+    assert(argc == 2);
     int port = std::atoi(argv[1]);
-    int nrOfRequests = std::atoi(argv[2]);
 
-    Driver driver;
+    auto logger = LOGR::ILogger::create("XMPL_server");
 
-    COMM::Socket serverSocket(port);
-    serverSocket.bind();
-    serverSocket.listen(1);
+    Driver driver{port};
 
-    std::cout << "listening" << std::endl;
+    driver.requestLoop();
 
-    COMM::Connection client = serverSocket.accept();
-
-    for (int i = 0; i < nrOfRequests; i++)
-    {
-        driver.handleRequest(client);
-    }
 }
