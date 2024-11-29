@@ -1,0 +1,44 @@
+@startuml
+
+participant Client
+entity ClientObject
+
+entity ServerObject
+participant Server
+
+create ServerObject
+Server -> ServerObject:
+Server -> ServerObject++: bind()
+  ServerObject -> ServerObject: listen()
+return
+
+create ClientObject
+Client -> ClientObject++: (address)
+  ClientObject -> ServerObject: connect()
+  activate ClientObject #pink
+
+Server -> ServerObject++: requestLoop()
+  ServerObject -> ServerObject: accept()
+  ServerObject --> ClientObject: handle
+  deactivate ClientObject
+  ClientObject --> Client--:
+
+  Client -> ClientObject++: method(params)
+    ClientObject -> ServerObject++: request(\nmethod, params)
+      ServerObject -> ServerObject: method(params)
+    return
+  return
+
+  loop
+    ServerObject -> ServerObject: //monitor connections//
+    ServerObject -> ServerObject: accept()
+
+    ClientObject -> ServerObject: disconnect(handle)
+    destroy ClientObject
+  end loop
+
+  ...
+
+ServerObject --> Server--:
+
+@enduml
