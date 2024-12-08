@@ -1,4 +1,6 @@
 #include "COMM/Server.hpp"
+#include "COMM/Socket.hpp"
+#include "COMM/Watcher.hpp"
 
 #include <iostream>
 

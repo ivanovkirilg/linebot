@@ -3,8 +3,8 @@
 #ifndef COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
 #define COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
 
+#include "COMM/Connection.hpp"
 #include "COMM/Server.hpp"
-#include "COMM/Socket.hpp"
 
 
 class DriverServer : public Server
