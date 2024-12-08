@@ -2,6 +2,7 @@ import os.path
 import re
 
 from .syntax_tree import MethodDeclaration
+from .templates import *
 
 
 INTERFACE_SUFFIX = '.interface'
@@ -50,7 +51,10 @@ class Generator:
         header_file = re.sub('.interface$', 'Client.hpp', self._interface_file)
 
         with self.IncludeGuard(header_file, content):
-            content.append(f"class {self._interface_name}Client {{}};")
+            content.append(
+                CLIENT_HEADER_FORMAT.format(
+                    interface=self._interface_name,
+                    methods="    PLACEHOLDER"))
 
         return '\n'.join(content)
 
@@ -59,6 +63,9 @@ class Generator:
         header_file = self._get_header_file()
 
         with self.IncludeGuard(header_file, content):
-            content.append(f"class {self._interface_name}Server {{}};")
+            content.append(
+                SERVER_HEADER_FORMAT.format(
+                    interface=self._interface_name,
+                    methods="    PLACEHOLDER"))
 
         return '\n'.join(content)
