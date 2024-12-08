@@ -39,7 +39,7 @@ def parse_parameters(parameter_tokens: Iterable[Token], out_params: list[Paramet
         case _:
             raise ValueError("Invalid parameters structure " + parameter_tokens)
 
-def parse(tokens: list[Token]):
+def parse(tokens: list[Token]) -> list[MethodDeclaration]:
     statements = separate_statements(tokens)
 
     methods = []
@@ -63,7 +63,8 @@ def parse(tokens: list[Token]):
                     )
                 )
             case _:
-                raise ValueError(f"Invalid structure in statement '{' '.join([tok.spelling for tok in statement])}'")
+                raise ValueError("Invalid structure in statement: "
+                                 + ' '.join([tok.spelling for tok in statement]))
 
     return methods
 
