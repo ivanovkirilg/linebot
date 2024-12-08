@@ -13,7 +13,6 @@ add_executable(
     server_main.cpp
     Driver.cpp
     DriverServer.cpp
-    Server.cpp
 )
 
 add_executable(

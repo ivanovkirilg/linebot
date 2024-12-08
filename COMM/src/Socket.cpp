@@ -287,9 +287,20 @@ Watcher::Watcher()
 
 Watcher::~Watcher()
 {
-    if (m_epollFileDescriptor >= 0) // TODO is this right?
+    if (m_epollFileDescriptor > 0)
     {
         int result = ::close(m_epollFileDescriptor);
+
+        if (result != 0)
+        {
+            std::cout << "close() ERROR " << errno
+                      << ": " << ::strerror(errno) << std::endl;
+        }
+    }
+
+    for (auto& watched : m_watched)
+    {
+        int result = ::close(watched.second->fileDescriptor());
 
         if (result != 0)
         {
@@ -309,7 +320,7 @@ void Watcher::watch(std::shared_ptr<IWatchable> watchable)
     };
 
     int result = ::epoll_ctl(m_epollFileDescriptor, EPOLL_CTL_ADD,
-                             watchable->fileDescriptor(), &event);
+                             event.data.fd, &event);
 
     if (result != 0)
     {

@@ -10,8 +10,10 @@ include_directories(${INT_INC_PATH})
 
 add_library(
     ${PROJECT_NAME} SHARED
+    ${EXT_INC_PATH}/${PROJECT_NAME}/Server.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Socket.hpp
 
+    ${SRC_PATH}/Server.cpp
     ${SRC_PATH}/Socket.cpp
 )
 
