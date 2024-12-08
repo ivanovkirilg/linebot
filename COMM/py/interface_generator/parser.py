@@ -1,9 +1,21 @@
-from typing import Iterable, List
+from typing import Iterable
 from .tokens import *
 from .syntax_tree import *
 
 
-def parse_parameters(parameter_tokens: Iterable[Token], out_params: List[Parameter]):
+def separate_statements(tokens: list[Token]) -> list[list[Token]]:
+    statements = []
+    start = end = 0
+    while start is not None:
+        try:
+            end = tokens.index(PunctuationToken(';'), start)
+            statements.append(tokens[start:end])
+            start = end + 1
+        except ValueError:
+            start = None
+    return statements
+
+def parse_parameters(parameter_tokens: Iterable[Token], out_params: list[Parameter]):
     match parameter_tokens:
         case []:
             return
@@ -27,27 +39,31 @@ def parse_parameters(parameter_tokens: Iterable[Token], out_params: List[Paramet
         case _:
             raise ValueError("Invalid parameters structure " + parameter_tokens)
 
-def parse(tokens):
-    match tokens:
-        case [
-                KeywordToken('method'),
-                WordToken() as name,
-                PunctuationToken('('),
-                *param_tokens,
-                PunctuationToken(')'),
-                PunctuationToken(';')
-            ]:
-            parameters = []
-            parse_parameters(param_tokens, parameters)
-            return [
-                MethodDeclaration(
-                    name.spelling,
-                    ReturnSpec(DataType.VOID),
-                    parameters
-                )
-            ]
-        case _:
-            raise ValueError("Invalid structure")
+def parse(tokens: list[Token]):
+    statements = separate_statements(tokens)
 
-    return []
+    methods = []
+
+    for statement in statements:
+        match statement:
+            case [
+                    KeywordToken('method'),
+                    WordToken() as name,
+                    PunctuationToken('('),
+                    *param_tokens,
+                    PunctuationToken(')')
+                ]:
+                parameters = []
+                parse_parameters(param_tokens, parameters)
+                methods.append(
+                    MethodDeclaration(
+                        name.spelling,
+                        ReturnSpec(DataType.VOID),
+                        parameters
+                    )
+                )
+            case _:
+                raise ValueError(f"Invalid structure in statement '{' '.join([tok.spelling for tok in statement])}'")
+
+    return methods
 
