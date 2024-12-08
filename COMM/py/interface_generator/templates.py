@@ -35,3 +35,7 @@ private:
     void handleRequest(COMM::Connection& client) override;
 }};
 """
+
+CLIENT_METHOD_FORMAT = "    {ret} {name}({params});"
+
+SERVER_METHOD_FORMAT = "    virtual {ret} {name}({params}) = 0;"

@@ -1,7 +1,7 @@
 import os.path
 import re
 
-from .syntax_tree import MethodDeclaration
+from .syntax_tree import MethodDeclaration, ParamDirection
 from .templates import *
 
 
@@ -39,28 +39,56 @@ class Generator:
         self._interface_file = interface_file
         self._interface_name = self._get_interface_name()
         self._methods = methods
+        self._parameters_per_method = {}
 
     def _get_interface_name(self):
         return os.path.basename(self._interface_file).removesuffix('.interface')
 
-    def _get_header_file(self):
-        return re.sub('.interface$', 'Server.hpp', self._interface_file)
+    def _get_header_file(self, kind: str):
+        return re.sub('.interface$', f'{kind}.hpp', self._interface_file)
+
+    def _get_parameters(self, method: MethodDeclaration):
+        if method.name in self._parameters_per_method.keys():
+            return self._parameters_per_method[method.name]
+
+        params = []
+        for param in method.parameters:
+            ref = '&' if param.direction == ParamDirection.OUT else ''
+            param_string = '{}{} {}'.format(
+                param.data_type.value, ref, param.name)
+            params.append(param_string)
+        self._parameters_per_method[method.name] = params
+
+        return params
+
+    def _generate_client_method_declarations(self) -> str:
+        declarations = ''
+        for method in self._methods:
+            decl = CLIENT_METHOD_FORMAT.format(
+                ret=method.return_spec.data_type.value,
+                name=method.name,
+                params=', '.join(self._get_parameters(method))
+            )
+            declarations += decl + '\n'
+        return declarations
 
     def generate_client_hpp(self) -> str:
         content = []
-        header_file = re.sub('.interface$', 'Client.hpp', self._interface_file)
+        header_file = self._get_header_file('Client')
 
         with self.IncludeGuard(header_file, content):
             content.append(
                 CLIENT_HEADER_FORMAT.format(
                     interface=self._interface_name,
-                    methods="    PLACEHOLDER"))
+                    methods=self._generate_client_method_declarations()
+                )
+            )
 
         return '\n'.join(content)
 
     def generate_server_hpp(self) -> str:
         content = []
-        header_file = self._get_header_file()
+        header_file = self._get_header_file('Server')
 
         with self.IncludeGuard(header_file, content):
             content.append(

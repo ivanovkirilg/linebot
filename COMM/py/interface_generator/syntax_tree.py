@@ -5,17 +5,17 @@ from typing import List
 from .tokens import KeywordKind
 
 class DataType(Enum):
-    VOID = auto()
+    VOID = 'void'
 
-    BYTE = auto()
-    BOOL = auto()
+    BYTE = 'byte'
+    BOOL = 'bool'
 
-    INT = auto()
-    FLOAT = auto()
-    DOUBLE = auto()
+    INT = 'int'
+    FLOAT = 'float'
+    DOUBLE = 'double'
 
-    CHAR = auto()
-    STRING = auto()
+    CHAR = 'char'
+    STRING = 'string'
 
 DATA_TYPE = {
     'void': DataType.VOID,
