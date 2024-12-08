@@ -5,10 +5,13 @@
 
 #include "COMM/Socket.hpp"
 
+#include <string>
+
 
 class DriverClient
 {
 public:
+    DriverClient(const std::string& localAddress);
     DriverClient(int serverPort);
 
     void set(double speed);

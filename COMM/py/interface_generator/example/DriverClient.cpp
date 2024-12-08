@@ -4,6 +4,13 @@
 
 #include "zpp_bits.hpp"
 
+
+DriverClient::DriverClient(const std::string& localAddress)
+    : m_serverConnection(COMM::Socket::connect(0))
+{
+    throw std::runtime_error("Local address registry not implemented");
+}
+
 DriverClient::DriverClient(int port)
     : m_serverConnection(COMM::Socket::connect(port))
 {
