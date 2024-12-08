@@ -2,7 +2,6 @@
 
 #include "DriverServer.hpp"
 
-#include "COMM/Socket.hpp"
 #include "COMM/InterfaceProtocol.hpp"
 
 #include "LOGR/Exception.hpp"

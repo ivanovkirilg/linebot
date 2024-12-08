@@ -2,6 +2,8 @@
 
 #include "DriverClient.hpp"
 
+#include "COMM/Socket.hpp"
+
 #include "zpp_bits.hpp"
 
 
