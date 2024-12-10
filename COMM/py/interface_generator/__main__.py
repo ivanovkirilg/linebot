@@ -19,13 +19,16 @@ def main(interface_file):
 
         generator = Generator(interface_file, declarations)
 
-        client_hpp = generator.generate_client_hpp()
-        print('CLIENT HEADER', client_hpp, **printargs)
+        client_cpp = generator.generate_client_cpp()
+        print('CLIENT SOURCE', client_cpp, **printargs)
 
-        input()
+        # client_hpp = generator.generate_client_hpp()
+        # print('CLIENT HEADER', client_hpp, **printargs)
 
-        server_hpp = generator.generate_server_hpp()
-        print('SERVER HEADER', server_hpp, **printargs)
+        # input()
+
+        # server_hpp = generator.generate_server_hpp()
+        # print('SERVER HEADER', server_hpp, **printargs)
 
 
 if __name__ == '__main__':

@@ -45,6 +45,7 @@ class Generator:
     def _get_interface_name(self):
         return os.path.basename(self._interface_file).removesuffix('.interface')
 
+    # TODO don't know what the expected paths are
     def _get_header_file(self, kind: str):
         return re.sub('.interface$', f'{kind}.hpp', self._interface_file)
 
@@ -73,9 +74,12 @@ class Generator:
             declarations += decl + '\n'
         return declarations
 
-    def _generate_hpp(self, class_prefix: str, class_format: str, method_format: str):
+    def _generate_hpp(self,
+                      class_postfix: str,
+                      class_format: str,
+                      method_format: str):
         content = []
-        header_file = self._get_header_file(class_prefix)
+        header_file = self._get_header_file(class_postfix)
 
         with self.IncludeGuard(header_file, content):
             content.append(
@@ -92,3 +96,36 @@ class Generator:
 
     def generate_server_hpp(self) -> str:
         return self._generate_hpp('Server', SERVER_HEADER_FORMAT, SERVER_METHOD_FORMAT)
+
+    def generate_client_cpp(self) -> str:
+        methods = ''
+        for i, method in enumerate(self._methods):
+            input_params_ser = '\n'.join(
+                CLIENT_SERIALIZE_INPUT_FORMAT.format(name=param.name)
+                for param in method.parameters
+                if param.direction == ParamDirection.IN
+            )
+
+            output_params_deser = '\n'.join(
+                CLIENT_DESERIALIZE_OUTPUT_FORMAT.format(name=param.name)
+                for param in method.parameters
+                if param.direction == ParamDirection.OUT
+            )
+
+            method_body = CLIENT_SOURCE_METHOD_FORMAT.format(
+                ret=method.return_spec.data_type.value,
+                interface=self._interface_name,
+                name=method.name,
+                params=', '.join(self._get_parameters(method)),
+                index=i,
+                input_params_serialization=input_params_ser,
+                output_params_deserialization=output_params_deser,
+            )
+
+            methods += method_body
+        
+        return CLIENT_SOURCE_FORMAT.format(
+            header=self._get_header_file('Client'),
+            interface=self._interface_name,
+            methods=methods
+        )

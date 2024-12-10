@@ -18,6 +18,7 @@ DriverClient::DriverClient(int port)
 {
 }
 
+
 void DriverClient::set(double speed)
 {
     constexpr int methodCode = 0;
@@ -34,8 +35,10 @@ void DriverClient::set(double speed)
     read(errCode).or_throw();
     if (errCode)
     {
-        throw "set failed";
+        // TODO read message
+        throw std::runtime_error("set failed");
     }
+
 }
 
 void DriverClient::get(double& speed)
@@ -45,6 +48,7 @@ void DriverClient::get(double& speed)
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
     write(methodCode).or_throw();
 
+
     m_serverConnection.send(inargs);
     auto response = m_serverConnection.receive();
 
@@ -53,8 +57,8 @@ void DriverClient::get(double& speed)
     read(errCode).or_throw();
     if (errCode)
     {
-        throw "set failed";
+        // TODO read message
+        throw std::runtime_error("get failed");
     }
-
     read(speed).or_throw();
 }
