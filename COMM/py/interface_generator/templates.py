@@ -12,7 +12,6 @@ public:
     {interface}Client(int serverPort);
 
 {methods}
-
 private:
     COMM::Connection m_serverConnection;
 }};
@@ -30,7 +29,6 @@ public:
 
 protected:
 {methods}
-
 private:
     void handleRequest(COMM::Connection& client) override;
 }};

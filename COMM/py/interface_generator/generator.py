@@ -8,6 +8,7 @@ from .templates import *
 INTERFACE_SUFFIX = '.interface'
 
 
+# TODO add a namespace parameter
 class Generator:
     class IncludeGuard:
         def __init__(self, header_file: str, out_header: list[str]):
@@ -61,10 +62,10 @@ class Generator:
 
         return params
 
-    def _generate_client_method_declarations(self) -> str:
+    def _generate_method_declarations(self, format: str) -> str:
         declarations = ''
         for method in self._methods:
-            decl = CLIENT_METHOD_FORMAT.format(
+            decl = format.format(
                 ret=method.return_spec.data_type.value,
                 name=method.name,
                 params=', '.join(self._get_parameters(method))
@@ -72,28 +73,22 @@ class Generator:
             declarations += decl + '\n'
         return declarations
 
-    def generate_client_hpp(self) -> str:
+    def _generate_hpp(self, class_prefix: str, class_format: str, method_format: str):
         content = []
-        header_file = self._get_header_file('Client')
+        header_file = self._get_header_file(class_prefix)
 
         with self.IncludeGuard(header_file, content):
             content.append(
-                CLIENT_HEADER_FORMAT.format(
+                class_format.format(
                     interface=self._interface_name,
-                    methods=self._generate_client_method_declarations()
+                    methods=self._generate_method_declarations(method_format)
                 )
             )
 
         return '\n'.join(content)
 
+    def generate_client_hpp(self) -> str:
+        return self._generate_hpp('Client', CLIENT_HEADER_FORMAT, CLIENT_METHOD_FORMAT)
+
     def generate_server_hpp(self) -> str:
-        content = []
-        header_file = self._get_header_file('Server')
-
-        with self.IncludeGuard(header_file, content):
-            content.append(
-                SERVER_HEADER_FORMAT.format(
-                    interface=self._interface_name,
-                    methods="    PLACEHOLDER"))
-
-        return '\n'.join(content)
+        return self._generate_hpp('Server', SERVER_HEADER_FORMAT, SERVER_METHOD_FORMAT)
