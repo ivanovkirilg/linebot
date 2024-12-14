@@ -22,12 +22,26 @@ int main(int argc, char *argv[])
         {
             double speed = 0;
             std::cin >> speed;
-            client.set(speed);
+            try
+            {
+                client.set(speed);
+            }
+            catch (std::exception& exc)
+            {
+                std::cout << "Caught " << exc.what() << std::endl;
+            }
         }
         else if (method == "get")
         {
             double speed = 0;
-            client.get(speed);
+            try
+            {
+                client.get(speed);
+            }
+            catch (std::exception& exc)
+            {
+                std::cout << "Caught " << exc.what() << std::endl;
+            }
             std::cout << speed << '\n';
         }
     }
