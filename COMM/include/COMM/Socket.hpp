@@ -30,6 +30,6 @@ private:
     void* m_addrInfo = nullptr;
 };
 
-}
+} // COMM
 
 #endif // COMM_INCLUDE_COMM_SOCKET

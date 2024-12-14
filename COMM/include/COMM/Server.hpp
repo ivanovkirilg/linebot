@@ -1,12 +1,13 @@
 #ifndef COMM_PY_INTERFACE_GENERATOR_EXAMPLE_SERVER
 #define COMM_PY_INTERFACE_GENERATOR_EXAMPLE_SERVER
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "COMM/Socket.hpp"
 
+namespace COMM
+{
 
 class Server
 {
@@ -33,5 +34,7 @@ private:
 
     bool m_breakLoop{};
 };
+
+} // COMM
 
 #endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_SERVER

@@ -6,8 +6,10 @@
 #include "COMM/Connection.hpp"
 #include "COMM/Server.hpp"
 
+namespace DRVR
+{
 
-class DriverServer : public Server
+class DriverServer : public COMM::Server
 {
 public:
     using Server::Server;
@@ -19,5 +21,7 @@ protected:
 private:
     void handleRequest(COMM::Connection& client) override;
 };
+
+}
 
 #endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
