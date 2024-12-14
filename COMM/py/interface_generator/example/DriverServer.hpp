@@ -6,6 +6,7 @@
 #include "COMM/Connection.hpp"
 #include "COMM/Server.hpp"
 
+
 namespace DRVR
 {
 
@@ -22,6 +23,6 @@ private:
     void handleRequest(COMM::Connection& client) override;
 };
 
-}
+} // DRVR
 
 #endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER

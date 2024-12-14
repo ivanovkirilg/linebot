@@ -5,6 +5,9 @@ CLIENT_HEADER_FORMAT = """
 #include <string>
 
 
+namespace {namespace}
+{{
+
 class {interface}Client
 {{
 public:
@@ -15,6 +18,8 @@ public:
 private:
     COMM::Connection m_serverConnection;
 }};
+
+}} // {namespace}
 """
 
 SERVER_HEADER_FORMAT = """
@@ -22,7 +27,10 @@ SERVER_HEADER_FORMAT = """
 #include "COMM/Server.hpp"
 
 
-class {interface}Server : public Server
+namespace {namespace}
+{{
+
+class {interface}Server : public COMM::Server
 {{
 public:
     using Server::Server;
@@ -32,6 +40,8 @@ protected:
 private:
     void handleRequest(COMM::Connection& client) override;
 }};
+
+}} // {namespace}
 """
 
 CLIENT_METHOD_FORMAT = "    {ret} {name}({params});"
@@ -47,13 +57,13 @@ CLIENT_SOURCE_FORMAT = """
 #include "zpp_bits.hpp"
 
 
-{interface}Client::{interface}Client(const std::string& localAddress)
+{namespace}::{interface}Client::{interface}Client(const std::string& localAddress)
     : m_serverConnection(COMM::Socket::connect(0))
 {{
     throw std::runtime_error("Local address registry not implemented");
 }}
 
-{interface}Client::{interface}Client(int port)
+{namespace}::{interface}Client::{interface}Client(int port)
     : m_serverConnection(COMM::Socket::connect(port))
 {{
 }}
@@ -62,7 +72,7 @@ CLIENT_SOURCE_FORMAT = """
 """
 
 CLIENT_SOURCE_METHOD_FORMAT = """
-{ret} {interface}Client::{name}({params})
+{ret} {namespace}::{interface}Client::{name}({params})
 {{
     constexpr int methodCode = {index};
 

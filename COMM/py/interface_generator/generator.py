@@ -19,10 +19,8 @@ class Generator:
         def __enter__(self):
             self._header.append('#ifndef ' + self._define)
             self._header.append('#define ' + self._define)
-            self._header.append('')
 
         def __exit__(self, *_):
-            self._header.append('')
             self._header.append('#endif // ' + self._define)
 
         def _generate_define(self):
@@ -33,12 +31,16 @@ class Generator:
             define = re.sub(r'([a-z])([A-Z])', r'\1_\2', define)
             return define.upper()
 
-    def __init__(self, interface_file: str, methods: list[MethodDeclaration]):
+    def __init__(self,
+                 interface_file: str,
+                 namespace: str,
+                 methods: list[MethodDeclaration]):
         if not interface_file.endswith(INTERFACE_SUFFIX):
             raise ValueError("Interface definition files must be suffixed "
                              f"with '.interface', and {interface_file} isn't.")
         self._interface_file = interface_file
         self._interface_name = self._get_interface_name()
+        self._namespace = namespace
         self._methods = methods
         self._parameters_per_method = {}
 
@@ -84,6 +86,7 @@ class Generator:
         with self.IncludeGuard(header_file, content):
             content.append(
                 class_format.format(
+                    namespace=self._namespace,
                     interface=self._interface_name,
                     methods=self._generate_method_declarations(method_format)
                 )
@@ -114,6 +117,7 @@ class Generator:
 
             method_body = CLIENT_SOURCE_METHOD_FORMAT.format(
                 ret=method.return_spec.data_type.value,
+                namespace=self._namespace,
                 interface=self._interface_name,
                 name=method.name,
                 params=', '.join(self._get_parameters(method)),
@@ -126,6 +130,7 @@ class Generator:
         
         return CLIENT_SOURCE_FORMAT.format(
             header=self._get_header_file('Client'),
+            namespace=self._namespace,
             interface=self._interface_name,
             methods=methods
         )
