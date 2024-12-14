@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     assert(argc == 2);
     int port = std::atoi(argv[1]);
 
-    DriverClient client(port);
+    DRVR::DriverClient client(port);
 
     std::string method;
     do

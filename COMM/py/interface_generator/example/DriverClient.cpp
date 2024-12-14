@@ -7,19 +7,19 @@
 #include "zpp_bits.hpp"
 
 
-DriverClient::DriverClient(const std::string& localAddress)
+DRVR::DriverClient::DriverClient(const std::string& localAddress)
     : m_serverConnection(COMM::Socket::connect(0))
 {
     throw std::runtime_error("Local address registry not implemented");
 }
 
-DriverClient::DriverClient(int port)
+DRVR::DriverClient::DriverClient(int port)
     : m_serverConnection(COMM::Socket::connect(port))
 {
 }
 
 
-void DriverClient::set(double speed)
+void DRVR::DriverClient::set(double speed)
 {
     constexpr int methodCode = 0;
 
@@ -41,7 +41,7 @@ void DriverClient::set(double speed)
 
 }
 
-void DriverClient::get(double& speed)
+void DRVR::DriverClient::get(double& speed)
 {
     constexpr int methodCode = 1;
 

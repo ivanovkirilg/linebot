@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
     auto logger = LOGR::ILogger::create("XMPL_server");
 
-    Driver driver{port};
+    DRVR::Driver driver{port};
 
     driver.requestLoop();
 

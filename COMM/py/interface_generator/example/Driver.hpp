@@ -5,6 +5,8 @@
 
 #include "DriverServer.hpp"
 
+namespace DRVR
+{
 
 class Driver : public DriverServer
 {
@@ -17,6 +19,8 @@ public:
 private:
     double m_speed = 0.0;
 };
+
+} // DRVR
 
 
 #endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER

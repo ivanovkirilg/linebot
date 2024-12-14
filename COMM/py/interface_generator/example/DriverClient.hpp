@@ -7,6 +7,8 @@
 
 #include <string>
 
+namespace DRVR
+{
 
 class DriverClient
 {
@@ -20,5 +22,7 @@ public:
 private:
     COMM::Connection m_serverConnection;
 };
+
+} // DRVR
 
 #endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_CLIENT

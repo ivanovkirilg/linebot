@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+using namespace DRVR;
+
 void Driver::set(double speed)
 {
     std::cout << "setting speed " << speed << '\n';
