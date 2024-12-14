@@ -94,6 +94,18 @@ void Watcher::watch(std::shared_ptr<IWatchable> watchable)
 
 void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 {
+    epoll_event event = {0};
+
+    int result = ::epoll_ctl(m_epollFileDescriptor, EPOLL_CTL_DEL,
+                             watchable->fileDescriptor(), &event);
+
+    if (result != 0)
+    {
+        std::cout << "epoll_ctl() ERROR " << errno
+                  << ": " << ::strerror(errno) << std::endl;
+        throw std::runtime_error("epoll_ctl() ERROR");
+    }
+
     m_watched.erase(watchable->fileDescriptor());
 }
 
