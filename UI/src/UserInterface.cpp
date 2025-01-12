@@ -1,10 +1,12 @@
 #include "UI/UserInterface.hpp"
 
+#include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
 #include "LOGR/Warning.hpp"
 
 #include <cmath>
 #include <iostream>
+#include <optional>
 #include <sstream>
 
 using namespace UI;
@@ -91,7 +93,7 @@ static std::optional<move::LinearMove> tryReadMove()
     return move;
 }
 
-std::optional<move::LinearMove> UserInterface::readMove()
+std::optional<move::Move> UserInterface::readMove()
 {
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
@@ -113,5 +115,13 @@ std::optional<move::LinearMove> UserInterface::readMove()
         move = tryReadMove();
     }
 
-    return move;
+    // FIXME temp until reading Triangular move is implemented
+    if (move)
+    {
+        return move::Move{move::MoveType::LINEAR, move.value()};
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }

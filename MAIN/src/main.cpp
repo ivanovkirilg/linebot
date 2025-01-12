@@ -25,7 +25,7 @@ int main()
 
     try
     {
-        std::optional<move::LinearMove> move = ui.readMove();
+        std::optional<move::Move> move = ui.readMove();
 
         while (move.has_value())
         {

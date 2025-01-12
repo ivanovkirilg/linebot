@@ -1,6 +1,7 @@
 #ifndef DOMN_INCLUDE_DOMN_MOVE
 #define DOMN_INCLUDE_DOMN_MOVE
 
+#include <variant>
 namespace move
 {
 
@@ -25,6 +26,12 @@ struct TriangularMove
 {
     double targetPosition{};
     double acceleration{};
+};
+
+struct Move 
+{
+    MoveType type;
+    std::variant<LinearMove, TriangularMove> profile;
 };
 
 inline bool isValid(const LinearMove& move)

@@ -1,5 +1,6 @@
 #include "CTRL/Controller.hpp"
 
+#include "DOMN/Move.hpp"
 #include "DRVR/IDriver.hpp"
 #include "LOGR/ILogger.hpp"
 
@@ -33,5 +34,5 @@ TEST(TestController, ExecuteMoveTogglesLogging)
     EXPECT_CALL(*driverMock, loggingOn());
     EXPECT_CALL(*driverMock, loggingOff());
 
-    controller.executeMove({});
+    controller.executeMove(move::Move{});
 }
