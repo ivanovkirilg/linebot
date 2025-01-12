@@ -75,7 +75,7 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-static std::optional<move::Move> tryReadMove()
+static std::optional<move::LinearMove> tryReadMove()
 {
     LOGR::Trace trace;
     std::string line;
@@ -84,21 +84,21 @@ static std::optional<move::Move> tryReadMove()
         return std::nullopt;
     }
 
-    move::Move move;
+    move::LinearMove move;
     std::istringstream lineStream(line);
     lineStream >> move.targetPosition >> move.speed;
 
     return move;
 }
 
-std::optional<move::Move> UserInterface::readMove()
+std::optional<move::LinearMove> UserInterface::readMove()
 {
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
 
-    std::optional<move::Move> move = tryReadMove();
+    std::optional<move::LinearMove> move = tryReadMove();
 
     for (int retries = 0; move and not move::isValid(move.value()); retries++)
     {

@@ -7,7 +7,7 @@
 #include <thread>
 
 
-void Controller::executeMove(const move::Move& move)
+void Controller::executeMove(const move::LinearMove& move)
 {
     LOGR::Trace trace(move.targetPosition, move.speed);
     // Stop driver

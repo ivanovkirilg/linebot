@@ -28,7 +28,7 @@ public:
              std::weak_ptr<const IDriver> driver);
     void terminate();
 
-    std::optional<move::Move> readMove();
+    std::optional<move::LinearMove> readMove();
 
 private:
     std::atomic<bool> m_running{};
