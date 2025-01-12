@@ -9,14 +9,25 @@ constexpr double MAX_POSITION = 1.0;
 
 constexpr double MIN_SPEED_EXCL = 0.0;
 
+enum class MoveType
+{
+    LINEAR,
+    TRIANGULAR
+};
 
-struct Move
+struct LinearMove
 {
     double targetPosition{};
     double speed{};
 };
 
-inline bool isValid(const Move& move)
+struct TriangularMove
+{
+    double targetPosition{};
+    double acceleration{};
+};
+
+inline bool isValid(const LinearMove& move)
 {
     return (move.targetPosition >= MIN_POSITION)
         && (move.targetPosition <= MAX_POSITION)
