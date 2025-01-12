@@ -4,10 +4,39 @@
 #include "LOGR/Trace.hpp"
 
 #include <cmath>
+#include <stdexcept>
+#include <string>
 #include <thread>
 
 
-void Controller::executeMove(const move::LinearMove& move)
+using namespace move;
+
+
+void Controller::executeMove(const Move& move)
+{
+    switch (move.type) 
+    {
+        case MoveType::LINEAR:
+            executeMove(std::get<LinearMove>(move.profile));
+            break;
+        case move::MoveType::TRIANGULAR:
+            executeMove(std::get<TriangularMove>(move.profile));
+            break;
+
+        default:
+            throw std::runtime_error("invalid move type " + std::to_string((int) move.type));
+            break;
+    };
+}
+
+void Controller::executeMove(const TriangularMove& move)
+{
+    (void) move;
+
+    throw std::logic_error("executeMove() not implemented for triangular moves");
+}
+
+void Controller::executeMove(const LinearMove& move)
 {
     LOGR::Trace trace(move.targetPosition, move.speed);
     // Stop driver
