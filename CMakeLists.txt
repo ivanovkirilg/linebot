@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.14)
 
 project(linebot)
 
+set(cmake_helpers_DIR cmake_helpers)
+find_package(cmake_helpers REQUIRED)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0135 NEW)

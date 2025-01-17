@@ -23,7 +23,7 @@ class LoggerImpl : public ILogger
 {
 public:
     LoggerImpl(const std::string& taskName);
-    ~LoggerImpl();
+    virtual ~LoggerImpl() override;
 
     virtual void queueLogLine(const std::string& line) override;
 

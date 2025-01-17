@@ -14,6 +14,7 @@ add_library(
 
     ${SRC_PATH}/UserInterface.cpp
 )
+enable_target_warnings(${PROJECT_NAME})
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}

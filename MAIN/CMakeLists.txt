@@ -12,6 +12,7 @@ add_executable(
     ${PROJECT_NAME}
     ${SRC_PATH}/main.cpp
 )
+enable_target_warnings(${PROJECT_NAME})
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
