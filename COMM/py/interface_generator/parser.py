@@ -35,9 +35,9 @@ def parse_parameters(parameter_tokens: Iterable[Token], out_params: list[Paramet
                 if rest_of_tokens[0] == PunctuationToken(','):
                     parse_parameters(rest_of_tokens[1:], out_params)
                 else:
-                    raise ValueError("Expected ',' at " + rest_of_tokens)
+                    raise ValueError(f"Expected ',' at {rest_of_tokens}")
         case _:
-            raise ValueError("Invalid parameters structure " + parameter_tokens)
+            raise ValueError(f"Invalid parameters structure {parameter_tokens}")
 
 def parse(tokens: list[Token]) -> list[MethodDeclaration]:
     statements = separate_statements(tokens)
