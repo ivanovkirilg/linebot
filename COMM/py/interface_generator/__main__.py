@@ -13,25 +13,15 @@ def main(interface_file, namespace, include_dir, source_dir):
 
         declarations = parse(tokens)
 
-        printargs = { 'sep': '\n', 'end': '\n================\n\n' }
-
-        print('DECLARATIONS', *declarations, **printargs)
-        input()
-
         generator = Generator(interface_file, namespace, declarations)
 
         client_cpp = generator.generate_client_cpp()
-        print('CLIENT SOURCE', client_cpp, **printargs)
 
-        input()
+        server_cpp = generator.generate_server_cpp()
 
         client_hpp = generator.generate_client_hpp()
-        print('CLIENT HEADER', client_hpp, **printargs)
-
-        input()
 
         server_hpp = generator.generate_server_hpp()
-        print('SERVER HEADER', server_hpp, **printargs)
 
 
 if __name__ == '__main__':

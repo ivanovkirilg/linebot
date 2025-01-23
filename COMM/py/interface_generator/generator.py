@@ -127,10 +127,47 @@ class Generator:
             )
 
             methods += method_body
-        
+
         return CLIENT_SOURCE_FORMAT.format(
             header=self._get_header_file('Client'),
             namespace=self._namespace,
             interface=self._interface_name,
+            methods=methods
+        )
+
+    def generate_server_cpp(self) -> str:
+        methods = ''
+        for i, method in enumerate(self._methods):
+            params_decl = '\n'.join(
+                SERVER_PARAMS_DECLARATION_FORMAT.format(type=param.data_type.value, name=param.name)
+                for param in method.parameters
+            )
+
+            input_params_deser = '\n'.join(
+                SERVER_DESERIALIZE_INPUT_FORMAT.format(name=param.name)
+                for param in method.parameters
+                if param.direction == ParamDirection.IN
+            )
+
+            output_params_ser = '\n'.join(
+                SERVER_SERIALIZE_OUTPUT_FORMAT.format(name=param.name)
+                for param in method.parameters
+                if param.direction == ParamDirection.OUT
+            )
+
+            method_body = SERVER_SOURCE_METHOD_FORMAT.format(
+                index=i,
+                params_declaration=params_decl,
+                input_params_deserialization=input_params_deser,
+                name=method.name,
+                params=', '.join(param.name for param in method.parameters),
+                output_params_serialization=output_params_ser,
+            )
+
+            methods += method_body
+
+        return SERVER_SOURCE_FORMAT.format(
+            interface=self._interface_name,
+            namespace=self._namespace,
             methods=methods
         )

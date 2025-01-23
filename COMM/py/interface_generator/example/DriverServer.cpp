@@ -63,9 +63,10 @@ void DRVR::DriverServer::handleRequest(Connection& client)
     {
         switch (methodCode)
         {
+
             case 0:
             {
-                double speed = 0.0;
+                double speed{};
                 in(speed).or_throw();
                 try
                 {
@@ -83,11 +84,14 @@ void DRVR::DriverServer::handleRequest(Connection& client)
                                     buildFailureMessage("set", exc))).or_throw();
                 }
                 out(RequestResult::OK).or_throw();
+
                 break;
             }
+
             case 1:
             {
-                double speed = 0.0;
+                double speed{};
+
                 try
                 {
                     get(speed);
@@ -107,6 +111,7 @@ void DRVR::DriverServer::handleRequest(Connection& client)
                 out(speed).or_throw();
                 break;
             }
+
             default:
             {
                 out(ErrorResult(RequestResult::PROTOCOL_ERROR,
