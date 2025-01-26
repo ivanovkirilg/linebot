@@ -1,20 +1,23 @@
 #include "UI/UserInterface.hpp"
 
+#include "MoveInput.hpp"
+
 #include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
-#include "LOGR/Warning.hpp"
 
 #include <cmath>
 #include <iostream>
 #include <optional>
-#include <sstream>
 
 using namespace UI;
 
 namespace
 {
 
+static constexpr int NR_OF_RETRIES = 3;
+
 static constexpr size_t WIDTH = 80;
+
 
 static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 {
@@ -77,48 +80,25 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-static std::optional<DOMN::LinearMove> tryReadMove()
-{
-    LOGR::Trace trace;
-    std::string line;
-    if (not std::getline(std::cin, line))
-    {
-        return std::nullopt;
-    }
-
-    DOMN::LinearMove move;
-    std::istringstream lineStream(line);
-    lineStream >> move.targetPosition >> move.speed;
-
-    return move;
-}
-
 std::optional<DOMN::Move> UserInterface::readMove()
 {
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
-    std::cout << " Enter target position & speed: ";
+    MoveInput input{std::cin};
 
-    std::optional<DOMN::LinearMove> move = tryReadMove();
+    std::cout << " Choose move type: linear(l), triangular(t): ";
+    input.retry<&MoveInput::tryReadMoveType>(NR_OF_RETRIES);
 
-    for (int retries = 0; move and not DOMN::isValid(move.value()); retries++)
+    if (input.valid())
     {
-        if (retries > 3)
-        {
-            throw InvalidInputException("No valid move entered (retried)");
-        }
-
-        LOGR::Warning("Received invalid move");
-
-        std::cout << " Enter target position [0, 1] & speed: ";
-        move = tryReadMove();
+        std::cout << input.profilePrompt();
+        input.retry<&MoveInput::tryReadMoveProfile>(NR_OF_RETRIES);
     }
 
-    // FIXME temp until reading Triangular move is implemented
-    if (move)
+    if (input.valid())
     {
-        return DOMN::Move{DOMN::MoveType::LINEAR, move.value()};
+        return input.move;
     }
     else
     {
