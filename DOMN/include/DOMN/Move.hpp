@@ -11,6 +11,7 @@ constexpr double MIN_POSITION = 0.0;
 constexpr double MAX_POSITION = 1.0;
 
 constexpr double MIN_SPEED_EXCL = 0.0;
+constexpr double MIN_ACCELERATION_EXCL = 0.0;
 
 enum class MoveType
 {
@@ -41,6 +42,13 @@ inline bool isValid(const LinearMove& move)
     return (move.targetPosition >= MIN_POSITION)
         && (move.targetPosition <= MAX_POSITION)
         && (move.speed > MIN_SPEED_EXCL);
+}
+
+inline bool isValid(const TriangularMove& move)
+{
+    return (move.targetPosition >= MIN_POSITION)
+        && (move.targetPosition <= MAX_POSITION)
+        && (move.acceleration > MIN_ACCELERATION_EXCL);
 }
 
 } // DOMN

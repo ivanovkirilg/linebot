@@ -5,6 +5,7 @@
 #include "LOGR/Warning.hpp"
 
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <optional>
 #include <sstream>
@@ -15,6 +16,133 @@ namespace
 {
 
 static constexpr size_t WIDTH = 80;
+
+static constexpr const char* LINEAR_MOVE_PROMPT     = " Enter target position & speed: ";
+static constexpr const char* TRIANGULAR_MOVE_PROMPT = " Enter target position & acceleration: ";
+
+
+struct MoveInput
+{
+    enum class State
+    {
+        END_OF_INPUT,
+        INVALID_INPUT,
+        VALID_INPUT
+    } state{};
+
+    DOMN::MoveType type{};
+    DOMN::Move move{};
+    const char* profilePrompt;
+
+    void tryReadMoveType()
+    {
+        LOGR::Trace trace;
+
+        std::string line;
+        if (not std::getline(std::cin, line))
+        {
+            state = State::END_OF_INPUT;
+            return;
+        }
+
+        if (line == "l" or line == "linear")
+        {
+            state = State::VALID_INPUT;
+            move.type = DOMN::MoveType::LINEAR;
+            profilePrompt = LINEAR_MOVE_PROMPT;
+        }
+        else if (line == "t" or line == "triangular")
+        {
+            state = State::VALID_INPUT;
+            move.type = DOMN::MoveType::TRIANGULAR;
+            profilePrompt = TRIANGULAR_MOVE_PROMPT;
+        }
+        else
+        {
+            LOGR::Warning("Received invalid move type", line);
+            state = State::INVALID_INPUT;
+        }
+    }
+
+    void tryReadMoveProfile()
+    {
+        LOGR::Trace trace;
+
+        std::string line;
+        if (not std::getline(std::cin, line))
+        {
+            state = State::END_OF_INPUT;
+            return;
+        }
+
+        switch (move.type)
+        {
+            case DOMN::MoveType::LINEAR:
+                tryParseLinearMove(line);
+                break;
+
+            case DOMN::MoveType::TRIANGULAR:
+                tryParseTriangularMove(line);
+                break;
+
+            default:
+                // TODO
+                break;
+        }
+    }
+
+    void retry(int retries, std::function<void()> method)
+    {
+        method();
+
+        for (int retry = 0; state == MoveInput::State::INVALID_INPUT; retry++)
+        {
+            if (retry > retries)
+            {
+                throw InvalidInputException("No valid move entered (retried)");
+            }
+
+            method();
+        }
+    }
+
+private:
+    void tryParseLinearMove(const std::string& line)
+    {
+        DOMN::LinearMove linearMove;
+        std::istringstream lineStream(line);
+        lineStream >> linearMove.targetPosition >> linearMove.speed;
+
+        if (DOMN::isValid(linearMove))
+        {
+            state = State::VALID_INPUT;
+            move.profile = linearMove;
+        }
+        else
+        {
+            state = State::INVALID_INPUT;
+            LOGR::Warning("Received invalid move profile ", linearMove.targetPosition, linearMove.speed);
+        }
+    }
+
+    void tryParseTriangularMove(const std::string& line)
+    {
+        DOMN::TriangularMove triangularMove;
+        std::istringstream lineStream(line);
+        lineStream >> triangularMove.targetPosition >> triangularMove.acceleration;
+
+        if (DOMN::isValid(triangularMove))
+        {
+            state = State::VALID_INPUT;
+            move.profile = triangularMove;
+        }
+        else
+        {
+            state = State::INVALID_INPUT;
+            LOGR::Warning("Received invalid move profile ", triangularMove.targetPosition, triangularMove.acceleration);
+        }
+    }
+};
 
 static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 {
@@ -77,48 +205,25 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-static std::optional<DOMN::LinearMove> tryReadMove()
-{
-    LOGR::Trace trace;
-    std::string line;
-    if (not std::getline(std::cin, line))
-    {
-        return std::nullopt;
-    }
-
-    DOMN::LinearMove move;
-    std::istringstream lineStream(line);
-    lineStream >> move.targetPosition >> move.speed;
-
-    return move;
-}
-
 std::optional<DOMN::Move> UserInterface::readMove()
 {
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
-    std::cout << " Enter target position & speed: ";
+    MoveInput input;
 
-    std::optional<DOMN::LinearMove> move = tryReadMove();
+    std::cout << " Choose move type: linear(l), triangular(t): ";
+    input.retry(3, std::bind(&MoveInput::tryReadMoveType, &input));
 
-    for (int retries = 0; move and not DOMN::isValid(move.value()); retries++)
+    if (input.state == MoveInput::State::VALID_INPUT)
     {
-        if (retries > 3)
-        {
-            throw InvalidInputException("No valid move entered (retried)");
-        }
-
-        LOGR::Warning("Received invalid move");
-
-        std::cout << " Enter target position [0, 1] & speed: ";
-        move = tryReadMove();
+        std::cout << input.profilePrompt;
     }
+    input.retry(3, std::bind(&MoveInput::tryReadMoveProfile, &input));
 
-    // FIXME temp until reading Triangular move is implemented
-    if (move)
+    if (input.state == MoveInput::State::VALID_INPUT)
     {
-        return DOMN::Move{DOMN::MoveType::LINEAR, move.value()};
+        return input.move;
     }
     else
     {
