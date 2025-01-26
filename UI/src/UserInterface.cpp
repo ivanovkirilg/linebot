@@ -77,7 +77,7 @@ void UserInterface::terminate()
     m_background.join();
 }
 
-static std::optional<move::LinearMove> tryReadMove()
+static std::optional<DOMN::LinearMove> tryReadMove()
 {
     LOGR::Trace trace;
     std::string line;
@@ -86,23 +86,23 @@ static std::optional<move::LinearMove> tryReadMove()
         return std::nullopt;
     }
 
-    move::LinearMove move;
+    DOMN::LinearMove move;
     std::istringstream lineStream(line);
     lineStream >> move.targetPosition >> move.speed;
 
     return move;
 }
 
-std::optional<move::Move> UserInterface::readMove()
+std::optional<DOMN::Move> UserInterface::readMove()
 {
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
     std::cout << " Enter target position & speed: ";
 
-    std::optional<move::LinearMove> move = tryReadMove();
+    std::optional<DOMN::LinearMove> move = tryReadMove();
 
-    for (int retries = 0; move and not move::isValid(move.value()); retries++)
+    for (int retries = 0; move and not DOMN::isValid(move.value()); retries++)
     {
         if (retries > 3)
         {
@@ -118,7 +118,7 @@ std::optional<move::Move> UserInterface::readMove()
     // FIXME temp until reading Triangular move is implemented
     if (move)
     {
-        return move::Move{move::MoveType::LINEAR, move.value()};
+        return DOMN::Move{DOMN::MoveType::LINEAR, move.value()};
     }
     else
     {

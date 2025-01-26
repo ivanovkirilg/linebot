@@ -9,7 +9,7 @@
 #include <thread>
 
 
-using namespace move;
+using namespace DOMN;
 
 
 void Controller::executeMove(const Move& move)
@@ -19,7 +19,7 @@ void Controller::executeMove(const Move& move)
         case MoveType::LINEAR:
             executeMove(std::get<LinearMove>(move.profile));
             break;
-        case move::MoveType::TRIANGULAR:
+        case MoveType::TRIANGULAR:
             executeMove(std::get<TriangularMove>(move.profile));
             break;
 

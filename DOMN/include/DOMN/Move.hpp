@@ -2,7 +2,9 @@
 #define DOMN_INCLUDE_DOMN_MOVE
 
 #include <variant>
-namespace move
+
+
+namespace DOMN
 {
 
 constexpr double MIN_POSITION = 0.0;
@@ -41,6 +43,6 @@ inline bool isValid(const LinearMove& move)
         && (move.speed > MIN_SPEED_EXCL);
 }
 
-}
+} // DOMN
 
 #endif // SRC_MOVE

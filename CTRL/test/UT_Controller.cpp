@@ -34,5 +34,5 @@ TEST(TestController, ExecuteMoveTogglesLogging)
     EXPECT_CALL(*driverMock, loggingOn());
     EXPECT_CALL(*driverMock, loggingOff());
 
-    controller.executeMove(move::Move{});
+    controller.executeMove(DOMN::Move{});
 }
