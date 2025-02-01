@@ -28,10 +28,10 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('interface_file')
 
-    # TODO nargs makes it a list :/
-    arg_parser.add_argument('-n', '--namespace', nargs=1, required=True)
-    arg_parser.add_argument('-i', '--include-dir', nargs=1, required=True)
-    arg_parser.add_argument('-s', '--source-dir', nargs=1, required=True)
+    arg_parser.add_argument('-n', '--namespace',   type=str, required=True)
+    arg_parser.add_argument('-i', '--include-dir', type=str, required=True)
+    arg_parser.add_argument('-s', '--source-dir',  type=str, required=True)
+
     args = arg_parser.parse_args()
 
-    main(args.interface_file, *args.namespace, *args.include_dir, *args.source_dir)
+    main(args.interface_file, args.namespace, args.include_dir, args.source_dir)
