@@ -1,3 +1,4 @@
+from enum import Enum
 import os.path
 import re
 
@@ -8,7 +9,11 @@ from .templates import *
 INTERFACE_SUFFIX = '.interface'
 
 
-# TODO add a namespace parameter
+class FileKind(Enum):
+    CLIENT = "Client"
+    SERVER = "Server"
+
+
 class Generator:
     class IncludeGuard:
         def __init__(self, header_file: str, out_header: list[str]):
@@ -34,7 +39,9 @@ class Generator:
     def __init__(self,
                  interface_file: str,
                  namespace: str,
-                 methods: list[MethodDeclaration]):
+                 methods: list[MethodDeclaration],
+                 include_dir: str,
+                 source_dir: str):
         if not interface_file.endswith(INTERFACE_SUFFIX):
             raise ValueError("Interface definition files must be suffixed "
                              f"with '.interface', and {interface_file} isn't.")
@@ -44,12 +51,17 @@ class Generator:
         self._methods = methods
         self._parameters_per_method = {}
 
+        self._include_dir = include_dir
+        self._source_dir = source_dir
+
     def _get_interface_name(self):
         return os.path.basename(self._interface_file).removesuffix('.interface')
 
-    # TODO don't know what the expected paths are
-    def _get_header_file(self, kind: str):
-        return re.sub('.interface$', f'{kind}.hpp', self._interface_file)
+    def get_header_path(self, kind: FileKind):
+        return os.path.join(self._include_dir, f'{self._get_interface_name()}{kind.value}.hpp')
+
+    def get_source_path(self, kind: FileKind):
+        return os.path.join(self._source_dir, f'{self._get_interface_name()}{kind.value}.cpp')
 
     def _get_parameters(self, method: MethodDeclaration):
         if method.name in self._parameters_per_method.keys():
@@ -77,11 +89,11 @@ class Generator:
         return declarations
 
     def _generate_hpp(self,
-                      class_postfix: str,
+                      kind: FileKind,
                       class_format: str,
                       method_format: str):
         content = []
-        header_file = self._get_header_file(class_postfix)
+        header_file = self.get_header_path(kind)
 
         with self.IncludeGuard(header_file, content):
             content.append(
@@ -95,10 +107,10 @@ class Generator:
         return '\n'.join(content)
 
     def generate_client_hpp(self) -> str:
-        return self._generate_hpp('Client', CLIENT_HEADER_FORMAT, CLIENT_METHOD_FORMAT)
+        return self._generate_hpp(FileKind.CLIENT, CLIENT_HEADER_FORMAT, CLIENT_METHOD_FORMAT)
 
     def generate_server_hpp(self) -> str:
-        return self._generate_hpp('Server', SERVER_HEADER_FORMAT, SERVER_METHOD_FORMAT)
+        return self._generate_hpp(FileKind.SERVER, SERVER_HEADER_FORMAT, SERVER_METHOD_FORMAT)
 
     def generate_client_cpp(self) -> str:
         methods = ''
@@ -129,7 +141,7 @@ class Generator:
             methods += method_body
 
         return CLIENT_SOURCE_FORMAT.format(
-            header=self._get_header_file('Client'),
+            header=self.get_header_path(FileKind.CLIENT),
             namespace=self._namespace,
             interface=self._interface_name,
             methods=methods

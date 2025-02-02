@@ -2,7 +2,7 @@ import argparse
 
 from .lexer import tokenize
 from .parser import parse
-from .generator import Generator
+from .generator import Generator, FileKind
 
 
 def main(interface_file, namespace, include_dir, source_dir):
@@ -13,15 +13,23 @@ def main(interface_file, namespace, include_dir, source_dir):
 
         declarations = parse(tokens)
 
-        generator = Generator(interface_file, namespace, declarations)
+        generator = Generator(interface_file, namespace, declarations, include_dir, source_dir)
 
-        client_cpp = generator.generate_client_cpp()
+        with open(generator.get_source_path(FileKind.CLIENT), 'w') as f:
+            client_cpp = generator.generate_client_cpp()
+            f.write(client_cpp)
 
-        server_cpp = generator.generate_server_cpp()
+        with open(generator.get_source_path(FileKind.SERVER), 'w') as f:
+            server_cpp = generator.generate_server_cpp()
+            f.write(server_cpp)
 
-        client_hpp = generator.generate_client_hpp()
+        with open(generator.get_header_path(FileKind.CLIENT), 'w') as f:
+            client_hpp = generator.generate_client_hpp()
+            f.write(client_hpp)
 
-        server_hpp = generator.generate_server_hpp()
+        with open(generator.get_header_path(FileKind.SERVER), 'w') as f:
+            server_hpp = generator.generate_server_hpp()
+            f.write(server_hpp)
 
 
 if __name__ == '__main__':
