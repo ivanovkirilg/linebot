@@ -10,15 +10,18 @@
 void Controller::executeMove(const move::Move& move)
 {
     LOGR::Trace trace(move.targetPosition, move.speed);
+
     // Stop driver
     m_driver->accelerate(-m_driver->velocity());
 
+    const double startPosition = m_driver->position();
+
     m_driver->loggingOn();
 
-    const double distance = std::abs(move.targetPosition - m_driver->position());
+    const double distance = std::abs(move.targetPosition - startPosition);
     const double moveTime = distance / move.speed;
     const double direction = 
-        (move.targetPosition > m_driver->position())  ? 1 : -1;
+        (move.targetPosition > startPosition)  ? 1 : -1;
 
     m_driver->accelerate(move.speed * direction);
 

@@ -14,15 +14,17 @@ namespace
 
 static constexpr size_t WIDTH = 80;
 
-static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
+static void draw(std::weak_ptr<DRVR::DriverClient> driver, std::ostream& output)
 {
-    std::shared_ptr<const IDriver> dr = driver.lock();
+    std::shared_ptr<DRVR::DriverClient> dr = driver.lock();
     if (dr)
     {
+        const double position = dr->position();
+
         output << '\r' << '|';
         for (size_t i = 0; i < WIDTH; i++)
         {
-            if (std::round(dr->position() * WIDTH) == i)
+            if (std::round(position * WIDTH) == i)
             {
                 output << '+';
             }
@@ -40,7 +42,7 @@ static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
 
 void UserInterface::run(
         std::chrono::milliseconds refreshRate,
-        std::weak_ptr<const IDriver> driver)
+        std::weak_ptr<DRVR::DriverClient> driver)
 {
     LOGR::Trace trace;
     

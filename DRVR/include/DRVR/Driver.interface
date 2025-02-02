@@ -1,0 +1,10 @@
+method position() -> double;
+method velocity() -> double;
+
+method loggingOn();
+method loggingOff();
+
+method run(in int refreshRate_ms);
+method terminate();
+
+method accelerate(in double instantaneousAcceleration);

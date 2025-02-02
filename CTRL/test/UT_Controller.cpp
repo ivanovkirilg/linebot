@@ -1,6 +1,6 @@
 #include "CTRL/Controller.hpp"
 
-#include "DRVR/IDriver.hpp"
+#include "DRVR/DriverClient.hpp"
 #include "LOGR/ILogger.hpp"
 
 #include "gtest/gtest.h"
@@ -10,16 +10,16 @@
 using ::testing::NiceMock;
 
 
-class DriverMock : public IDriver
+class DriverMock : public DRVR::IDriverClient
 {
 public:
-    MOCK_METHOD(void, loggingOn, ());
-    MOCK_METHOD(void, loggingOff, ());
-    MOCK_METHOD(double, position, (), (const));
-    MOCK_METHOD(double, velocity, (), (const));
-    MOCK_METHOD(void, run, (std::chrono::milliseconds refreshRate));
-    MOCK_METHOD(void, terminate, ());
-    MOCK_METHOD(void, accelerate, (double instantaneousAcceleration));
+    MOCK_METHOD(double, position, () );
+    MOCK_METHOD(double, velocity, () );
+    MOCK_METHOD(void, loggingOn, () );
+    MOCK_METHOD(void, loggingOff, () );
+    MOCK_METHOD(void, run, (int refreshRate_ms) );
+    MOCK_METHOD(void, terminate, () );
+    MOCK_METHOD(void, accelerate, (double instantaneousAcceleration) );
 };
 
 
