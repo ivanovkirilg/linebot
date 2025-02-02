@@ -14,8 +14,6 @@ add_executable(
 )
 target_link_libraries(client PRIVATE COMM)
 
-find_package(Python COMPONENTS Interpreter REQUIRED)
-
 add_test(NAME serverConnectionTest
          COMMAND ${Python_EXECUTABLE}
                  ${CMAKE_CURRENT_SOURCE_DIR}/test_server_connection.py

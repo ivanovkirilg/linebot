@@ -12,6 +12,8 @@ cmake_policy(SET CMP0135 NEW)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+find_package(Python COMPONENTS Interpreter REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
