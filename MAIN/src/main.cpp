@@ -1,5 +1,6 @@
 #include "UI/UserInterface.hpp"
-#include "DRVR/Driver.hpp"
+// #include "DRVR/Driver.hpp"
+#include "DriverClient.hpp"
 #include "CTRL/Controller.hpp"
 #include "LOGR/ILogger.hpp"
 #include "LOGR/Trace.hpp"
@@ -8,15 +9,30 @@
 #include <iostream>
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        std::cout << "Provide exactly 1 argument: port for Driver interface\n";
+        return 1;
+    }
+
+    int driverPort = std::atoi(argv[1]);
+
     using namespace std::literals;
     auto logger = LOGR::ILogger::create("MAIN");
 
     LOGR::Trace trace;
 
-    auto driver = std::make_shared<Driver>(0.5);
-    driver->run(4ms);
+    auto driver = std::make_shared<DRVR::DriverClient>(driverPort);
+    try
+    {
+        driver->run(4);
+    }
+    catch (std::runtime_error& exc)
+    {
+        std::cout << "Driver run() failed, perhaps already running?\n";
+    }
 
     Controller controller(driver);
 

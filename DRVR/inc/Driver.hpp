@@ -1,15 +1,16 @@
-#ifndef DRVR_INCLUDE_DRVR_DRIVER
-#define DRVR_INCLUDE_DRVR_DRIVER
+#ifndef DRVR_INC_DRIVER_IMPL
+#define DRVR_INC_DRIVER_IMPL
 
-#include "IDriver.hpp"
+#include "DriverServer.hpp"
 
-#include <atomic>
-#include <chrono>
-#include <thread>
 #include <fstream>
+#include <thread>
 
 
-class Driver : public IDriver
+namespace DRVR
+{
+
+class Driver : public DriverServer
 {
 public:
     Driver(double position)
@@ -17,13 +18,14 @@ public:
         m_logFile( std::string("driver") + std::to_string(time(NULL)) + ".txt" )
     { }
 
-    virtual double position() const override { return m_position; }
-    virtual double velocity() const override { return m_velocity; }
+protected:
+    virtual void position(double& pos) override { pos = m_position; }
+    virtual void velocity(double& vel) override { vel = m_velocity; }
 
     virtual void loggingOn() override;
     virtual void loggingOff() override;
 
-    virtual void run(std::chrono::milliseconds refreshRate) override;
+    virtual void run(int refreshRate) override;
     virtual void terminate() override;
 
     virtual void accelerate(double instantaneousAcceleration) override;
@@ -40,4 +42,6 @@ private:
     std::thread m_background;
 };
 
-#endif // SRC_WAFER_STAGE_DRIVER
+} // DRVR
+
+#endif // DRVR_INC_DRIVER_IMPL

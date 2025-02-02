@@ -51,6 +51,7 @@ void LoggerImpl::logSome(size_t nrLinesToLog)
     {
         m_logFile << line;
     }
+    m_logFile.flush();
 }
 
 LoggerImpl::LoggerImpl(const std::string& taskName)
