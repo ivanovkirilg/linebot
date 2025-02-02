@@ -25,14 +25,15 @@ public:
     void requestLoop();
     virtual void handleRequest(COMM::Connection& client) = 0;
 
+protected:
+    bool m_breakLoop{};
+
 private:
     std::string m_localAddress;
 
     using ConnectionHandle = int;
     ConnectionHandle freeHandle{};
     std::shared_ptr<COMM::Socket> m_connectionSocket;
-
-    bool m_breakLoop{};
 };
 
 } // COMM
