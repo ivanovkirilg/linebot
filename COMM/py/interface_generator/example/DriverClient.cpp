@@ -4,7 +4,7 @@
 
 #include "COMM/Socket.hpp"
 
-#include "zpp_bits.hpp"
+#include "zpp_bits.h"
 
 
 DRVR::DriverClient::DriverClient(const std::string& localAddress)

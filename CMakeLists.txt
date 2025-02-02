@@ -13,6 +13,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 include(FetchContent)
+
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
@@ -22,6 +23,14 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+
+FetchContent_Declare(
+  zpp_bits
+  URL https://github.com/eyalz800/zpp_bits/archive/refs/tags/v4.4.25.zip
+)
+FetchContent_MakeAvailable(zpp_bits)
+
+include_directories(${zpp_bits_SOURCE_DIR})
 
 find_package(Doxygen QUIET)
 

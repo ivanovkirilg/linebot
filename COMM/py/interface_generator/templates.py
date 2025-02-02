@@ -54,7 +54,7 @@ CLIENT_SOURCE_FORMAT = """
 
 #include "COMM/Socket.hpp"
 
-#include "zpp_bits.hpp"
+#include "zpp_bits.h"
 
 
 {namespace}::{interface}Client::{interface}Client(const std::string& localAddress)
@@ -110,7 +110,7 @@ SERVER_SOURCE_FORMAT = """
 #include "LOGR/Warning.hpp"
 #include "LOGR/ILogger.hpp"
 
-#include "zpp_bits.hpp"
+#include "zpp_bits.h"
 
 #include <vector>
 #include <sstream>

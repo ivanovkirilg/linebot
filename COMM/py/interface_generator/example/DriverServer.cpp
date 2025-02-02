@@ -8,7 +8,7 @@
 #include "LOGR/Warning.hpp"
 #include "LOGR/ILogger.hpp"
 
-#include "zpp_bits.hpp"
+#include "zpp_bits.h"
 
 #include <vector>
 #include <sstream>
