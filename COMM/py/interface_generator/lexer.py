@@ -11,16 +11,16 @@ def tokenize(translation_unit: str) -> list[Token]:
 
     # Letters, digits, underscore;
     # beginning with a letter
-    word_regex = '[a-zA-Z][a-zA-Z0-9_]*'
+    word_regex = r'[a-zA-Z][a-zA-Z0-9_]*'
 
     # Digits preceded by a point,
     # optionally preceded by a whole part,
     # optionally preceded by a sign,
     # optionally an exponent
-    float_regex = '[-+]?\d*\.\d+([eE][-+]?\d+)?'
+    float_regex = r'[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?'
 
     # Digits, optionally preceded by a sign
-    int_regex = '[-+]?\d+'
+    int_regex = r'[-+]?[0-9]+'
 
     # Any punctuation symbol,
     # but only some are supported;
