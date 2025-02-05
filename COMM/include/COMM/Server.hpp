@@ -30,9 +30,6 @@ protected:
 
 private:
     std::string m_localAddress;
-
-    using ConnectionHandle = int;
-    ConnectionHandle freeHandle{};
     std::shared_ptr<COMM::Socket> m_connectionSocket;
 };
 

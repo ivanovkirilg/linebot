@@ -63,13 +63,11 @@ void Connection::send(std::vector<std::byte> message)
 
     if (sent < 0)
     {
-        std::cout << "send() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("send() ERROR");
+        throw std::runtime_error("send() ERROR " + std::to_string(errno) +
+                                 ": " + ::strerror(errno));
     }
     else if (sent == 0)
     {
-        std::cout << "Connection closed" << std::endl;
         throw COMM::ConnectionClosedException("send() Connection closed");
     }
     else if (sent < message.size())
@@ -88,13 +86,11 @@ std::vector<std::byte> Connection::receive()
 
     if (received < 0)
     {
-        std::cout << "recv() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("recv() ERROR");
+        throw std::runtime_error("recv() ERROR " + std::to_string(errno) +
+                                 ": " + ::strerror(errno));
     }
     else if (received == 0)
     {
-        std::cout << "Connection closed" << std::endl;
         throw COMM::ConnectionClosedException("recv() Connection closed");
     }
     else if (received == CHUNK)

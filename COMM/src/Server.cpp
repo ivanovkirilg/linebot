@@ -1,6 +1,9 @@
 #include "COMM/Server.hpp"
+
 #include "COMM/Socket.hpp"
 #include "COMM/Watcher.hpp"
+
+#include "LOGR/Trace.hpp"
 
 #include <iostream>
 
@@ -55,13 +58,14 @@ void Server::unbind()
 
 void Server::requestLoop()
 {
+    LOGR::Trace trace(m_localAddress, m_connectionSocket->port());
+
     Watcher watcher;
 
     watcher.watch(m_connectionSocket);
 
     while (not m_breakLoop)
     {
-        std::cout << "Watching for connections...\n";
         auto ready = watcher.wait(1500);
 
         for (std::shared_ptr<IWatchable> rdy : ready)
@@ -70,14 +74,15 @@ void Server::requestLoop()
             Connection* conn = dynamic_cast<Connection*>(rdy.get());
             if (acc)
             {
-                std::cout << "Accepting...\n";
+                trace.log("Accepting connection on port", acc->port());
+
                 auto connection = std::make_shared<Connection>(acc->accept());
                 watcher.watch(connection);
-                // m_connections.emplace(connection->fileDescriptor(), connection);
             }
             else if (conn)
             {
-                std::cout << "Handling...\n";
+                trace.log("Handling request on", conn);
+
                 try
                 {
                     handleRequest(*conn);
