@@ -49,6 +49,14 @@ function(add_interface component interface)
             ${Python_EXECUTABLE} -m interface_generator -n ${component} -i ${INTERFACE_PATH} -s ${INTERFACE_PATH} ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
         DEPENDS
             ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
+
+            ${COMM_PYTHONPATH}/interface_generator/__main__.py
+            ${COMM_PYTHONPATH}/interface_generator/generator.py
+            ${COMM_PYTHONPATH}/interface_generator/lexer.py
+            ${COMM_PYTHONPATH}/interface_generator/parser.py
+            ${COMM_PYTHONPATH}/interface_generator/syntax_tree.py
+            ${COMM_PYTHONPATH}/interface_generator/templates.py
+            ${COMM_PYTHONPATH}/interface_generator/tokens.py
         VERBATIM
     )
     add_custom_target(
