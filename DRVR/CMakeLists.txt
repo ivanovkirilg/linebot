@@ -9,21 +9,6 @@ set(INTERFACE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(${INT_INC_PATH})
 
-# add_library(
-#     ${PROJECT_NAME} SHARED
-#     ${EXT_INC_PATH}/${PROJECT_NAME}/Driver.hpp
-
-#     ${SRC_PATH}/Driver.cpp
-# )
-# enable_target_warnings(${PROJECT_NAME})
-
-# target_include_directories(
-#     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
-# )
-
-# target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-
-
 add_interface(DRVR Driver)
 
 add_executable(

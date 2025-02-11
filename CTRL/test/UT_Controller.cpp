@@ -1,6 +1,6 @@
 #include "CTRL/Controller.hpp"
 
-#include "DriverClient.hpp"
+#include "DRVR/DriverClient.hpp"
 #include "LOGR/ILogger.hpp"
 
 #include "gtest/gtest.h"

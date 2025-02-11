@@ -67,7 +67,6 @@ function(add_interface component interface)
         ${INTERFACE_PATH}/${interface}Client.cpp
         ${INTERFACE_PATH}/${interface}Server.cpp
     )
-    target_include_directories(${interface}_interface PUBLIC ${INTERFACE_PATH})
 
     target_link_libraries(${interface}_interface COMM)
 endfunction()

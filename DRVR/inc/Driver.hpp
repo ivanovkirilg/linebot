@@ -1,7 +1,7 @@
 #ifndef DRVR_INC_DRIVER_IMPL
 #define DRVR_INC_DRIVER_IMPL
 
-#include "DriverServer.hpp"
+#include "DRVR/DriverServer.hpp"
 
 #include <fstream>
 #include <thread>
