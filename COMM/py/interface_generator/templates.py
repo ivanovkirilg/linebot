@@ -8,7 +8,15 @@ CLIENT_HEADER_FORMAT = """
 namespace {namespace}
 {{
 
-class {interface}Client
+class I{interface}Client
+{{
+public:
+    virtual ~I{interface}Client() = default;
+
+{abstract_methods}
+}};
+
+class {interface}Client : public I{interface}Client
 {{
 public:
     {interface}Client(const std::string& localAddress);
@@ -44,7 +52,8 @@ private:
 }} // {namespace}
 """
 
-CLIENT_METHOD_FORMAT = "    {ret} {name}({params});"
+CLIENT_ABSTRACT_METHOD_FORMAT = "    virtual {ret} {name}({params}) = 0;"
+CLIENT_METHOD_FORMAT          = "    {ret} {name}({params}) override;"
 
 SERVER_METHOD_FORMAT = "    virtual {ret} {name}({params}) = 0;"
 

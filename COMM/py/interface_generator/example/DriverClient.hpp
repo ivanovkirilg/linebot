@@ -11,14 +11,24 @@
 namespace DRVR
 {
 
-class DriverClient
+class IDriverClient
+{
+public:
+    virtual ~IDriverClient() = default;
+
+    virtual void set(double speed) = 0;
+    virtual void get(double& speed) = 0;
+
+};
+
+class DriverClient : public IDriverClient
 {
 public:
     DriverClient(const std::string& localAddress);
     DriverClient(int serverPort);
 
-    void set(double speed);
-    void get(double& speed);
+    void set(double speed) override;
+    void get(double& speed) override;
 
 private:
     COMM::Connection m_serverConnection;

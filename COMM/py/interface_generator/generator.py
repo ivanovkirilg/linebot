@@ -88,29 +88,36 @@ class Generator:
             declarations += decl + '\n'
         return declarations
 
-    def _generate_hpp(self,
-                      kind: FileKind,
-                      class_format: str,
-                      method_format: str):
+    def generate_client_hpp(self) -> str:
         content = []
-        header_file = self.get_header_path(kind)
+        header_file = self.get_header_path(FileKind.CLIENT)
 
         with self.IncludeGuard(header_file, content):
             content.append(
-                class_format.format(
+                CLIENT_HEADER_FORMAT.format(
                     namespace=self._namespace,
                     interface=self._interface_name,
-                    methods=self._generate_method_declarations(method_format)
+                    methods=self._generate_method_declarations(CLIENT_METHOD_FORMAT),
+                    abstract_methods=self._generate_method_declarations(CLIENT_ABSTRACT_METHOD_FORMAT)
                 )
             )
 
         return '\n'.join(content)
 
-    def generate_client_hpp(self) -> str:
-        return self._generate_hpp(FileKind.CLIENT, CLIENT_HEADER_FORMAT, CLIENT_METHOD_FORMAT)
-
     def generate_server_hpp(self) -> str:
-        return self._generate_hpp(FileKind.SERVER, SERVER_HEADER_FORMAT, SERVER_METHOD_FORMAT)
+        content = []
+        header_file = self.get_header_path(FileKind.SERVER)
+
+        with self.IncludeGuard(header_file, content):
+            content.append(
+                SERVER_HEADER_FORMAT.format(
+                    namespace=self._namespace,
+                    interface=self._interface_name,
+                    methods=self._generate_method_declarations(SERVER_METHOD_FORMAT),
+                )
+            )
+
+        return '\n'.join(content)
 
     def generate_client_cpp(self) -> str:
         methods = ''

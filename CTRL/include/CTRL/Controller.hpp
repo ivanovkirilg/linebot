@@ -10,12 +10,12 @@
 class Controller
 {
 public:
-    Controller(std::shared_ptr<DRVR::DriverClient> driver) : m_driver(driver) { }
+    Controller(std::shared_ptr<DRVR::IDriverClient> driver) : m_driver(driver) { }
 
     void executeMove(const move::Move& move);
 
 private:
-    std::shared_ptr<DRVR::DriverClient> m_driver;
+    std::shared_ptr<DRVR::IDriverClient> m_driver;
 };
 
 #endif // CTRL_INCLUDE_CTRL_CONTROLLER
