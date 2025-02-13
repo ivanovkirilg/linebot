@@ -19,6 +19,6 @@ add_executable(
         ${SRC_PATH}/Driver.cpp
 )
 
-target_link_libraries(DRVR_main PRIVATE Driver_interface)
+target_link_libraries(DRVR_main PRIVATE Driver_interface DOMN)
 
 add_subdirectory(test)

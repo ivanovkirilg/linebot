@@ -1,6 +1,8 @@
 #include "Driver.hpp"
 
+#include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
+#include "LOGR/Warning.hpp"
 
 #include <iostream>
 #include <thread>
@@ -65,6 +67,15 @@ void Driver::simulate(int refreshRate_ms)
         const double deltaTime_s = deltaTime_ms.count() / 1000.0;
 
         m_position = m_position + (m_velocity * deltaTime_s);
+
+        if ((m_position < move::MIN_POSITION) || (m_position > move::MAX_POSITION))
+        {
+            LOGR::Warning{"Position", m_position, "went out of bounds", move::MIN_POSITION, move::MAX_POSITION};
+
+            double pos = m_position;
+            m_position = std::clamp(pos, move::MIN_POSITION, move::MAX_POSITION);
+            m_velocity = 0.0;
+        }
 
         if (m_logging)
         {

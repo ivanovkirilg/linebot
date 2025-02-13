@@ -10,6 +10,7 @@ add_executable(
 target_link_libraries(
     FT_Driver
     Driver_interface
+    DOMN
     GTest::gtest_main
 )
 
