@@ -31,6 +31,8 @@ public:
     virtual void accelerate(double instantaneousAcceleration) override;
 
 private:
+    void simulate(int refreshRate);
+
     std::atomic<double> m_position{};
     std::atomic<double> m_velocity{};
 
