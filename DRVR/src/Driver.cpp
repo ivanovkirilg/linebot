@@ -62,20 +62,30 @@ void Driver::run(int refreshRate_ms)
 
 void Driver::simulate(int refreshRate_ms)
 {
+    using namespace std::chrono;
+
     LOGR::Trace trace;
+
+    auto currentTime = system_clock::now();
+    auto previousTime = currentTime;
 
     while (m_running)
     {
-        const double deltaT = refreshRate_ms / 1000.0;
-        m_velocity += m_acceleration * deltaT;
-        m_position += m_velocity * deltaT;
+        currentTime = system_clock::now();
+
+        const auto deltaTime_ms = duration_cast<milliseconds>(currentTime - previousTime);
+        const double deltaTime_s = deltaTime_ms.count() / 1000.0;
+
+        m_velocity += m_acceleration * deltaTime_s;
+        m_position += m_velocity * deltaTime_s;
 
         if (m_logging)
         {
             m_logFile << m_position << '\t';
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(refreshRate_ms));
+        previousTime = currentTime;
+        std::this_thread::sleep_for(milliseconds(refreshRate_ms));
     }
 }
 
