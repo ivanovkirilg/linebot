@@ -1,5 +1,6 @@
 #include "Driver.hpp"
 
+#include "DOMN/Move.hpp"
 #include "LOGR/ILogger.hpp"
 
 #include <gtest/gtest.h>
@@ -80,4 +81,25 @@ TEST_F(TestDriverFunctional, Accelerates)
     std::this_thread::sleep_for(sleepTime);
 
     EXPECT_NEAR(driver.velocity(), expectedVelocity, tickAcceleration * 1.5);
+}
+
+TEST_F(TestDriverFunctional, StopsAtBounds)
+{
+    constexpr double inputVelocity = 10;
+
+    constexpr std::chrono::milliseconds sleepTime{150};
+
+    driver.setVelocity(inputVelocity);
+
+    std::this_thread::sleep_for(sleepTime);
+
+    EXPECT_NEAR(driver.position(), DOMN::MAX_POSITION, 0.00001);
+    ASSERT_NEAR(driver.velocity(), 0.0, 0.00001);
+
+    driver.setVelocity(-inputVelocity);
+
+    std::this_thread::sleep_for(sleepTime);
+
+    EXPECT_NEAR(driver.position(), DOMN::MIN_POSITION, 0.00001);
+    ASSERT_NEAR(driver.velocity(), 0.0, 0.00001);
 }
