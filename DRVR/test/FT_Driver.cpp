@@ -1,5 +1,6 @@
 #include "Driver.hpp"
 
+#include "DOMN/Move.hpp"
 #include "LOGR/ILogger.hpp"
 
 #include <gtest/gtest.h>
@@ -28,7 +29,7 @@ protected:
 
         std::filesystem::remove(expectedFile);
     }
-
+    
     const time_t creationTime = ::time(nullptr);
     const std::string expectedFile = "driver"
                                      + std::to_string(creationTime)
@@ -78,4 +79,25 @@ TEST_F(TestDriverFunctional, Moves)
     std::this_thread::sleep_for(sleepTime);
 
     EXPECT_NEAR(driver.position(), STARTING_POSITION + expectedDistance, tickDistance * 1.5);
+}
+
+TEST_F(TestDriverFunctional, StopsAtBounds)
+{
+    constexpr double inputVelocity = 10;
+
+    constexpr std::chrono::milliseconds sleepTime{150};
+
+    driver.accelerate(inputVelocity);
+
+    std::this_thread::sleep_for(sleepTime);
+
+    EXPECT_NEAR(driver.position(), move::MAX_POSITION, 0.00001);
+    ASSERT_NEAR(driver.velocity(), 0.0, 0.00001);
+
+    driver.accelerate(-inputVelocity);
+
+    std::this_thread::sleep_for(sleepTime);
+
+    EXPECT_NEAR(driver.position(), move::MIN_POSITION, 0.00001);
+    ASSERT_NEAR(driver.velocity(), 0.0, 0.00001);
 }

@@ -18,6 +18,6 @@ add_executable(
 )
 enable_target_warnings(DRVR_main)
 
-target_link_libraries(DRVR_main PRIVATE Driver_interface)
+target_link_libraries(DRVR_main PRIVATE Driver_interface DOMN)
 
 add_subdirectory(test)
