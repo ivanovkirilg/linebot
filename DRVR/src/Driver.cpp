@@ -48,6 +48,34 @@ void Driver::loggingOff()
     m_logFile << std::endl;
 }
 
+void Driver::simulate(int refreshRate_ms)
+{
+    using namespace std::chrono;
+
+    LOGR::Trace trace;
+
+    auto currentTime = system_clock::now();
+    auto previousTime = currentTime;
+
+    while (m_running)
+    {
+        currentTime = system_clock::now();
+
+        const auto deltaTime_ms = duration_cast<milliseconds>(currentTime - previousTime);
+        const double deltaTime_s = deltaTime_ms.count() / 1000.0;
+
+        m_position = m_position + (m_velocity * deltaTime_s);
+
+        if (m_logging)
+        {
+            m_logFile << m_position << '\t';
+        }
+
+        previousTime = currentTime;
+        std::this_thread::sleep_for(milliseconds(refreshRate_ms));
+    }
+}
+
 void Driver::run(int refreshRate_ms)
 {
     LOGR::Trace trace{refreshRate_ms};
@@ -57,26 +85,8 @@ void Driver::run(int refreshRate_ms)
         throw std::runtime_error{"already running"};
     }
 
-    auto job = [this, refreshRate_ms]()
-    {
-        LOGR::Trace trace;
-
-        while (m_running)
-        {
-            const double deltaT = refreshRate_ms / 1000.0;
-            m_position = m_position + (m_velocity * deltaT);
-
-            if (m_logging)
-            {
-                m_logFile << m_position << '\t';
-            }
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(refreshRate_ms));
-        }
-    };
-
     m_running = true;
-    m_background = std::thread(job);
+    m_background = std::thread(&Driver::simulate, this, refreshRate_ms);
 }
 
 void Driver::terminate()
