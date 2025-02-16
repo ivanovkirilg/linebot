@@ -26,11 +26,13 @@ public:
     virtual void run(std::chrono::milliseconds refreshRate) override;
     virtual void terminate() override;
 
-    virtual void accelerate(double instantaneousAcceleration) override;
+    virtual void accelerateInstantly(double instantaneousAcceleration) override;
+    virtual void setAcceleration(double acceleration) override;
 
 private:
     std::atomic<double> m_position{};
     std::atomic<double> m_velocity{};
+    std::atomic<double> m_acceleration{};
 
     std::atomic<bool> m_logging{};
     std::ofstream m_logFile;

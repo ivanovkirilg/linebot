@@ -31,16 +31,47 @@ void Controller::executeMove(const Move& move)
 
 void Controller::executeMove(const TriangularMove& move)
 {
-    (void) move;
+    LOGR::Trace trace(move.targetPosition, move.acceleration);
 
-    throw std::logic_error("executeMove() not implemented for triangular moves");
+    m_driver->loggingOn();
+
+    const double direction = 
+        (move.targetPosition > m_driver->position())  ? 1 : -1;
+    const double distance = std::abs(move.targetPosition - m_driver->position());
+    const double maxVelocityPoint = m_driver->position() + (distance / 2) * direction;
+
+    m_driver->setAcceleration(move.acceleration * direction);
+
+    if (direction > 0)
+    {
+        while (m_driver->position() < maxVelocityPoint)
+        { }
+        m_driver->setAcceleration(move.acceleration * -direction);
+
+        while (m_driver->position() < move.targetPosition)
+        { }
+    }
+    else
+    {
+        while (m_driver->position() > maxVelocityPoint)
+        { }
+        m_driver->setAcceleration(move.acceleration * -direction);
+
+        while (m_driver->position() > move.targetPosition)
+        { }
+    }
+
+    m_driver->setAcceleration(0.0);
+    m_driver->accelerateInstantly(-m_driver->velocity()); // Stop
+
+    m_driver->loggingOff();
 }
 
 void Controller::executeMove(const LinearMove& move)
 {
     LOGR::Trace trace(move.targetPosition, move.speed);
     // Stop driver
-    m_driver->accelerate(-m_driver->velocity());
+    m_driver->accelerateInstantly(-m_driver->velocity());
 
     m_driver->loggingOn();
 
@@ -49,12 +80,12 @@ void Controller::executeMove(const LinearMove& move)
     const double direction = 
         (move.targetPosition > m_driver->position())  ? 1 : -1;
 
-    m_driver->accelerate(move.speed * direction);
+    m_driver->accelerateInstantly(move.speed * direction);
 
     const long moveTimeMs = moveTime * 1000;
     std::this_thread::sleep_for(std::chrono::milliseconds(moveTimeMs));
 
-    m_driver->accelerate(move.speed * -direction);
+    m_driver->accelerateInstantly(move.speed * -direction);
 
     m_driver->loggingOff();
 }
