@@ -18,6 +18,10 @@ private:
     void executeMove(const DOMN::LinearMove& move);
     void executeMove(const DOMN::TriangularMove& move);
 
+    double getDirection(double targetPosition) const;
+
+    double getDistance(double targetPosition) const;
+
     std::shared_ptr<IDriver> m_driver;
 };
 

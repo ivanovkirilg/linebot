@@ -16,7 +16,8 @@ public:
     virtual void run(std::chrono::milliseconds refreshRate) = 0;
     virtual void terminate() = 0;
 
-    virtual void accelerate(double instantaneousAcceleration) = 0;
+    virtual void setVelocity(double velocity) = 0;
+    virtual void setAcceleration(double acceleration) = 0;
 
     virtual ~IDriver() = default;
 };
