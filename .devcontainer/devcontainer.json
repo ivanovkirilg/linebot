@@ -1,0 +1,4 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04",
+  "postCreateCommand": "git submodule update --recursive --init"
+}
