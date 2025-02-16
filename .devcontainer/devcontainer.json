@@ -1,4 +1,21 @@
 {
   "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04",
-  "postCreateCommand": "git submodule update --recursive --init"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "akiramiyakoda.cppincludeguard",
+        "mechatroner.rainbow-csv",
+        "jebbs.plantuml"
+      ],
+      "settings": {
+        "C/C++ Include Guard.Comment Style": "Line",
+        "C/C++ Include Guard.File Path Pascal Case to Snake Case": true,
+        "C/C++ Include Guard.Macro Type": "Filepath",
+        "C/C++ Include Guard.Auto Update Include Guard": false,
+        "C_Cpp.intelliSenseEngine": "disabled"
+      }
+    }
+  },
+  "postCreateCommand": "./.devcontainer/init.sh"
 }
