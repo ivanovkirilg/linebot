@@ -13,7 +13,9 @@
         "C/C++ Include Guard.File Path Pascal Case to Snake Case": true,
         "C/C++ Include Guard.Macro Type": "Filepath",
         "C/C++ Include Guard.Auto Update Include Guard": false,
-        "C_Cpp.intelliSenseEngine": "disabled"
+        "C_Cpp.intelliSenseEngine": "disabled",
+        "cmake.skipConfigureIfCachePresent": true,
+        "cmake.generator": "Unix Makefiles"
       }
     }
   },

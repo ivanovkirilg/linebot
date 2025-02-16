@@ -8,3 +8,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt -y install lsb-release wget software-pro
 sudo .devcontainer/llvm.sh 21
 
 sudo DEBIAN_FRONTEND=noninteractive apt -y update && sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
+
+mkdir build ; cd build
+cmake .. && make -j
