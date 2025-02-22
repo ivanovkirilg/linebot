@@ -3,9 +3,10 @@
 #include <iostream>
 #include <thread>
 
-void Driver::accelerateInstantly(double instantaneousAcceleration)
+void Driver::setVelocity(double instantaneousAcceleration)
 {
     m_velocity = m_velocity + instantaneousAcceleration;
+    m_acceleration = 0.0;
 }
 
 void Driver::setAcceleration(double acceleration)

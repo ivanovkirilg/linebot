@@ -69,12 +69,11 @@ void Controller::executeMove(const TriangularMove& move)
 
         if (std::abs(m_driver->velocity()) < minimumSpeed)
         {
-            m_driver->accelerateInstantly(minimumSpeed * forwards);
+            m_driver->setVelocity(minimumSpeed * forwards);
         }
     }
 
-    m_driver->setAcceleration(0.0);
-    m_driver->accelerateInstantly(-m_driver->velocity()); // Stop
+    m_driver->setVelocity(0.0);
 
     m_driver->loggingOff();
 }
@@ -82,8 +81,8 @@ void Controller::executeMove(const TriangularMove& move)
 void Controller::executeMove(const LinearMove& move)
 {
     LOGR::Trace trace(move.targetPosition, move.speed);
-    // Stop driver
-    m_driver->accelerateInstantly(-m_driver->velocity());
+
+    m_driver->setVelocity(0.0);
 
     m_driver->loggingOn();
 
@@ -92,12 +91,14 @@ void Controller::executeMove(const LinearMove& move)
     const double direction = 
         (move.targetPosition > m_driver->position())  ? 1 : -1;
 
-    m_driver->accelerateInstantly(move.speed * direction);
+    trace.log("Start");
+    m_driver->setVelocity(move.speed * direction);
 
     const long moveTimeMs = moveTime * 1000;
     std::this_thread::sleep_for(std::chrono::milliseconds(moveTimeMs));
-
-    m_driver->accelerateInstantly(move.speed * -direction);
+    
+    trace.log("Stop");
+    m_driver->setVelocity(0.0);
 
     m_driver->loggingOff();
 }

@@ -26,7 +26,7 @@ public:
     virtual void run(std::chrono::milliseconds refreshRate) override;
     virtual void terminate() override;
 
-    virtual void accelerateInstantly(double instantaneousAcceleration) override;
+    virtual void setVelocity(double instantaneousAcceleration) override;
     virtual void setAcceleration(double acceleration) override;
 
 private:
