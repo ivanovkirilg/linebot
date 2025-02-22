@@ -4,6 +4,7 @@
 #include "LOGR/Trace.hpp"
 
 #include <cmath>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -41,34 +42,34 @@ void Controller::executeMove(const TriangularMove& move)
     const double distance = std::abs(move.targetPosition - m_driver->position());
     const double maxVelocityPoint = m_driver->position() + (distance / 2) * forwards;
 
+    auto notReached = [this, forwards](double target)
+    {
+        if (forwards > 0)
+        {
+            return m_driver->position() < target;
+        }
+        else
+        {
+            return m_driver->position() > target;
+        };
+    };
+    
     m_driver->setAcceleration(move.acceleration * forwards);
 
-    if (forwards > 0)
+    while (notReached(maxVelocityPoint))
     {
-        while (m_driver->position() < maxVelocityPoint)
-        { }
-        m_driver->setAcceleration(move.acceleration * backwards);
-
-        while (m_driver->position() < move.targetPosition)
-        {
-            if (std::abs(m_driver->velocity()) < 0.01)
-            {
-                m_driver->accelerateInstantly(0.01 * forwards);
-            }
-        }
+        // Wait
     }
-    else
-    {
-        while (m_driver->position() > maxVelocityPoint)
-        { }
-        m_driver->setAcceleration(move.acceleration * backwards);
 
-        while (m_driver->position() > move.targetPosition)
+    m_driver->setAcceleration(move.acceleration * backwards);
+
+    while (notReached(move.targetPosition))
+    {
+        const double minimumSpeed = 0.01; // Arbitrary
+
+        if (std::abs(m_driver->velocity()) < minimumSpeed)
         {
-            if (std::abs(m_driver->velocity()) < 0.01)
-            {
-                m_driver->accelerateInstantly(0.01 * forwards);
-            }
+            m_driver->accelerateInstantly(minimumSpeed * forwards);
         }
     }
 
