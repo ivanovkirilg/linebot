@@ -35,30 +35,41 @@ void Controller::executeMove(const TriangularMove& move)
 
     m_driver->loggingOn();
 
-    const double direction = 
+    const double forwards = 
         (move.targetPosition > m_driver->position())  ? 1 : -1;
+    const double backwards = -forwards;
     const double distance = std::abs(move.targetPosition - m_driver->position());
-    const double maxVelocityPoint = m_driver->position() + (distance / 2) * direction;
+    const double maxVelocityPoint = m_driver->position() + (distance / 2) * forwards;
 
-    m_driver->setAcceleration(move.acceleration * direction);
+    m_driver->setAcceleration(move.acceleration * forwards);
 
-    if (direction > 0)
+    if (forwards > 0)
     {
         while (m_driver->position() < maxVelocityPoint)
         { }
-        m_driver->setAcceleration(move.acceleration * -direction);
+        m_driver->setAcceleration(move.acceleration * backwards);
 
         while (m_driver->position() < move.targetPosition)
-        { }
+        {
+            if (std::abs(m_driver->velocity()) < 0.01)
+            {
+                m_driver->accelerateInstantly(0.01 * forwards);
+            }
+        }
     }
     else
     {
         while (m_driver->position() > maxVelocityPoint)
         { }
-        m_driver->setAcceleration(move.acceleration * -direction);
+        m_driver->setAcceleration(move.acceleration * backwards);
 
         while (m_driver->position() > move.targetPosition)
-        { }
+        {
+            if (std::abs(m_driver->velocity()) < 0.01)
+            {
+                m_driver->accelerateInstantly(0.01 * forwards);
+            }
+        }
     }
 
     m_driver->setAcceleration(0.0);
