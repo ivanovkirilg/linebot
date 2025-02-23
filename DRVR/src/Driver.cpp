@@ -1,16 +1,20 @@
 #include "DRVR/Driver.hpp"
 
+#include "LOGR/Trace.hpp"
+
 #include <iostream>
 #include <thread>
 
-void Driver::setVelocity(double instantaneousAcceleration)
+void Driver::setVelocity(double velocity)
 {
-    m_velocity = m_velocity + instantaneousAcceleration;
+    LOGR::Trace trace{"current =", m_velocity, "new =", velocity};
+    m_velocity = velocity;
     m_acceleration = 0.0;
 }
 
 void Driver::setAcceleration(double acceleration)
 {
+    LOGR::Trace trace{"current =", m_acceleration, "new =", acceleration};
     m_acceleration = acceleration;
 }
 
