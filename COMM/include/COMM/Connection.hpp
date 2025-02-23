@@ -11,10 +11,18 @@
 namespace COMM
 {
 
+/// The connection was politely closed by the peer
 class ConnectionClosedException : public LOGR::Exception
 {
     using LOGR::Exception::Exception;
 };
+
+/// A network system call resulted in an error
+class NetworkException : public LOGR::Exception
+{
+    using LOGR::Exception::Exception;
+};
+
 
 class Connection : public IWatchable
 {

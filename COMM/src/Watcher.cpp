@@ -12,27 +12,6 @@
 
 using namespace COMM;
 
-namespace
-{
-
-int getPort(int socketFileDescriptor)
-{
-    sockaddr_in actualAddr = {0};
-    socklen_t size = sizeof(actualAddr);
-    int result = ::getsockname(socketFileDescriptor,
-                               (sockaddr*) &actualAddr, &size);
-
-    if (result < 0)
-    {
-        std::cerr << "getsockname() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("getsockname ERROR");
-    }
-
-    return actualAddr.sin_port;
-}
-
-}
 
 Watcher::Watcher()
 {
@@ -94,7 +73,7 @@ void Watcher::watch(std::shared_ptr<IWatchable> watchable)
 
 void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 {
-    epoll_event event = {0};
+    epoll_event event{};
 
     int result = ::epoll_ctl(m_epollFileDescriptor, EPOLL_CTL_DEL,
                              watchable->fileDescriptor(), &event);
@@ -112,7 +91,7 @@ void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 std::vector<std::shared_ptr<IWatchable>> Watcher::wait(int msTimeout)
 {
     constexpr size_t maxEvents = 10;
-    epoll_event events[maxEvents] = {0};
+    epoll_event events[maxEvents]{};
 
     int result = ::epoll_wait(m_epollFileDescriptor, events, maxEvents, msTimeout);
 

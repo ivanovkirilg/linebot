@@ -34,6 +34,8 @@ target_include_directories(
 
 target_link_libraries(${PROJECT_NAME} LOGR)
 
+enable_target_warnings(${PROJECT_NAME})
+
 set(COMM_PYTHONPATH ${CMAKE_CURRENT_SOURCE_DIR}/py CACHE PATH
     "Path to COMM python packages (like interface_generator)")
 

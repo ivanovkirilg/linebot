@@ -17,7 +17,7 @@ namespace
 
 int getPort(int socketFileDescriptor)
 {
-    sockaddr_in actualAddr = {0};
+    sockaddr_in actualAddr{};
     socklen_t size = sizeof(actualAddr);
     int result = ::getsockname(socketFileDescriptor,
                                (sockaddr*) &actualAddr, &size);
