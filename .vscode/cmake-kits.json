@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Codespaces Kit",
+        "compilers": {
+            "C": "/usr/bin/clang",
+            "CXX": "/usr/bin/clang++"
+        },
+        "preferredGenerator": {
+            "name": "Unix Makefiles"
+        }
+    }
+]
