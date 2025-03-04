@@ -2,6 +2,7 @@
 CLIENT_HEADER_FORMAT = """
 #include "COMM/Connection.hpp"
 
+#include <mutex>
 #include <string>
 
 
@@ -25,6 +26,7 @@ public:
 {methods}
 private:
     COMM::Connection m_serverConnection;
+    std::mutex m_mutex;
 }};
 
 }} // {namespace}
@@ -83,6 +85,8 @@ CLIENT_SOURCE_FORMAT = """
 CLIENT_SOURCE_METHOD_FORMAT = """
 {ret} {namespace}::{interface}Client::{name}({params})
 {{
+    std::lock_guard lock{{m_mutex}};
+
     constexpr int methodCode = {index};
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{{}});

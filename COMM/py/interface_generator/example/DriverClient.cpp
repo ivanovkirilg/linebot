@@ -21,6 +21,8 @@ DRVR::DriverClient::DriverClient(int port)
 
 void DRVR::DriverClient::set(double speed)
 {
+    std::lock_guard lock{m_mutex};
+
     constexpr int methodCode = 0;
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
@@ -43,6 +45,8 @@ void DRVR::DriverClient::set(double speed)
 
 void DRVR::DriverClient::get(double& speed)
 {
+    std::lock_guard lock{m_mutex};
+
     constexpr int methodCode = 1;
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
