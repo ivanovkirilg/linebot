@@ -28,6 +28,8 @@ public:
 
     virtual void accelerate(double instantaneousAcceleration) override;
 
+    virtual ~Driver() override = default;
+
 private:
     std::atomic<double> m_position{};
     std::atomic<double> m_velocity{};

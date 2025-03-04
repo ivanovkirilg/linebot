@@ -17,6 +17,8 @@ public:
     virtual void terminate() = 0;
 
     virtual void accelerate(double instantaneousAcceleration) = 0;
+
+    virtual ~IDriver() = default;
 };
 
 #endif // DRVR_INCLUDE_DRVR_IDRIVER
