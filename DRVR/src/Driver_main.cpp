@@ -22,6 +22,4 @@ int main(int argc, char *argv[])
     driver.bind(port);
 
     driver.requestLoop();
-
-    driver.unbind();
 }

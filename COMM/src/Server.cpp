@@ -50,12 +50,6 @@ void Server::bind(int port)
     m_connectionSocket->listen(CONNECTIONS_BACKLOG);
 }
 
-void Server::unbind()
-{
-    // TODO:
-    // m_connectionSocket->close();
-}
-
 void Server::requestLoop()
 {
     LOGR::Trace trace(m_localAddress, m_connectionSocket->port());
@@ -81,8 +75,6 @@ void Server::requestLoop()
             }
             else if (conn)
             {
-                trace.log("Handling request on", conn);
-
                 try
                 {
                     handleRequest(*conn);
