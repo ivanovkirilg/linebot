@@ -1,14 +1,22 @@
 #ifndef COMM_INCLUDE_COMM_WATCHER
 #define COMM_INCLUDE_COMM_WATCHER
 
+#include "COMM/IWatchable.hpp"
+
+#include "LOGR/Exception.hpp"
+
 #include <memory>
 #include <vector>
 #include <map>
 
-#include "COMM/IWatchable.hpp"
 
 namespace COMM
 {
+
+class PollingException : public LOGR::Exception
+{
+    using LOGR::Exception::Exception;
+};
 
 class Watcher
 {

@@ -1,13 +1,14 @@
 #include "COMM/Watcher.hpp"
 
+#include "LOGR/Exception.hpp"
+#include "LOGR/Warning.hpp"
+
 #include <netdb.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
 #include <cstring>
-#include <iostream>
-#include <stdexcept>
 #include <vector>
 
 using namespace COMM;
@@ -19,9 +20,7 @@ Watcher::Watcher()
 
     if (m_epollFileDescriptor < 0)
     {
-        std::cout << "epoll_create() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_create() ERROR");
+        throw PollingException("epoll_create() ERROR" + LOGR::getUnderlyingError());
     }
 }
 
@@ -33,8 +32,7 @@ Watcher::~Watcher()
 
         if (result != 0)
         {
-            std::cout << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
+            LOGR::Warning{"close() ERROR", LOGR::getUnderlyingError()};
         }
     }
 }
@@ -53,9 +51,7 @@ void Watcher::watch(std::shared_ptr<IWatchable> watchable)
 
     if (result != 0)
     {
-        std::cout << "epoll_ctl() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_ctl() ERROR");
+        throw PollingException("epoll_ctl() ERROR" + LOGR::getUnderlyingError());
     }
     m_watched.emplace(watchable->fileDescriptor(), watchable);
 }
@@ -69,9 +65,7 @@ void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 
     if (result != 0)
     {
-        std::cout << "epoll_ctl() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_ctl() ERROR");
+        LOGR::Warning{"epoll_ctl() ERROR", LOGR::getUnderlyingError()};
     }
 
     m_watched.erase(watchable->fileDescriptor());
@@ -86,9 +80,7 @@ std::vector<std::shared_ptr<IWatchable>> Watcher::wait(int msTimeout)
 
     if (result < 0)
     {
-        std::cout << "epoll_wait() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_wait() ERROR");
+        throw PollingException("epoll_wait() ERROR" + LOGR::getUnderlyingError());
     }
 
     std::vector<std::shared_ptr<IWatchable>> ready;

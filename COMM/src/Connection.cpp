@@ -1,6 +1,7 @@
 #include "COMM/Connection.hpp"
 
 #include "LOGR/Warning.hpp"
+#include "LOGR/Exception.hpp"
 
 #include <netdb.h>
 #include <sys/epoll.h>
@@ -8,23 +9,10 @@
 #include <unistd.h>
 
 #include <array>
-#include <cstring>
 #include <string>
 #include <vector>
 
 using namespace COMM;
-
-
-namespace
-{
-
-inline std::string getUnderlyingError()
-{
-    auto e = errno;
-    return std::to_string(e) + ": " + ::strerror(e);
-}
-
-} // namespace
 
 
 Connection::Connection(int fileDescriptor)
@@ -40,7 +28,7 @@ Connection::~Connection()
 
         if (result < 0)
         {
-            LOGR::Warning{getUnderlyingError()};
+            LOGR::Warning{LOGR::getUnderlyingError()};
         }
 
         m_fileDescriptor = 0;
@@ -80,7 +68,7 @@ void Connection::send(std::vector<std::byte> message)
 
     if (sent < 0)
     {
-        throw NetworkException(getUnderlyingError());
+        throw NetworkException(LOGR::getUnderlyingError());
     }
     else if (sent == 0)
     {
@@ -110,7 +98,7 @@ std::vector<std::byte> Connection::receive()
 
     if (received < 0)
     {
-        throw NetworkException(getUnderlyingError());
+        throw NetworkException(LOGR::getUnderlyingError());
     }
     else if (received == 0)
     {
