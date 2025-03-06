@@ -39,6 +39,7 @@ public:
           requires(sizeof...(Ts) == 0)
         : m_loc(loc)
     {
+        (args, ...); // Silence 'Wunused' for compiler versions that don't understand requires()
         auto line = internal::startLine(internal::Level::TRACE, m_loc);
         line << "v\n";
         ILogger::instance()->queueLogLine(line.str());
