@@ -37,17 +37,6 @@ Watcher::~Watcher()
                       << ": " << ::strerror(errno) << std::endl;
         }
     }
-
-    for (auto& watched : m_watched)
-    {
-        int result = ::close(watched.second->fileDescriptor());
-
-        if (result != 0)
-        {
-            std::cout << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
-        }
-    }
 }
 
 void Watcher::watch(std::shared_ptr<IWatchable> watchable)
