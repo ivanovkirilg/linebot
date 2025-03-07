@@ -42,18 +42,11 @@ void Controller::executeMove(const TriangularMove& move)
     const double distance = std::abs(move.targetPosition - m_driver->position());
     const double maxVelocityPoint = m_driver->position() + (distance / 2) * forwards;
 
-    auto notReached = [this, forwards](double target)
-    {
-        if (forwards > 0)
-        {
-            return m_driver->position() < target;
-        }
-        else
-        {
-            return m_driver->position() > target;
-        };
-    };
-    
+    using compare = std::function<bool (double)>;
+    auto notReached = (forwards > 0)
+        ? (compare) [this](double target) { return m_driver->position() < target; }
+        : (compare) [this](double target) { return m_driver->position() > target; };
+
     m_driver->setAcceleration(move.acceleration * forwards);
 
     while (notReached(maxVelocityPoint))
