@@ -20,7 +20,7 @@ add_library(
     ${EXT_INC_PATH}/${PROJECT_NAME}/IWatchable.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Server.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Socket.hpp
-    ${EXT_INC_PATH}/${PROJECT_NAME}/Watcher.hpp
+    ${INT_INC_PATH}/Watcher.hpp
 
     ${SRC_PATH}/Connection.cpp
     ${SRC_PATH}/Server.cpp
@@ -60,14 +60,6 @@ function(add_interface component interface)
             ${COMM_PYTHONPATH}/interface_generator/templates.py
             ${COMM_PYTHONPATH}/interface_generator/tokens.py
         VERBATIM
-    )
-    add_custom_target(
-        ${interface}_interface_files
-        DEPENDS
-            ${INTERFACE_PATH}/${interface}Client.hpp
-            ${INTERFACE_PATH}/${interface}Client.cpp
-            ${INTERFACE_PATH}/${interface}Server.hpp
-            ${INTERFACE_PATH}/${interface}Server.cpp
     )
     add_library(
         ${interface}_interface SHARED
