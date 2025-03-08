@@ -78,11 +78,11 @@ struct MoveInput
         switch (move.type)
         {
             case DOMN::MoveType::LINEAR:
-                tryParseLinearMove(line);
+                tryParseMoveProfile<DOMN::LinearMove, &DOMN::LinearMove::speed>(line);
                 break;
 
             case DOMN::MoveType::TRIANGULAR:
-                tryParseTriangularMove(line);
+                tryParseMoveProfile<DOMN::TriangularMove, &DOMN::TriangularMove::acceleration>(line);
                 break;
 
             default:
@@ -107,39 +107,24 @@ struct MoveInput
     }
 
 private:
-    void tryParseLinearMove(const std::string& line)
+    template<class SpecificMove, double SpecificMove::*profileCharacteristic>
+    void tryParseMoveProfile(const std::string& line)
     {
-        DOMN::LinearMove linearMove;
+        SpecificMove parsed;
         std::istringstream lineStream(line);
-        lineStream >> linearMove.targetPosition >> linearMove.speed;
+        lineStream >> parsed.targetPosition >> parsed.*profileCharacteristic;
 
-        if (DOMN::isValid(linearMove))
+        if (DOMN::isValid(parsed))
         {
             state = State::VALID_INPUT;
-            move.profile = linearMove;
+            move.profile = parsed;
         }
         else
         {
             state = State::INVALID_INPUT;
-            LOGR::Warning("Received invalid move profile ", linearMove.targetPosition, linearMove.speed);
-        }
-    }
-
-    void tryParseTriangularMove(const std::string& line)
-    {
-        DOMN::TriangularMove triangularMove;
-        std::istringstream lineStream(line);
-        lineStream >> triangularMove.targetPosition >> triangularMove.acceleration;
-
-        if (DOMN::isValid(triangularMove))
-        {
-            state = State::VALID_INPUT;
-            move.profile = triangularMove;
-        }
-        else
-        {
-            state = State::INVALID_INPUT;
-            LOGR::Warning("Received invalid move profile ", triangularMove.targetPosition, triangularMove.acceleration);
+            LOGR::Warning("Received invalid move profile ",
+                          parsed.targetPosition,
+                          parsed.*profileCharacteristic);
         }
     }
 };
