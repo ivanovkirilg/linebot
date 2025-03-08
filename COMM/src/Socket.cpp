@@ -1,14 +1,19 @@
 #include "COMM/Socket.hpp"
 
+#include "COMM/Connection.hpp"
+
+#include "LOGR/Exception.hpp"
+#include "LOGR/Warning.hpp"
+
 #include <netdb.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <cstring>
-#include <iostream>
 #include <stdexcept>
 #include <string>
+
+#include <cassert>
 
 using namespace COMM;
 
@@ -24,9 +29,7 @@ int getPort(int socketFileDescriptor)
 
     if (result < 0)
     {
-        std::cerr << "getsockname() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("getsockname ERROR");
+        throw NetworkException("getsockname ERROR " + LOGR::getUnderlyingError());
     }
 
     return actualAddr.sin_port;
@@ -38,7 +41,6 @@ Socket::Socket(int port)
     : m_port(port)
 {
     addrinfo hints;
-
     memset(&hints, 0, sizeof(hints));
 
     hints.ai_family = AF_UNSPEC;
@@ -50,11 +52,9 @@ Socket::Socket(int port)
     addrinfo* socketAddress = nullptr;
     int result = ::getaddrinfo(nullptr, portStr.c_str(), &hints, &socketAddress);
 
-    if (result)
+    if (result != 0)
     {
-        std::cerr << "getaddrinfo() ERROR " << result
-                  << ": " << ::gai_strerror(result) << std::endl;
-        throw std::runtime_error("getaddrinfo ERROR");
+        throw NetworkException("getaddrinfo ERROR " + LOGR::getUnderlyingError());
     }
 
     m_addrInfo = socketAddress;
@@ -66,9 +66,7 @@ Socket::Socket(int port)
 
     if (m_fileDescriptor < 0)
     {
-        std::cerr << "socket() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("socket ERROR");
+        throw NetworkException("socket ERROR " + LOGR::getUnderlyingError());
     }
 }
 
@@ -87,8 +85,7 @@ Socket::~Socket()
 
         if (result < 0)
         {
-            std::cerr << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
+            LOGR::Warning{LOGR::getUnderlyingError()};
         }
     }
 }
@@ -105,6 +102,8 @@ int Socket::fileDescriptor()
 
 void Socket::bind()
 {
+    if (m_addrInfo == nullptr) throw std::logic_error{"m_addrInfo == nullptr"};
+
     addrinfo* socketAddress = (addrinfo*) m_addrInfo;
     int result = ::bind(m_fileDescriptor,
                         socketAddress->ai_addr,
@@ -112,9 +111,7 @@ void Socket::bind()
 
     if (result < 0)
     {
-        std::cerr << "bind() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("bind ERROR");
+        throw NetworkException("bind ERROR " + LOGR::getUnderlyingError());
     }
 
     if (m_port == 0)
@@ -129,15 +126,13 @@ void Socket::listen(int backlog)
 
     if (result < 0)
     {
-        std::cerr << "listen() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("listen ERROR");
+        throw NetworkException("listen ERROR " + LOGR::getUnderlyingError());
     }
 }
 
 Connection Socket::accept()
 {
-    addrinfo clientAddr;
+    addrinfo clientAddr{};
     socklen_t clientAddrSize = sizeof(clientAddr);
     int result = ::accept(m_fileDescriptor,
                           (sockaddr*) &clientAddr,
@@ -145,17 +140,15 @@ Connection Socket::accept()
 
     if (result < 0)
     {
-        std::cerr << "accept() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("accept ERROR");
+        throw NetworkException("accept ERROR " + LOGR::getUnderlyingError());
     }
 
-    return result;
+    return {result};
 }
 
 Connection Socket::connect(int port)
 {
-    Socket temp(port);
+    Socket temp(port); // TODO better without this?
     addrinfo* socketAddress = (addrinfo*) temp.m_addrInfo;
 
     int result = ::connect(temp.m_fileDescriptor,
@@ -164,9 +157,7 @@ Connection Socket::connect(int port)
 
     if (result < 0)
     {
-        std::cout << "connect() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("connect ERROR");
+        throw NetworkException("connect ERROR " + LOGR::getUnderlyingError());
     }
 
     Connection connection(temp.m_fileDescriptor);
