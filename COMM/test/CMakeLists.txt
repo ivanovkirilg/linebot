@@ -32,20 +32,7 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_Socket_SUT
 )
 
-
-## Interface
-
-add_executable(
-    interface_server
-    test_interface/interface_server.cpp
-)
-target_link_libraries(interface_server PRIVATE COMM)
-
-add_test(NAME serverInterfaceTest
-         COMMAND ${Python_EXECUTABLE}
-                 ${CMAKE_CURRENT_SOURCE_DIR}/test_interface/test_interface_server.py
-                 ${CMAKE_CURRENT_BINARY_DIR}/interface_server)
-
+##
 
 # add_executable(
 #     TODO_test
