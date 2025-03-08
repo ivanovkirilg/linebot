@@ -1,29 +1,21 @@
 #!/bin/env python3
 
-import subprocess
-import socket
 import sys
 
-def some_port():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind( ('', 0) )
-    port = sock.getsockname()[1]
-    sock.close()
-    return port
-
+import socket_testing
 
 HOST = ''
-PORT = some_port()
+PORT = socket_testing.some_port()
 EXPECTED_MESSAGE = b'request'
 REPLY = b'reply'
 
 SUT = sys.argv[1]
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock = socket_testing.create_socket()
 sock.bind((HOST, PORT))
 sock.listen(2)
 
-proc = subprocess.Popen([SUT, str(PORT)], stdout=subprocess.PIPE)
+proc = socket_testing.launch_sut(SUT, PORT)
 
 conn, _ = sock.accept()
 

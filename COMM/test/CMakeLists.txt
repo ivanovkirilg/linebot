@@ -2,27 +2,36 @@ cmake_minimum_required(VERSION 3.14)
 
 project(COMM_test)
 
+## FT_Connection
 add_executable(
-    server
-    server.cpp
+    FT_Connection_SUT
+    FT_Connection/SUT.cpp
 )
-target_link_libraries(server PRIVATE COMM)
+target_link_libraries(FT_Connection_SUT PRIVATE COMM)
+add_test(
+    NAME COMM::FT_ConnectionTest
+    COMMAND
+        ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
+        ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/FT_Connection/test_connection.py
+        ${CMAKE_CURRENT_BINARY_DIR}/FT_Connection_SUT
+)
 
+## FT_Socket
 add_executable(
-    client
-    client.cpp
+    FT_Socket_SUT
+    FT_Socket/SUT.cpp
 )
-target_link_libraries(client PRIVATE COMM)
+target_link_libraries(FT_Socket_SUT PRIVATE COMM)
+add_test(
+    NAME COMM::FT_SocketTest
+    COMMAND
+        ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
+        ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/FT_Socket/test_socket.py
+        ${CMAKE_CURRENT_BINARY_DIR}/FT_Socket_SUT
+)
 
-add_test(NAME serverConnectionTest
-         COMMAND ${Python_EXECUTABLE}
-                 ${CMAKE_CURRENT_SOURCE_DIR}/test_server_connection.py
-                 ${CMAKE_CURRENT_BINARY_DIR}/server)
-
-add_test(NAME clientConnectionTest
-         COMMAND ${Python_EXECUTABLE}
-                 ${CMAKE_CURRENT_SOURCE_DIR}/test_client_connection.py
-                 ${CMAKE_CURRENT_BINARY_DIR}/client)
 
 ## Interface
 
