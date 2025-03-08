@@ -3,6 +3,7 @@
 #include "COMM/Socket.hpp"
 #include "Watcher.hpp"
 
+#include "LOGR/Exception.hpp"
 #include "LOGR/Trace.hpp"
 
 #include <iostream>
@@ -64,16 +65,14 @@ void Server::requestLoop()
 
         for (std::shared_ptr<IWatchable> rdy : ready)
         {
-            Socket* acc = dynamic_cast<Socket*>(rdy.get());
-            Connection* conn = dynamic_cast<Connection*>(rdy.get());
-            if (acc)
+            if (auto acc = dynamic_cast<Socket*>(rdy.get()))
             {
                 trace.log("Accepting connection on port", acc->port());
 
                 auto connection = std::make_shared<Connection>(acc->accept());
                 watcher.watch(connection);
             }
-            else if (conn)
+            else if (auto conn = dynamic_cast<Connection*>(rdy.get()))
             {
                 try
                 {
@@ -82,13 +81,12 @@ void Server::requestLoop()
                 catch (ConnectionClosedException& exc)
                 {
                     watcher.unwatch(rdy);
-                    exc.handle("Unwatching client");
+                    exc.handle("Unwatched client");
                 }
             }
             else
             {
-                throw std::runtime_error("Invalid watchable");
-                rdy.get();
+                throw LOGR::Exception("Invalid watchable");
             }
         }
     }
