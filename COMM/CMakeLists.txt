@@ -46,7 +46,7 @@ function(add_interface component interface)
             ${INTERFACE_PATH}/${interface}Server.cpp
         COMMAND
             ${CMAKE_COMMAND} -E env "PYTHONPATH=${COMM_PYTHONPATH}"
-            ${Python_EXECUTABLE} -m interface_generator -n ${component} -i ${INTERFACE_PATH} -s ${INTERFACE_PATH} ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
+            ${Python_EXECUTABLE} -m interface_generator -n ${component} -o ${INTERFACE_PATH} ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
         DEPENDS
             ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
 

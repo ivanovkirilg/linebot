@@ -40,8 +40,7 @@ class Generator:
                  interface_file: str,
                  namespace: str,
                  methods: list[MethodDeclaration],
-                 include_dir: str,
-                 source_dir: str):
+                 output_dir: str):
         if not interface_file.endswith(INTERFACE_SUFFIX):
             raise ValueError("Interface definition files must be suffixed "
                              f"with '.interface', and {interface_file} isn't.")
@@ -51,17 +50,15 @@ class Generator:
         self._methods = methods
         self._parameters_per_method = {}
 
-        self._include_dir = include_dir
-        self._source_dir = source_dir
+        self._output_dir = output_dir
 
     def _get_interface_name(self):
         return os.path.basename(self._interface_file).removesuffix('.interface')
 
-    def get_header_path(self, kind: FileKind):
-        return os.path.join(self._include_dir, f'{self._get_interface_name()}{kind.value}.hpp')
-
-    def get_source_path(self, kind: FileKind):
-        return os.path.join(self._source_dir, f'{self._get_interface_name()}{kind.value}.cpp')
+    def get_output_path(self, kind: FileKind, extension='hpp'):
+        return os.path.join(
+            self._output_dir,
+            f'{self._get_interface_name()}{kind.value}.{extension}')
 
     def _get_parameters(self, method: MethodDeclaration):
         if method.name in self._parameters_per_method.keys():
@@ -90,7 +87,7 @@ class Generator:
 
     def generate_client_hpp(self) -> str:
         content = []
-        header_file = self.get_header_path(FileKind.CLIENT)
+        header_file = self.get_output_path(FileKind.CLIENT)
 
         with self.IncludeGuard(header_file, content):
             content.append(
@@ -106,7 +103,7 @@ class Generator:
 
     def generate_server_hpp(self) -> str:
         content = []
-        header_file = self.get_header_path(FileKind.SERVER)
+        header_file = self.get_output_path(FileKind.SERVER)
 
         with self.IncludeGuard(header_file, content):
             content.append(
@@ -148,7 +145,7 @@ class Generator:
             methods += method_body
 
         return CLIENT_SOURCE_FORMAT.format(
-            header=self.get_header_path(FileKind.CLIENT),
+            header=self.get_output_path(FileKind.CLIENT),
             namespace=self._namespace,
             interface=self._interface_name,
             methods=methods
