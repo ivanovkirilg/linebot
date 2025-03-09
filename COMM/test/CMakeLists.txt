@@ -45,6 +45,14 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_Watcher_SUT
 )
 
+## UT_interface_generator (py tests)
+add_test(
+    NAME COMM::UT_interface_generator
+    WORKING_DIRECTORY ${COMM_PYTHONPATH}
+    COMMAND
+        ${Python_EXECUTABLE} -m unittest -v
+)
+
 ## FT_interface_generator (example interface)
 set(TEST_EXAMPLE_DIR "${COMM_PYTHONPATH}/interface_generator/test/example")
 add_executable(
