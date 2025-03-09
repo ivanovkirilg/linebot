@@ -16,11 +16,11 @@ public:
 
     void bind();
     void listen(int backlog);
-    [[nodiscard]] Connection accept();
+    Connection accept();
 
     int port() const;
 
-    [[nodiscard]] static Connection connect(int port);
+    static Connection connect(int port);
 
 private:
     int fileDescriptor() override;

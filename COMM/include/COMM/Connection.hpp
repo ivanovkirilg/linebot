@@ -24,7 +24,7 @@ class NetworkException : public LOGR::Exception
 };
 
 
-class Connection : public IWatchable
+class [[nodiscard]] Connection : public IWatchable
 {
 public:
     ~Connection();
