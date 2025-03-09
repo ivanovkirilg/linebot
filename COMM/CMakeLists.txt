@@ -72,4 +72,3 @@ function(add_interface component interface)
 endfunction()
 
 add_subdirectory(test)
-add_subdirectory(py/interface_generator/example)

@@ -1,16 +1,16 @@
 // server-side GENERATED file
 
-#ifndef COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
-#define COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
+#ifndef COMM_PY_INTERFACE_GENERATOR_TEST_EXAMPLE_EXAMPLE_SERVER
+#define COMM_PY_INTERFACE_GENERATOR_TEST_EXAMPLE_EXAMPLE_SERVER
 
 #include "COMM/Connection.hpp"
 #include "COMM/Server.hpp"
 
 
-namespace DRVR
+namespace XMPL
 {
 
-class DriverServer : public COMM::Server
+class ExampleServer : public COMM::Server
 {
 public:
     using Server::Server;
@@ -23,6 +23,6 @@ private:
     void handleRequest(COMM::Connection& client) override;
 };
 
-} // DRVR
+} // XMPL
 
-#endif // COMM_PY_INTERFACE_GENERATOR_EXAMPLE_DRIVER_SERVER
+#endif // COMM_PY_INTERFACE_GENERATOR_TEST_EXAMPLE_EXAMPLE_SERVER

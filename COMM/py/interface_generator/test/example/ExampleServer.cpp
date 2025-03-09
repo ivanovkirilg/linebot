@@ -1,6 +1,6 @@
 // server-side GENERATED file
 
-#include "DriverServer.hpp"
+#include "ExampleServer.hpp"
 
 #include "COMM/InterfaceProtocol.hpp"
 
@@ -21,7 +21,7 @@ namespace
 std::string buildFailureMessage(const char* func, const LOGR::Exception& exc)
 {
     std::ostringstream message;
-    message << "DRVR::DriverServer::" << func
+    message << "XMPL::ExampleServer::" << func
             << ": LOGR::Exception [" << exc.id() << "]: " << exc.what();
     return message.str();
 }
@@ -29,7 +29,7 @@ std::string buildFailureMessage(const char* func, const LOGR::Exception& exc)
 std::string buildFailureMessage(const char* func, const std::exception& exc)
 {
     std::ostringstream message;
-    message << "DRVR::DriverServer::" << func
+    message << "XMPL::ExampleServer::" << func
             << ": std::exception: " << exc.what();
     return message.str();
 }
@@ -42,7 +42,7 @@ struct ErrorResult
 
 }
 
-void DRVR::DriverServer::handleRequest(Connection& client)
+void XMPL::ExampleServer::handleRequest(Connection& client)
 {
     const std::vector<std::byte> inBuffer = client.receive();
     auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{});

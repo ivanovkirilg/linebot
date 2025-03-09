@@ -1,25 +1,25 @@
 // client-side GENERATED file
 
-#include "DriverClient.hpp"
+#include "ExampleClient.hpp"
 
 #include "COMM/Socket.hpp"
 
 #include "zpp_bits.h"
 
 
-DRVR::DriverClient::DriverClient(const std::string& localAddress)
+XMPL::ExampleClient::ExampleClient(const std::string& localAddress)
     : m_serverConnection(COMM::Socket::connect(0))
 {
     throw std::runtime_error("Local address registry not implemented");
 }
 
-DRVR::DriverClient::DriverClient(int port)
+XMPL::ExampleClient::ExampleClient(int port)
     : m_serverConnection(COMM::Socket::connect(port))
 {
 }
 
 
-void DRVR::DriverClient::set(double speed)
+void XMPL::ExampleClient::set(double speed)
 {
     std::lock_guard lock{m_mutex};
 
@@ -43,7 +43,7 @@ void DRVR::DriverClient::set(double speed)
 
 }
 
-void DRVR::DriverClient::get(double& speed)
+void XMPL::ExampleClient::get(double& speed)
 {
     std::lock_guard lock{m_mutex};
 
