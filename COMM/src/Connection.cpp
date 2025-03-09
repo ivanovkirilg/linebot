@@ -47,12 +47,12 @@ Connection& Connection::operator=(Connection&& other)
     return *this;
 }
 
-Connection::operator bool()
+Connection::operator bool() const
 {
     return m_fileDescriptor != 0;
 }
 
-int Connection::fileDescriptor()
+int Connection::fileDescriptor() const
 {
     return m_fileDescriptor;
 }

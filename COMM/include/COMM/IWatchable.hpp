@@ -12,7 +12,7 @@ public:
 private:
     friend class Watcher;
 
-    virtual int fileDescriptor() = 0;
+    virtual int fileDescriptor() const = 0;
 };
 
 } // namespace COMM

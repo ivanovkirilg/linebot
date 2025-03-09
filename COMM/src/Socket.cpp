@@ -95,7 +95,7 @@ int Socket::port() const
     return m_port;
 }
 
-int Socket::fileDescriptor()
+int Socket::fileDescriptor() const
 {
     return m_fileDescriptor;
 }

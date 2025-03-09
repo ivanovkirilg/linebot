@@ -23,7 +23,7 @@ public:
     static Connection connect(int port);
 
 private:
-    int fileDescriptor() override;
+    int fileDescriptor() const override;
 
     int m_port = 0;
     int m_fileDescriptor = 0;

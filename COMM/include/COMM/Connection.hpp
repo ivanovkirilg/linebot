@@ -35,7 +35,7 @@ public:
     void send(std::vector<std::byte> message);
     std::vector<std::byte> receive();
 
-    operator bool();
+    operator bool() const;
 
 private:
     friend class Socket;
@@ -43,7 +43,7 @@ private:
     Connection(int fileDescriptor);
 
 private:
-    int fileDescriptor() override;
+    int fileDescriptor() const override;
 
     int m_fileDescriptor = 0;
 };
