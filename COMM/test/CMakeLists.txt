@@ -30,7 +30,14 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_Socket_SUT
 )
 
-##
+## UT_interface_generator (py tests)
+add_test(
+    NAME COMM::UT_interface_generator
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../py
+    COMMAND
+        ${Python_EXECUTABLE} -m unittest -v
+)
+
 
 # add_executable(
 #     TODO_test
