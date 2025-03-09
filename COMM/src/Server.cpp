@@ -1,8 +1,9 @@
 #include "COMM/Server.hpp"
 
 #include "COMM/Socket.hpp"
-#include "COMM/Watcher.hpp"
+#include "Watcher.hpp"
 
+#include "LOGR/Exception.hpp"
 #include "LOGR/Trace.hpp"
 
 #include <iostream>
@@ -50,12 +51,6 @@ void Server::bind(int port)
     m_connectionSocket->listen(CONNECTIONS_BACKLOG);
 }
 
-void Server::unbind()
-{
-    // TODO:
-    // m_connectionSocket->close();
-}
-
 void Server::requestLoop()
 {
     LOGR::Trace trace(m_localAddress, m_connectionSocket->port());
@@ -70,19 +65,15 @@ void Server::requestLoop()
 
         for (std::shared_ptr<IWatchable> rdy : ready)
         {
-            Socket* acc = dynamic_cast<Socket*>(rdy.get());
-            Connection* conn = dynamic_cast<Connection*>(rdy.get());
-            if (acc)
+            if (auto acc = dynamic_cast<Socket*>(rdy.get()))
             {
                 trace.log("Accepting connection on port", acc->port());
 
                 auto connection = std::make_shared<Connection>(acc->accept());
                 watcher.watch(connection);
             }
-            else if (conn)
+            else if (auto conn = dynamic_cast<Connection*>(rdy.get()))
             {
-                trace.log("Handling request on", conn);
-
                 try
                 {
                     handleRequest(*conn);
@@ -90,13 +81,12 @@ void Server::requestLoop()
                 catch (ConnectionClosedException& exc)
                 {
                     watcher.unwatch(rdy);
-                    exc.handle("Unwatching client");
+                    exc.handle("Unwatched client");
                 }
             }
             else
             {
-                throw std::runtime_error("Invalid watchable");
-                rdy.get();
+                throw LOGR::Exception("Invalid watchable");
             }
         }
     }

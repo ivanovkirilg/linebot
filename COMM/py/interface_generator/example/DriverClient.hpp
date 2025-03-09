@@ -5,6 +5,7 @@
 
 #include "COMM/Connection.hpp"
 
+#include <mutex>
 #include <string>
 
 
@@ -32,6 +33,7 @@ public:
 
 private:
     COMM::Connection m_serverConnection;
+    std::mutex m_mutex;
 };
 
 } // DRVR

@@ -1,18 +1,19 @@
 #include "COMM/Connection.hpp"
 
+#include "LOGR/Warning.hpp"
+#include "LOGR/Exception.hpp"
+
 #include <netdb.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
 #include <array>
-#include <cstring>
-#include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
 using namespace COMM;
+
 
 Connection::Connection(int fileDescriptor)
     : m_fileDescriptor(fileDescriptor)
@@ -27,8 +28,7 @@ Connection::~Connection()
 
         if (result < 0)
         {
-            std::cerr << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
+            LOGR::Warning{LOGR::getUnderlyingError()};
         }
 
         m_fileDescriptor = 0;
@@ -47,61 +47,70 @@ Connection& Connection::operator=(Connection&& other)
     return *this;
 }
 
-Connection::operator bool()
+Connection::operator bool() const
 {
     return m_fileDescriptor != 0;
 }
 
-int Connection::fileDescriptor()
+int Connection::fileDescriptor() const
 {
     return m_fileDescriptor;
 }
 
 void Connection::send(std::vector<std::byte> message)
 {
-    int sent = ::send(m_fileDescriptor, message.data(), message.size(), 0);
+    if (m_fileDescriptor == 0)
+    {
+        throw LOGR::Exception("This Connection is already closed");
+    }
+
+    ssize_t sent = ::send(m_fileDescriptor, message.data(), message.size(), 0);
 
     if (sent < 0)
     {
-        throw std::runtime_error("send() ERROR " + std::to_string(errno) +
-                                 ": " + ::strerror(errno));
+        throw NetworkException(LOGR::getUnderlyingError());
     }
     else if (sent == 0)
     {
-        throw COMM::ConnectionClosedException("send() Connection closed");
+        m_fileDescriptor = 0;
+        throw ConnectionClosedException("send() Connection closed");
     }
-    else if (sent < message.size())
+    else if (sent < (ssize_t) message.size())
     {
-        std::cout << "TODO message partially sent" << std::endl;
-        throw std::runtime_error("TODO send rest of message");
+        // Apparently this case is possible per documentation,
+        // but not with common implementations???
+        LOGR::Warning{"Sent less than expected:", sent, "<", message.size()};
+        send( { message.begin() + sent, message.end() } );
     }
 }
 
 std::vector<std::byte> Connection::receive()
 {
-    constexpr const size_t CHUNK = 1024;
-    std::array<std::byte, CHUNK> buffer;
+    if (m_fileDescriptor == 0)
+    {
+        throw LOGR::Exception("This Connection is already closed");
+    }
+
+    constexpr size_t CHUNK = 2048;
+    std::array<std::byte, CHUNK> buffer{};
 
     ssize_t received = ::recv(m_fileDescriptor, buffer.data(), buffer.size(), 0);
 
     if (received < 0)
     {
-        throw std::runtime_error("recv() ERROR " + std::to_string(errno) +
-                                 ": " + ::strerror(errno));
+        throw NetworkException(LOGR::getUnderlyingError());
     }
     else if (received == 0)
     {
-        throw COMM::ConnectionClosedException("recv() Connection closed");
+        m_fileDescriptor = 0;
+        throw ConnectionClosedException("recv() Connection closed");
     }
     else if (received == CHUNK)
     {
-        std::cout << "TODO message partially received" << std::endl;
-        throw std::runtime_error("TODO receive rest of message");
+        throw LOGR::Exception("Longer messages not supported");
     }
 
-    std::vector<std::byte> message(received);
-
-    std::copy(buffer.begin(), buffer.begin() + received, message.begin());
+    std::vector<std::byte> message(buffer.begin(), buffer.begin() + received);
 
     return message;
 }

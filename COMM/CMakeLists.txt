@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.14)
-
 project(COMM)
 
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -20,7 +18,7 @@ add_library(
     ${EXT_INC_PATH}/${PROJECT_NAME}/IWatchable.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Server.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Socket.hpp
-    ${EXT_INC_PATH}/${PROJECT_NAME}/Watcher.hpp
+    ${INT_INC_PATH}/Watcher.hpp
 
     ${SRC_PATH}/Connection.cpp
     ${SRC_PATH}/Server.cpp
@@ -33,6 +31,8 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME} LOGR)
+
+enable_target_warnings(${PROJECT_NAME})
 
 set(COMM_PYTHONPATH ${CMAKE_CURRENT_SOURCE_DIR}/py CACHE PATH
     "Path to COMM python packages (like interface_generator)")
@@ -58,14 +58,6 @@ function(add_interface component interface)
             ${COMM_PYTHONPATH}/interface_generator/templates.py
             ${COMM_PYTHONPATH}/interface_generator/tokens.py
         VERBATIM
-    )
-    add_custom_target(
-        ${interface}_interface_files
-        DEPENDS
-            ${INTERFACE_PATH}/${interface}Client.hpp
-            ${INTERFACE_PATH}/${interface}Client.cpp
-            ${INTERFACE_PATH}/${interface}Server.hpp
-            ${INTERFACE_PATH}/${interface}Server.cpp
     )
     add_library(
         ${interface}_interface SHARED

@@ -1,4 +1,7 @@
-#include "COMM/Watcher.hpp"
+#include "Watcher.hpp"
+
+#include "LOGR/Exception.hpp"
+#include "LOGR/Warning.hpp"
 
 #include <netdb.h>
 #include <sys/epoll.h>
@@ -6,33 +9,10 @@
 #include <unistd.h>
 
 #include <cstring>
-#include <iostream>
-#include <stdexcept>
 #include <vector>
 
 using namespace COMM;
 
-namespace
-{
-
-int getPort(int socketFileDescriptor)
-{
-    sockaddr_in actualAddr = {0};
-    socklen_t size = sizeof(actualAddr);
-    int result = ::getsockname(socketFileDescriptor,
-                               (sockaddr*) &actualAddr, &size);
-
-    if (result < 0)
-    {
-        std::cerr << "getsockname() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("getsockname ERROR");
-    }
-
-    return actualAddr.sin_port;
-}
-
-}
 
 Watcher::Watcher()
 {
@@ -40,9 +20,7 @@ Watcher::Watcher()
 
     if (m_epollFileDescriptor < 0)
     {
-        std::cout << "epoll_create() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_create() ERROR");
+        throw PollingException("epoll_create() ERROR" + LOGR::getUnderlyingError());
     }
 }
 
@@ -54,19 +32,7 @@ Watcher::~Watcher()
 
         if (result != 0)
         {
-            std::cout << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
-        }
-    }
-
-    for (auto& watched : m_watched)
-    {
-        int result = ::close(watched.second->fileDescriptor());
-
-        if (result != 0)
-        {
-            std::cout << "close() ERROR " << errno
-                      << ": " << ::strerror(errno) << std::endl;
+            LOGR::Warning{"close() ERROR", LOGR::getUnderlyingError()};
         }
     }
 }
@@ -85,25 +51,21 @@ void Watcher::watch(std::shared_ptr<IWatchable> watchable)
 
     if (result != 0)
     {
-        std::cout << "epoll_ctl() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_ctl() ERROR");
+        throw PollingException("epoll_ctl() ERROR" + LOGR::getUnderlyingError());
     }
     m_watched.emplace(watchable->fileDescriptor(), watchable);
 }
 
 void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 {
-    epoll_event event = {0};
+    epoll_event event{};
 
     int result = ::epoll_ctl(m_epollFileDescriptor, EPOLL_CTL_DEL,
                              watchable->fileDescriptor(), &event);
 
     if (result != 0)
     {
-        std::cout << "epoll_ctl() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_ctl() ERROR");
+        LOGR::Warning{"epoll_ctl() ERROR", LOGR::getUnderlyingError()};
     }
 
     m_watched.erase(watchable->fileDescriptor());
@@ -112,15 +74,13 @@ void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
 std::vector<std::shared_ptr<IWatchable>> Watcher::wait(int msTimeout)
 {
     constexpr size_t maxEvents = 10;
-    epoll_event events[maxEvents] = {0};
+    epoll_event events[maxEvents]{};
 
     int result = ::epoll_wait(m_epollFileDescriptor, events, maxEvents, msTimeout);
 
     if (result < 0)
     {
-        std::cout << "epoll_wait() ERROR " << errno
-                  << ": " << ::strerror(errno) << std::endl;
-        throw std::runtime_error("epoll_wait() ERROR");
+        throw PollingException("epoll_wait() ERROR" + LOGR::getUnderlyingError());
     }
 
     std::vector<std::shared_ptr<IWatchable>> ready;

@@ -5,6 +5,9 @@
 #include <source_location>
 #include <stdexcept>
 
+#include <cerrno>
+#include <cstring>
+
 
 namespace LOGR
 {
@@ -37,6 +40,13 @@ private:
     static std::atomic<unsigned long long> freeId;
     unsigned long long m_id{};
 };
+
+/// Get a string representation of the current value and meaning of errno.
+inline std::string getUnderlyingError()
+{
+    auto e = errno;
+    return std::to_string(e) + ": " + ::strerror(e);
+}
 
 }
 

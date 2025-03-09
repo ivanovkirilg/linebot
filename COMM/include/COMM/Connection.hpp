@@ -11,12 +11,20 @@
 namespace COMM
 {
 
+/// The connection was politely closed by the peer
 class ConnectionClosedException : public LOGR::Exception
 {
     using LOGR::Exception::Exception;
 };
 
-class Connection : public IWatchable
+/// A network system call resulted in an error
+class NetworkException : public LOGR::Exception
+{
+    using LOGR::Exception::Exception;
+};
+
+
+class [[nodiscard]] Connection : public IWatchable
 {
 public:
     ~Connection();
@@ -27,7 +35,7 @@ public:
     void send(std::vector<std::byte> message);
     std::vector<std::byte> receive();
 
-    operator bool();
+    operator bool() const;
 
 private:
     friend class Socket;
@@ -35,7 +43,7 @@ private:
     Connection(int fileDescriptor);
 
 private:
-    int fileDescriptor() override;
+    int fileDescriptor() const override;
 
     int m_fileDescriptor = 0;
 };

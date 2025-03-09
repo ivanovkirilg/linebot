@@ -20,7 +20,6 @@ public:
 
     void bind(const std::string& localAddress);
     void bind(int port);
-    void unbind();
 
     void requestLoop();
     virtual void handleRequest(COMM::Connection& client) = 0;
