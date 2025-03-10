@@ -1,5 +1,6 @@
 #include "CTRL/Controller.hpp"
 
+#include "DOMN/Move.hpp"
 #include "DRVR/IDriver.hpp"
 #include "LOGR/ILogger.hpp"
 
@@ -19,7 +20,8 @@ public:
     MOCK_METHOD(double, velocity, (), (const));
     MOCK_METHOD(void, run, (std::chrono::milliseconds refreshRate));
     MOCK_METHOD(void, terminate, ());
-    MOCK_METHOD(void, accelerate, (double instantaneousAcceleration));
+    MOCK_METHOD(void, setVelocity, (double instantaneousAcceleration));
+    MOCK_METHOD(void, setAcceleration, (double acceleration));
 };
 
 
@@ -33,5 +35,5 @@ TEST(TestController, ExecuteMoveTogglesLogging)
     EXPECT_CALL(*driverMock, loggingOn());
     EXPECT_CALL(*driverMock, loggingOff());
 
-    controller.executeMove({});
+    controller.executeMove(DOMN::Move{});
 }

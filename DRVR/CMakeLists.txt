@@ -20,6 +20,6 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads LOGR)
 
 add_subdirectory(test)

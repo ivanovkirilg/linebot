@@ -25,7 +25,7 @@ int main()
 
     try
     {
-        std::optional<move::Move> move = ui.readMove();
+        std::optional<DOMN::Move> move = ui.readMove();
 
         while (move.has_value())
         {
