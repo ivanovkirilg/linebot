@@ -2,6 +2,18 @@
 
 #include <chrono>
 #include <sstream>
+#include <vector>
+
+namespace
+{
+
+constexpr int LINES_TO_LOG_AT_ONCE = 20;
+constexpr int BASE_DELAY = 500;
+constexpr int MIN_DELAY = BASE_DELAY / 10;
+
+constexpr int WEIGHT_PER_LINE_FOR_DELAY = BASE_DELAY / LINES_TO_LOG_AT_ONCE;
+
+}
 
 
 namespace LOGR
@@ -51,6 +63,8 @@ void LoggerImpl::logSome(size_t nrLinesToLog)
     {
         m_logFile << line;
     }
+
+    m_logFile.flush();
 }
 
 LoggerImpl::LoggerImpl(const std::string& taskName)
@@ -69,7 +83,13 @@ LoggerImpl::LoggerImpl(const std::string& taskName)
     {
         while (m_keepLogging)
         {
-            logSome(5);
+            logSome(LINES_TO_LOG_AT_ONCE);
+
+            int64_t delayMs = std::max(
+                (ssize_t) MIN_DELAY,
+                BASE_DELAY - WEIGHT_PER_LINE_FOR_DELAY * std::ssize(m_toLog) );
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
         }
     };
 

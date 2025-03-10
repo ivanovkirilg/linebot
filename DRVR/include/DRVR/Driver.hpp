@@ -29,6 +29,8 @@ public:
     virtual void setVelocity(double velocity) override;
     virtual void setAcceleration(double acceleration) override;
 
+    virtual ~Driver() override = default;
+
 private:
     std::atomic<double> m_position{};
     std::atomic<double> m_velocity{};

@@ -18,6 +18,8 @@ public:
 
     virtual void setVelocity(double velocity) = 0;
     virtual void setAcceleration(double acceleration) = 0;
+  
+    virtual ~IDriver() = default;
 };
 
 #endif // DRVR_INCLUDE_DRVR_IDRIVER
