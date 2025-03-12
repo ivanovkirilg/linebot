@@ -16,20 +16,19 @@ class FileKind(Enum):
 
 class Generator:
     class IncludeGuard:
-        def __init__(self, header_file: str, out_header: list[str]):
-            self._header_file = header_file
-            self._header = out_header
-            self._define = self._generate_define()
+        @property
+        def start(self):
+            return f'#ifndef {self._define}\n#define {self._define}'
 
-        def __enter__(self):
-            self._header.append('#ifndef ' + self._define)
-            self._header.append('#define ' + self._define)
+        @property
+        def end(self):
+            return f'#endif // {self._define}'
 
-        def __exit__(self, *_):
-            self._header.append('#endif // ' + self._define)
+        def __init__(self, header_file: str):
+            self._define = self._generate_define(header_file)
 
-        def _generate_define(self):
-            define = self._header_file.removesuffix('.hpp')
+        def _generate_define(self, header_file: str):
+            define = header_file.removesuffix('.hpp')
             # Punctuation to _
             define = re.sub(r'[./\: ()]', '_', define)
             # CamelCase to SHOUT_CASE
@@ -86,35 +85,26 @@ class Generator:
         return declarations
 
     def generate_client_hpp(self) -> str:
-        content = []
-        header_file = self.get_output_path(FileKind.CLIENT)
+        guard = self.IncludeGuard(self.get_output_path(FileKind.CLIENT))
 
-        with self.IncludeGuard(header_file, content):
-            content.append(
-                CLIENT_HEADER_FORMAT.format(
+        return CLIENT_HEADER_FORMAT.format(
+                    header_guard=guard.start,
                     namespace=self._namespace,
                     interface=self._interface_name,
                     methods=self._generate_method_declarations(CLIENT_METHOD_FORMAT),
-                    abstract_methods=self._generate_method_declarations(CLIENT_ABSTRACT_METHOD_FORMAT)
-                )
-            )
-
-        return '\n'.join(content)
+                    abstract_methods=self._generate_method_declarations(CLIENT_ABSTRACT_METHOD_FORMAT),
+                    end_header_guard=guard.end)
 
     def generate_server_hpp(self) -> str:
-        content = []
-        header_file = self.get_output_path(FileKind.SERVER)
+        guard = self.IncludeGuard(self.get_output_path(FileKind.SERVER))
 
-        with self.IncludeGuard(header_file, content):
-            content.append(
-                SERVER_HEADER_FORMAT.format(
-                    namespace=self._namespace,
-                    interface=self._interface_name,
-                    methods=self._generate_method_declarations(SERVER_METHOD_FORMAT),
-                )
-            )
-
-        return '\n'.join(content)
+        return SERVER_HEADER_FORMAT.format(
+            header_guard=guard.start,
+            namespace=self._namespace,
+            interface=self._interface_name,
+            methods=self._generate_method_declarations(SERVER_METHOD_FORMAT),
+            end_header_guard=guard.end
+        )
 
     def generate_client_cpp(self) -> str:
         methods = ''
@@ -145,7 +135,6 @@ class Generator:
             methods += method_body
 
         return CLIENT_SOURCE_FORMAT.format(
-            header=self.get_output_path(FileKind.CLIENT),
             namespace=self._namespace,
             interface=self._interface_name,
             methods=methods

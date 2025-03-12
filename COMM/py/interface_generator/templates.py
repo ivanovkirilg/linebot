@@ -1,5 +1,8 @@
 
-CLIENT_HEADER_FORMAT = """
+CLIENT_HEADER_FORMAT = """// client-side GENERATED file
+
+{header_guard}
+
 #include "COMM/Connection.hpp"
 
 #include <mutex>
@@ -30,9 +33,14 @@ private:
 }};
 
 }} // {namespace}
+
+{end_header_guard}
 """
 
-SERVER_HEADER_FORMAT = """
+SERVER_HEADER_FORMAT = """// server-side GENERATED file
+
+{header_guard}
+
 #include "COMM/Connection.hpp"
 #include "COMM/Server.hpp"
 
@@ -52,6 +60,8 @@ private:
 }};
 
 }} // {namespace}
+
+{end_header_guard}
 """
 
 CLIENT_ABSTRACT_METHOD_FORMAT = "    virtual {ret} {name}({params}) = 0;"
@@ -60,8 +70,9 @@ CLIENT_METHOD_FORMAT          = "    {ret} {name}({params}) override;"
 SERVER_METHOD_FORMAT = "    virtual {ret} {name}({params}) = 0;"
 
 
-CLIENT_SOURCE_FORMAT = """
-#include "{header}"
+CLIENT_SOURCE_FORMAT = """// client-side GENERATED file
+
+#include "{interface}Client.hpp"
 
 #include "COMM/Socket.hpp"
 
@@ -112,8 +123,7 @@ CLIENT_SERIALIZE_INPUT_FORMAT = '    write({name}).or_throw();'
 
 CLIENT_DESERIALIZE_OUTPUT_FORMAT = '    read({name}).or_throw();'
 
-SERVER_SOURCE_FORMAT = """
-// server-side GENERATED file
+SERVER_SOURCE_FORMAT = """// server-side GENERATED file
 
 #include "{interface}Server.hpp"
 

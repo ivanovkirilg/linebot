@@ -66,3 +66,4 @@ void XMPL::ExampleClient::get(double& speed)
     }
     read(speed).or_throw();
 }
+
