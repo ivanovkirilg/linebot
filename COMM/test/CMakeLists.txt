@@ -33,7 +33,7 @@ add_test(
 ## UT_interface_generator (py tests)
 add_test(
     NAME COMM::UT_interface_generator
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../py
+    WORKING_DIRECTORY ${COMM_PYTHONPATH}
     COMMAND
         ${Python_EXECUTABLE} -m unittest -v
 )

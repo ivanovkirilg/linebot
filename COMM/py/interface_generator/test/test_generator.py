@@ -1,54 +1,73 @@
 import unittest
 import difflib
+import os
 
 from ..syntax_tree import MethodDeclaration, ParamDirection, ReturnSpec, DataType, Parameter
 from ..generator import Generator
 
 
 class TestGenerator(unittest.TestCase):
-    methods = [
-        MethodDeclaration(
-            name='set',
-            return_spec=ReturnSpec(data_type=DataType.VOID, name=None),
-            parameters=[
-                Parameter(direction=ParamDirection.IN, data_type=DataType.DOUBLE, name='speed')
-            ]
-        ),
-        MethodDeclaration(
-            name='get',
-            return_spec=ReturnSpec(data_type=DataType.VOID, name=None),
-            parameters=[
-                Parameter(direction=ParamDirection.OUT, data_type=DataType.DOUBLE, name='speed')
-            ]
-        )
-    ]
+    def _get_expected_file(self, file_name):
+        return os.path.join(os.path.dirname(__file__), 'example', file_name)
 
-    def test_generates(self):
-        generator = Generator('example/Example.interface', 'XMPL', self.methods, '/tmp')
-
-        client_hpp = generator.generate_client_hpp()
-        client_cpp = generator.generate_client_cpp()
-        server_hpp = generator.generate_server_hpp()
-        server_cpp = generator.generate_server_cpp()
-
-        expected_files = [
-            'interface_generator/test/example/' + f for f in (
-                'ExampleClient.hpp',
-                'ExampleClient.cpp',
-                'ExampleServer.hpp',
-                'ExampleServer.cpp'
+    def setUp(self):
+        self.methods = [
+            MethodDeclaration(
+                name='set',
+                return_spec=ReturnSpec(data_type=DataType.VOID, name=None),
+                parameters=[
+                    Parameter(direction=ParamDirection.IN, data_type=DataType.DOUBLE, name='speed')
+                ]
+            ),
+            MethodDeclaration(
+                name='get',
+                return_spec=ReturnSpec(data_type=DataType.VOID, name=None),
+                parameters=[
+                    Parameter(direction=ParamDirection.OUT, data_type=DataType.DOUBLE, name='speed')
+                ]
             )
         ]
 
-        def read_file(f):
-            with open(f, 'r') as file:
-                return file.read()
+        self.example_interface = self._get_expected_file('Example.interface')
 
-        expected_contents = [read_file(f) for f in expected_files]
+        self.generator = Generator(self.example_interface, 'XMPL', self.methods, '/tmp')
 
-        for actual, expected, title in zip([client_hpp, client_cpp, server_hpp, server_cpp],
-                                           expected_contents,
-                                           ['Client Header', 'Client Source', 'Server Header', 'Server Source']):
-            self.assertEqual(expected, actual,
-                             f"\n{title} differs:\n" +
-                             '\n'.join(difflib.unified_diff(expected.splitlines(), actual.splitlines())))
+    def test_generates_client_hpp(self):
+        self._assert_generates(
+            'ExampleClient.hpp',
+            self.generator.generate_client_hpp
+        )
+
+    def test_generates_server_hpp(self):
+        self._assert_generates(
+            'ExampleServer.hpp',
+            self.generator.generate_server_hpp
+        )
+
+    def test_generates_client_cpp(self):
+        self._assert_generates(
+            'ExampleClient.cpp',
+            self.generator.generate_client_cpp
+        )
+
+    def test_generates_server_cpp(self):
+        self._assert_generates(
+            'ExampleServer.cpp',
+            self.generator.generate_server_cpp
+        )
+
+    def _assert_generates(self, expected_file_name, generator_method_under_test):
+        actual: str = generator_method_under_test()
+
+        with open(self._get_expected_file(expected_file_name), 'r') as file:
+            expected = file.read()
+
+        self.assertEqual(
+            expected, actual,
+            '\n'.join(
+                difflib.unified_diff(
+                    expected.splitlines(),
+                    actual.splitlines()
+                )
+            )
+        )
