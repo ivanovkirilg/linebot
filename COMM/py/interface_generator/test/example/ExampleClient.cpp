@@ -18,6 +18,17 @@ XMPL::ExampleClient::ExampleClient(int port)
 {
 }
 
+XMPL::ExampleClient::~ExampleClient()
+{
+    std::lock_guard lock{m_mutex};
+
+    constexpr int methodCode = -1;
+
+    auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
+    write(methodCode).or_throw();
+
+    m_serverConnection.send(inargs);
+}
 
 void XMPL::ExampleClient::set(double speed)
 {

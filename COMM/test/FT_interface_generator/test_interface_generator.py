@@ -24,4 +24,4 @@ print(server_err)
 assert client_out == EXPECTED_OUTPUT, "ACTUAL %s != %s EXPECTED" % (client_out, EXPECTED_OUTPUT)
 
 assert_no_warnings_or_errors(client_err, logr_stubbed=True)
-assert_no_warnings_or_errors(server_err, logr_stubbed=True, expected=['recv() Connection closed', 'Unwatched client'])
+assert_no_warnings_or_errors(server_err, logr_stubbed=True)

@@ -25,6 +25,7 @@ class {interface}Client : public I{interface}Client
 public:
     {interface}Client(const std::string& localAddress);
     {interface}Client(int serverPort);
+    ~{interface}Client() override;
 
 {methods}
 private:
@@ -56,7 +57,7 @@ public:
 protected:
 {methods}
 private:
-    void handleRequest(COMM::Connection& client) override;
+    COMM::ConnectionStatus handleRequest(COMM::Connection& client) override;
 }};
 
 }} // {namespace}
@@ -90,6 +91,17 @@ CLIENT_SOURCE_FORMAT = """// client-side GENERATED file
 {{
 }}
 
+{namespace}::{interface}Client::~{interface}Client()
+{{
+    std::lock_guard lock{{m_mutex}};
+
+    constexpr int methodCode = -1;
+
+    auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{{}});
+    write(methodCode).or_throw();
+
+    m_serverConnection.send(inargs);
+}}
 {methods}
 """
 
@@ -167,7 +179,7 @@ struct ErrorResult
 
 }}
 
-void {namespace}::{interface}Server::handleRequest(Connection& client)
+ConnectionStatus {namespace}::{interface}Server::handleRequest(Connection& client)
 {{
     const std::vector<std::byte> inBuffer = client.receive();
     auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{{}});
@@ -188,6 +200,11 @@ void {namespace}::{interface}Server::handleRequest(Connection& client)
     {{
         switch (methodCode)
         {{
+            case -1:
+            {{
+                return ConnectionStatus::DISCONNECTED;
+                break;
+            }}
 {methods}
             default:
             {{
@@ -208,6 +225,7 @@ void {namespace}::{interface}Server::handleRequest(Connection& client)
     }}
 
     client.send(reply);
+    return ConnectionStatus::CONNECTED;
 }}
 """
 

@@ -33,10 +33,8 @@ def get_trace_of_levels(trace: str, levels: Union[LogLevel], logr_stubbed: bool)
             for line in csv.reader(trace.splitlines(), delimiter=';')
             if LogLevel(line[loglevel_field]) in levels]
 
-def assert_no_warnings_or_errors(trace, logr_stubbed: bool, expected: list = []):
+def assert_no_warnings_or_errors(trace, logr_stubbed: bool):
     warnings_or_errors = get_trace_of_levels(
         trace, {LogLevel.WARNING, LogLevel.EXCEPTION}, logr_stubbed)
-    unexpected = [line for line in warnings_or_errors
-                  if not any(exp in line for exp in expected)]
-    assert not unexpected, "Unexpected warnings/errors:\n  %s" % '\n  '.join(unexpected)
+    assert not warnings_or_errors, "Unexpected warnings/errors:\n  %s" % '\n  '.join(warnings_or_errors)
 

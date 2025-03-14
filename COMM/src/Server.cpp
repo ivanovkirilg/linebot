@@ -76,7 +76,10 @@ void Server::requestLoop()
             {
                 try
                 {
-                    handleRequest(*conn);
+                    if (handleRequest(*conn) == ConnectionStatus::DISCONNECTED)
+                    {
+                        watcher.unwatch(rdy);
+                    }
                 }
                 catch (ConnectionClosedException& exc)
                 {

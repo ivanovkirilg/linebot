@@ -20,7 +20,7 @@ protected:
     virtual void get(double& speed) = 0;
 
 private:
-    void handleRequest(COMM::Connection& client) override;
+    COMM::ConnectionStatus handleRequest(COMM::Connection& client) override;
 };
 
 } // XMPL

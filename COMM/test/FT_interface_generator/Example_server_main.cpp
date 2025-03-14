@@ -20,12 +20,5 @@ int main(int argc, char* argv[])
     server.bind(port);
     trace.log("Server bound to", port);
 
-    try
-    {
-        server.requestLoop();
-    }
-    catch (LOGR::Exception& exc)
-    {
-        exc.handle("Here");
-    }
+    server.requestLoop();
 }

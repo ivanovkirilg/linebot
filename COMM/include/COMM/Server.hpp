@@ -9,6 +9,12 @@
 namespace COMM
 {
 
+enum class ConnectionStatus
+{
+    CONNECTED,
+    DISCONNECTED
+};
+
 class Server
 {
 public:
@@ -22,7 +28,7 @@ public:
     void bind(int port);
 
     void requestLoop();
-    virtual void handleRequest(COMM::Connection& client) = 0;
+    virtual ConnectionStatus handleRequest(COMM::Connection& client) = 0;
 
 protected:
     bool m_breakLoop{};

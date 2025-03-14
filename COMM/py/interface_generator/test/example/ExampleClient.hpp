@@ -27,6 +27,7 @@ class ExampleClient : public IExampleClient
 public:
     ExampleClient(const std::string& localAddress);
     ExampleClient(int serverPort);
+    ~ExampleClient() override;
 
     void set(double speed) override;
     void get(double& speed) override;

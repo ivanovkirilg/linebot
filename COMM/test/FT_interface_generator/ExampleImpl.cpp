@@ -13,4 +13,5 @@ void XMPL::ExampleImpl::get(double& speed)
 {
     LOGR::Trace trace{m_speed};
     speed = m_speed;
+    m_breakLoop = true;
 }

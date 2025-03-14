@@ -19,20 +19,12 @@ int main(int argc, char* argv[])
     XMPL::ExampleClient client{port};
     trace.log("Connected on port", port);
 
-    try
-    {
-        client.set(15);
-        trace.log("Set speed");
+    client.set(15);
+    trace.log("Set speed");
 
-        double speed{};
-        client.get(speed);
-        trace.log("Got speed", speed);
+    double speed{};
+    client.get(speed);
+    trace.log("Got speed", speed);
 
-        std::cout << speed;
-    }
-    catch (LOGR::Exception& exc)
-    {
-        exc.handle("Here");
-    }
+    std::cout << speed;
 }
-

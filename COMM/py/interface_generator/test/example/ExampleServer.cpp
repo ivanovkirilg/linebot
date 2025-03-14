@@ -42,7 +42,7 @@ struct ErrorResult
 
 }
 
-void XMPL::ExampleServer::handleRequest(Connection& client)
+ConnectionStatus XMPL::ExampleServer::handleRequest(Connection& client)
 {
     const std::vector<std::byte> inBuffer = client.receive();
     auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{});
@@ -63,6 +63,11 @@ void XMPL::ExampleServer::handleRequest(Connection& client)
     {
         switch (methodCode)
         {
+            case -1:
+            {
+                return ConnectionStatus::DISCONNECTED;
+                break;
+            }
 
             case 0:
             {
@@ -131,4 +136,5 @@ void XMPL::ExampleServer::handleRequest(Connection& client)
     }
 
     client.send(reply);
+    return ConnectionStatus::CONNECTED;
 }
