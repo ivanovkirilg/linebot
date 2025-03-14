@@ -3,19 +3,25 @@
 import sys
 from time import sleep
 
-import socket_testing
+from socket_testing import launch_sut, some_port, assert_no_warnings_or_errors
 
 HOST = ''
-PORT = socket_testing.some_port()
-EXPECTED_OUTPUT = b'15'
+PORT = some_port()
+EXPECTED_OUTPUT = '15'
 
 SERVER, CLIENT = sys.argv[1], sys.argv[2]
 
-server = socket_testing.launch_sut(SERVER, PORT)
+server = launch_sut(SERVER, PORT, pipe_err=True, text=True)
 sleep(.01)
-client = socket_testing.launch_sut(CLIENT, PORT)
+client = launch_sut(CLIENT, PORT, pipe_err=True, text=True)
 
-out, err = client.communicate()
+client_out, client_err = client.communicate()
+print(client_err)
 
-assert out == EXPECTED_OUTPUT, "ACTUAL %s != %s EXPECTED" % (out, EXPECTED_OUTPUT)
-assert not err, "Unexpected stderr output: %s" % err
+_, server_err = server.communicate()
+print(server_err)
+
+assert client_out == EXPECTED_OUTPUT, "ACTUAL %s != %s EXPECTED" % (client_out, EXPECTED_OUTPUT)
+
+assert_no_warnings_or_errors(client_err, logr_stubbed=True)
+assert_no_warnings_or_errors(server_err, logr_stubbed=True, expected=['recv() Connection closed', 'Unwatched client'])
