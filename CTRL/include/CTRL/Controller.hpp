@@ -7,11 +7,19 @@
 #include <memory>
 
 
+///
+/// \brief Calculate & send commands for the Driver to execute a specified move.
+///
 class Controller
 {
 public:
     Controller(std::shared_ptr<IDriver> driver) : m_driver(driver) { }
 
+    /// \brief Move as specified, blocking the caller and enabling
+    /// the driver's logging for the needed duration.
+    /// \pre The Driver has been `run()`.
+    /// \post The Driver is stationary.
+    /// \note The exact `targetPosition` is not guaranteed to be reached.
     void executeMove(const DOMN::Move& move);
 
 private:
