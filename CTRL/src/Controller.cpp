@@ -1,11 +1,11 @@
 #include "CTRL/Controller.hpp"
 
 #include "DOMN/Move.hpp"
+#include "LOGR/Exception.hpp"
 #include "LOGR/Trace.hpp"
 
 #include <cmath>
 #include <functional>
-#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -15,7 +15,7 @@ using namespace DOMN;
 
 void Controller::executeMove(const Move& move)
 {
-    switch (move.type) 
+    switch (move.type)
     {
         case MoveType::LINEAR:
             executeMove(std::get<LinearMove>(move.profile));
@@ -25,7 +25,7 @@ void Controller::executeMove(const Move& move)
             break;
 
         default:
-            throw std::runtime_error("invalid move type " + std::to_string((int) move.type));
+            throw LOGR::Exception("Invalid move type " + std::to_string((int) move.type));
             break;
     };
 }
@@ -36,10 +36,9 @@ void Controller::executeMove(const TriangularMove& move)
 
     m_driver->loggingOn();
 
-    const double forwards = 
-        (move.targetPosition > m_driver->position())  ? 1 : -1;
+    const double forwards = getDirection(move.targetPosition);
     const double backwards = -forwards;
-    const double distance = std::abs(move.targetPosition - m_driver->position());
+    const double distance = getDistance(move.targetPosition);
     const double maxVelocityPoint = m_driver->position() + (distance / 2) * forwards;
 
     using compare = std::function<bool (double)>;
@@ -79,10 +78,9 @@ void Controller::executeMove(const LinearMove& move)
 
     m_driver->loggingOn();
 
-    const double distance = std::abs(move.targetPosition - m_driver->position());
+    const double distance = getDistance(move.targetPosition);
     const double moveTime = distance / move.speed;
-    const double direction = 
-        (move.targetPosition > m_driver->position())  ? 1 : -1;
+    const double direction = getDirection(move.targetPosition);
 
     trace.log("Start");
     m_driver->setVelocity(move.speed * direction);
@@ -94,4 +92,14 @@ void Controller::executeMove(const LinearMove& move)
     m_driver->setVelocity(0.0);
 
     m_driver->loggingOff();
+}
+
+double Controller::getDirection(double targetPosition) const
+{
+    return (targetPosition > m_driver->position()) ? 1 : -1;
+}
+
+double Controller::getDistance(double targetPosition) const
+{
+    return std::abs(targetPosition - m_driver->position());
 }

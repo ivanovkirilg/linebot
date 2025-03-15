@@ -20,7 +20,7 @@ public:
     MOCK_METHOD(double, velocity, (), (const));
     MOCK_METHOD(void, run, (std::chrono::milliseconds refreshRate));
     MOCK_METHOD(void, terminate, ());
-    MOCK_METHOD(void, setVelocity, (double instantaneousAcceleration));
+    MOCK_METHOD(void, setVelocity, (double velocity));
     MOCK_METHOD(void, setAcceleration, (double acceleration));
 };
 
