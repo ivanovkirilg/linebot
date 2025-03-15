@@ -48,7 +48,7 @@ ConnectionStatus XMPL::ExampleServer::handleRequest(Connection& client)
     auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{});
     auto [reply, out] = zpp::bits::data_out(zpp::bits::endian::network{});
 
-    int methodCode = -1;
+    int methodCode = 0;
     if (zpp::bits::failure(in(methodCode))) // Read fail is probably not our fault
     {
         if (LOGR::ILogger::isSet())
@@ -69,7 +69,7 @@ ConnectionStatus XMPL::ExampleServer::handleRequest(Connection& client)
                 break;
             }
 
-            case 0:
+            case 1:
             {
                 double speed{};
                 in(speed).or_throw();
@@ -93,7 +93,7 @@ ConnectionStatus XMPL::ExampleServer::handleRequest(Connection& client)
                 break;
             }
 
-            case 1:
+            case 2:
             {
                 double speed{};
 

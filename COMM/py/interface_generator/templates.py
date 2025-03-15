@@ -185,7 +185,7 @@ ConnectionStatus {namespace}::{interface}Server::handleRequest(Connection& clien
     auto in = zpp::bits::in(inBuffer, zpp::bits::endian::network{{}});
     auto [reply, out] = zpp::bits::data_out(zpp::bits::endian::network{{}});
 
-    int methodCode = -1;
+    int methodCode = 0;
     if (zpp::bits::failure(in(methodCode))) // Read fail is probably not our fault
     {{
         if (LOGR::ILogger::isSet())

@@ -34,7 +34,7 @@ void XMPL::ExampleClient::set(double speed)
 {
     std::lock_guard lock{m_mutex};
 
-    constexpr int methodCode = 0;
+    constexpr int methodCode = 1;
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
     write(methodCode).or_throw();
@@ -58,7 +58,7 @@ void XMPL::ExampleClient::get(double& speed)
 {
     std::lock_guard lock{m_mutex};
 
-    constexpr int methodCode = 1;
+    constexpr int methodCode = 2;
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{});
     write(methodCode).or_throw();

@@ -127,7 +127,7 @@ class Generator:
                 interface=self._interface_name,
                 name=method.name,
                 params=', '.join(self._get_parameters(method)),
-                index=i,
+                index=(i+1),
                 input_params_serialization=input_params_ser,
                 output_params_deserialization=output_params_deser,
             )
@@ -161,7 +161,7 @@ class Generator:
             )
 
             method_body = SERVER_SOURCE_METHOD_FORMAT.format(
-                index=i,
+                index=(i+1),
                 params_declaration=params_decl,
                 input_params_deserialization=input_params_deser,
                 name=method.name,
