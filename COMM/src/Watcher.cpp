@@ -68,6 +68,8 @@ void Watcher::unwatch(std::shared_ptr<IWatchable> watchable)
         LOGR::Warning{"epoll_ctl() ERROR", LOGR::getUnderlyingError()};
     }
 
+    // FIXME this doesn't work if the watchable has thrown
+    // ConnectionClosedException because it is not identifiable anymore!
     m_watched.erase(watchable->fileDescriptor());
 }
 

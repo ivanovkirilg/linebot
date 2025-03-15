@@ -21,5 +21,13 @@ int main(int argc, char *argv[])
 
     driver.bind(port);
 
-    driver.requestLoop();
+    try
+    {
+        driver.requestLoop();
+    }
+    catch (LOGR::Exception& exc)
+    {
+        driver.terminate();
+        return -1;
+    }
 }

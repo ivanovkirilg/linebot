@@ -18,7 +18,6 @@ public:
         m_logFile( std::string("driver") + std::to_string(time(NULL)) + ".txt" )
     { }
 
-protected:
     virtual void position(double& pos) override { pos = m_position; }
     virtual void velocity(double& vel) override { vel = m_velocity; }
 
