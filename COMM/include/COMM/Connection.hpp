@@ -45,7 +45,8 @@ private:
 private:
     int fileDescriptor() const override;
 
-    int m_fileDescriptor = 0;
+    int m_fileDescriptor{};
+    bool m_open{};
 };
 
 } // namespace COMM

@@ -3,6 +3,7 @@
 #include "LOGR/Warning.hpp"
 #include "LOGR/Exception.hpp"
 
+#include <cassert>
 #include <netdb.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
@@ -16,13 +17,15 @@ using namespace COMM;
 
 
 Connection::Connection(int fileDescriptor)
-    : m_fileDescriptor(fileDescriptor)
+    : m_fileDescriptor(fileDescriptor),
+      m_open(fileDescriptor >= 0)
 {
+    assert(fileDescriptor >= 0);
 }
 
 Connection::~Connection()
 {
-    if (m_fileDescriptor > 0)
+    if ((m_fileDescriptor >= 0) && m_open)
     {
         int result = ::close(m_fileDescriptor);
 
@@ -31,7 +34,7 @@ Connection::~Connection()
             LOGR::Warning{LOGR::getUnderlyingError()};
         }
 
-        m_fileDescriptor = 0;
+        m_open = false;
     }
 }
 
@@ -42,14 +45,15 @@ Connection::Connection(Connection&& other)
 
 Connection& Connection::operator=(Connection&& other)
 {
+    m_open = other.m_open;
+    other.m_open = false;
     m_fileDescriptor = other.m_fileDescriptor;
-    other.m_fileDescriptor = 0;
     return *this;
 }
 
 Connection::operator bool() const
 {
-    return m_fileDescriptor != 0;
+    return m_open;
 }
 
 int Connection::fileDescriptor() const
@@ -59,9 +63,9 @@ int Connection::fileDescriptor() const
 
 void Connection::send(std::vector<std::byte> message)
 {
-    if (m_fileDescriptor == 0)
+    if (not m_open)
     {
-        throw LOGR::Exception("This Connection is already closed");
+        throw ConnectionClosedException("This Connection is already closed");
     }
 
     ssize_t sent = ::send(m_fileDescriptor, message.data(), message.size(), 0);
@@ -72,7 +76,7 @@ void Connection::send(std::vector<std::byte> message)
     }
     else if (sent == 0)
     {
-        m_fileDescriptor = 0;
+        m_open = false;
         throw ConnectionClosedException("send() Connection closed");
     }
     else if (sent < (ssize_t) message.size())
@@ -86,9 +90,9 @@ void Connection::send(std::vector<std::byte> message)
 
 std::vector<std::byte> Connection::receive()
 {
-    if (m_fileDescriptor == 0)
+    if (not m_open)
     {
-        throw LOGR::Exception("This Connection is already closed");
+        throw ConnectionClosedException("This Connection is already closed");
     }
 
     constexpr size_t CHUNK = 2048;
@@ -102,7 +106,7 @@ std::vector<std::byte> Connection::receive()
     }
     else if (received == 0)
     {
-        m_fileDescriptor = 0;
+        m_open = false;
         throw ConnectionClosedException("recv() Connection closed");
     }
     else if (received == CHUNK)
