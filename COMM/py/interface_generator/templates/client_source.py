@@ -12,7 +12,7 @@ METHOD_TEMPLATE = """
 
     auto [inargs, write] = zpp::bits::data_out(zpp::bits::endian::network{{}});
     write(methodCode).or_throw();
-{serialize_in_params}
+{write_in_params}
 
     m_serverConnection.send(inargs);
     auto response = m_serverConnection.receive();
@@ -25,7 +25,7 @@ METHOD_TEMPLATE = """
         // TODO read message
         throw std::runtime_error("{name} failed");
     }}
-{deserialize_out_params}
+{read_out_params}
 }}
 """
 

@@ -9,7 +9,7 @@ METHOD_TEMPLATE = """
             case {index}:
             {{
 {params_declaration}
-{deserialize_in_params}
+{read_in_params}
                 try
                 {{
                     {name}({params});
@@ -26,7 +26,7 @@ METHOD_TEMPLATE = """
                                     buildFailureMessage("{name}", exc))).or_throw();
                 }}
                 out(RequestResult::OK).or_throw();
-{serialize_out_params}
+{write_out_params}
                 break;
             }}
 """

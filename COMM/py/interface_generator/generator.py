@@ -83,6 +83,16 @@ class Generator:
             declarations += decl + '\n'
         return declarations
 
+    def _generate_params_serialization(self,
+                                       method: MethodDeclaration,
+                                       direction: ParamDirection,
+                                       template: str):
+        return '\n'.join(
+            template.format(name = param.name)
+            for param in method.parameters
+            if param.direction == direction
+        )
+
     def generate_client_hpp(self) -> str:
         from .templates.client_header import FILE_TEMPLATE, ABSTRACT_METHOD_TEMPLATE, METHOD_TEMPLATE
 
@@ -111,31 +121,26 @@ class Generator:
         )
 
     def generate_client_cpp(self) -> str:
-        from .templates.client_source import FILE_TEMPLATE, METHOD_TEMPLATE, IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
+        from .templates.client_source import FILE_TEMPLATE, METHOD_TEMPLATE, \
+            IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
 
         methods = ''
         for i, method in enumerate(self._methods):
-            input_params_ser = '\n'.join(
-                IN_PARAMS_TEMPLATE.format(name = param.name)
-                for param in method.parameters
-                if param.direction == ParamDirection.IN
-            )
+            input_params_ser    = self._generate_params_serialization(
+                method, ParamDirection.IN, IN_PARAMS_TEMPLATE)
 
-            output_params_deser = '\n'.join(
-                OUT_PARAMS_TEMPLATE.format(name = param.name)
-                for param in method.parameters
-                if param.direction == ParamDirection.OUT
-            )
+            output_params_deser = self._generate_params_serialization(
+                method, ParamDirection.OUT, OUT_PARAMS_TEMPLATE)
 
             method_body = METHOD_TEMPLATE.format(
-                ret                    = method.return_spec.data_type.value,
-                namespace              = self._namespace,
-                interface              = self._interface_name,
-                name                   = method.name,
-                params                 = ', '.join(self._get_parameters(method)),
-                index                  = (i+1),
-                serialize_in_params    = input_params_ser,
-                deserialize_out_params = output_params_deser,
+                ret             = method.return_spec.data_type.value,
+                namespace       = self._namespace,
+                interface       = self._interface_name,
+                name            = method.name,
+                params          = ', '.join(self._get_parameters(method)),
+                index           = (i+1),
+                write_in_params = input_params_ser,
+                read_out_params = output_params_deser,
             )
 
             methods += method_body
@@ -147,7 +152,8 @@ class Generator:
         )
 
     def generate_server_cpp(self) -> str:
-        from .templates.server_source import FILE_TEMPLATE, METHOD_TEMPLATE, PARAMS_DECL_TEMPLATE, IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
+        from .templates.server_source import FILE_TEMPLATE, METHOD_TEMPLATE, \
+            PARAMS_DECL_TEMPLATE, IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
 
         methods = ''
         for i, method in enumerate(self._methods):
@@ -159,25 +165,19 @@ class Generator:
                 for param in method.parameters
             )
 
-            input_params_deser = '\n'.join(
-                IN_PARAMS_TEMPLATE.format(name = param.name)
-                for param in method.parameters
-                if param.direction == ParamDirection.IN
-            )
+            input_params_deser = self._generate_params_serialization(
+                method, ParamDirection.IN, IN_PARAMS_TEMPLATE)
 
-            output_params_ser = '\n'.join(
-                OUT_PARAMS_TEMPLATE.format(name = param.name)
-                for param in method.parameters
-                if param.direction == ParamDirection.OUT
-            )
+            output_params_ser  = self._generate_params_serialization(
+                method, ParamDirection.OUT, OUT_PARAMS_TEMPLATE)
 
             method_body = METHOD_TEMPLATE.format(
-                index                 = i + 1,
-                params_declaration    = params_decl,
-                deserialize_in_params = input_params_deser,
-                name                  = method.name,
-                params                = ', '.join(param.name for param in method.parameters),
-                serialize_out_params  = output_params_ser,
+                index              = i + 1,
+                params_declaration = params_decl,
+                read_in_params     = input_params_deser,
+                name               = method.name,
+                params             = ', '.join(param.name for param in method.parameters),
+                write_out_params   = output_params_ser,
             )
 
             methods += method_body
