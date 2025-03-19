@@ -55,7 +55,10 @@ function(add_interface component interface)
             ${COMM_PYTHONPATH}/interface_generator/lexer.py
             ${COMM_PYTHONPATH}/interface_generator/parser.py
             ${COMM_PYTHONPATH}/interface_generator/syntax_tree.py
-            ${COMM_PYTHONPATH}/interface_generator/templates.py
+            ${COMM_PYTHONPATH}/interface_generator/templates/client_header.py
+            ${COMM_PYTHONPATH}/interface_generator/templates/client_source.py
+            ${COMM_PYTHONPATH}/interface_generator/templates/server_header.py
+            ${COMM_PYTHONPATH}/interface_generator/templates/server_source.py
             ${COMM_PYTHONPATH}/interface_generator/tokens.py
         VERBATIM
     )

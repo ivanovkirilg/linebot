@@ -3,7 +3,6 @@ import os.path
 import re
 
 from .syntax_tree import MethodDeclaration, ParamDirection
-from .templates import *
 
 
 INTERFACE_SUFFIX = '.interface'
@@ -85,94 +84,106 @@ class Generator:
         return declarations
 
     def generate_client_hpp(self) -> str:
+        from .templates.client_header import FILE_TEMPLATE, ABSTRACT_METHOD_TEMPLATE, METHOD_TEMPLATE
+
         guard = self.IncludeGuard(self.get_output_path(FileKind.CLIENT))
 
-        return CLIENT_HEADER_FORMAT.format(
-                    header_guard=guard.start,
-                    namespace=self._namespace,
-                    interface=self._interface_name,
-                    methods=self._generate_method_declarations(CLIENT_METHOD_FORMAT),
-                    abstract_methods=self._generate_method_declarations(CLIENT_ABSTRACT_METHOD_FORMAT),
-                    end_header_guard=guard.end)
+        return FILE_TEMPLATE.format(
+            header_guard     = guard.start,
+            namespace        = self._namespace,
+            interface        = self._interface_name,
+            abstract_methods = self._generate_method_declarations(ABSTRACT_METHOD_TEMPLATE),
+            methods          = self._generate_method_declarations(METHOD_TEMPLATE),
+            end_header_guard = guard.end
+        )
 
     def generate_server_hpp(self) -> str:
+        from .templates.server_header import FILE_TEMPLATE, METHOD_TEMPLATE
+
         guard = self.IncludeGuard(self.get_output_path(FileKind.SERVER))
 
-        return SERVER_HEADER_FORMAT.format(
-            header_guard=guard.start,
-            namespace=self._namespace,
-            interface=self._interface_name,
-            methods=self._generate_method_declarations(SERVER_METHOD_FORMAT),
-            end_header_guard=guard.end
+        return FILE_TEMPLATE.format(
+            header_guard     = guard.start,
+            namespace        = self._namespace,
+            interface        = self._interface_name,
+            methods          = self._generate_method_declarations(METHOD_TEMPLATE),
+            end_header_guard = guard.end
         )
 
     def generate_client_cpp(self) -> str:
+        from .templates.client_source import FILE_TEMPLATE, METHOD_TEMPLATE, IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
+
         methods = ''
         for i, method in enumerate(self._methods):
             input_params_ser = '\n'.join(
-                CLIENT_SERIALIZE_INPUT_FORMAT.format(name=param.name)
+                IN_PARAMS_TEMPLATE.format(name = param.name)
                 for param in method.parameters
                 if param.direction == ParamDirection.IN
             )
 
             output_params_deser = '\n'.join(
-                CLIENT_DESERIALIZE_OUTPUT_FORMAT.format(name=param.name)
+                OUT_PARAMS_TEMPLATE.format(name = param.name)
                 for param in method.parameters
                 if param.direction == ParamDirection.OUT
             )
 
-            method_body = CLIENT_SOURCE_METHOD_FORMAT.format(
-                ret=method.return_spec.data_type.value,
-                namespace=self._namespace,
-                interface=self._interface_name,
-                name=method.name,
-                params=', '.join(self._get_parameters(method)),
-                index=(i+1),
-                input_params_serialization=input_params_ser,
-                output_params_deserialization=output_params_deser,
+            method_body = METHOD_TEMPLATE.format(
+                ret                    = method.return_spec.data_type.value,
+                namespace              = self._namespace,
+                interface              = self._interface_name,
+                name                   = method.name,
+                params                 = ', '.join(self._get_parameters(method)),
+                index                  = (i+1),
+                serialize_in_params    = input_params_ser,
+                deserialize_out_params = output_params_deser,
             )
 
             methods += method_body
 
-        return CLIENT_SOURCE_FORMAT.format(
-            namespace=self._namespace,
-            interface=self._interface_name,
-            methods=methods
+        return FILE_TEMPLATE.format(
+            namespace = self._namespace,
+            interface = self._interface_name,
+            methods   = methods
         )
 
     def generate_server_cpp(self) -> str:
+        from .templates.server_source import FILE_TEMPLATE, METHOD_TEMPLATE, PARAMS_DECL_TEMPLATE, IN_PARAMS_TEMPLATE, OUT_PARAMS_TEMPLATE
+
         methods = ''
         for i, method in enumerate(self._methods):
             params_decl = '\n'.join(
-                SERVER_PARAMS_DECLARATION_FORMAT.format(type=param.data_type.value, name=param.name)
+                PARAMS_DECL_TEMPLATE.format(
+                    type = param.data_type.value,
+                    name = param.name
+                )
                 for param in method.parameters
             )
 
             input_params_deser = '\n'.join(
-                SERVER_DESERIALIZE_INPUT_FORMAT.format(name=param.name)
+                IN_PARAMS_TEMPLATE.format(name = param.name)
                 for param in method.parameters
                 if param.direction == ParamDirection.IN
             )
 
             output_params_ser = '\n'.join(
-                SERVER_SERIALIZE_OUTPUT_FORMAT.format(name=param.name)
+                OUT_PARAMS_TEMPLATE.format(name = param.name)
                 for param in method.parameters
                 if param.direction == ParamDirection.OUT
             )
 
-            method_body = SERVER_SOURCE_METHOD_FORMAT.format(
-                index=(i+1),
-                params_declaration=params_decl,
-                input_params_deserialization=input_params_deser,
-                name=method.name,
-                params=', '.join(param.name for param in method.parameters),
-                output_params_serialization=output_params_ser,
+            method_body = METHOD_TEMPLATE.format(
+                index                 = i + 1,
+                params_declaration    = params_decl,
+                deserialize_in_params = input_params_deser,
+                name                  = method.name,
+                params                = ', '.join(param.name for param in method.parameters),
+                serialize_out_params  = output_params_ser,
             )
 
             methods += method_body
 
-        return SERVER_SOURCE_FORMAT.format(
-            interface=self._interface_name,
-            namespace=self._namespace,
-            methods=methods
+        return FILE_TEMPLATE.format(
+            interface = self._interface_name,
+            namespace = self._namespace,
+            methods   = methods
         )
