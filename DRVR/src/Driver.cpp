@@ -1,11 +1,21 @@
 #include "DRVR/Driver.hpp"
 
+#include "LOGR/Trace.hpp"
+
 #include <iostream>
 #include <thread>
 
-void Driver::accelerate(double instantaneousAcceleration)
+void Driver::setVelocity(double velocity)
 {
-    m_velocity = m_velocity + instantaneousAcceleration;
+    LOGR::Trace trace{"current =", m_velocity, "new =", velocity};
+    m_velocity = velocity;
+    m_acceleration = 0.0;
+}
+
+void Driver::setAcceleration(double acceleration)
+{
+    LOGR::Trace trace{"current =", m_acceleration, "new =", acceleration};
+    m_acceleration = acceleration;
 }
 
 void Driver::loggingOn()
@@ -27,7 +37,8 @@ void Driver::run(std::chrono::milliseconds refreshRate)
         while (m_running)
         {
             const double deltaT = refreshRate.count() / 1000.0;
-            m_position = m_position + (m_velocity * deltaT);
+            m_velocity += m_acceleration * deltaT;
+            m_position += m_velocity * deltaT;
 
             if (m_logging)
             {
