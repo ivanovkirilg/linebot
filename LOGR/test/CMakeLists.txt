@@ -6,7 +6,7 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    GTest::gtest_main
+    GTest::gmock_main
     LOGR
 )
 

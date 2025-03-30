@@ -5,6 +5,9 @@
 #include <stdexcept>
 #include <string>
 
+#include <cerrno>
+#include <cstring>
+
 #include "LOGR/internal.hpp"
 #include "LoggerImpl.hpp"
 
@@ -32,3 +35,11 @@ long long LOGR::Exception::id() const
 {
     return m_id;
 }
+
+/// Get a string representation of the current value and meaning of errno.
+std::string LOGR::getUnderlyingError()
+{
+    auto e = errno;
+    return std::to_string(e) + ": " + ::strerror(e);
+}
+

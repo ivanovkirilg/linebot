@@ -3,7 +3,8 @@
 #include "LOGR/Trace.hpp"
 #include "LOGR/Warning.hpp"
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
+#include "gmock/gmock-matchers.h"
 
 #include <filesystem>
 #include <fstream>
@@ -17,6 +18,9 @@
 using namespace LOGR;
 using namespace internal;
 using src_loc = std::source_location;
+
+using testing::StartsWith;
+using testing::HasSubstr;
 
 
 namespace
@@ -156,4 +160,17 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
     EXPECT_EQ(  log.line,      expectedTraceLocation);
     EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "^");
+}
+
+TEST(TestGetUnderlyingError, ReturnsMessage)
+{
+    std::ifstream nonExistentFile;
+    nonExistentFile.open("justsomenonexistentfileIhopenoonecreatesit.txt");
+
+    ASSERT_FALSE(nonExistentFile.is_open());
+
+    const std::string prefix = std::to_string(ENOENT) + ": ";
+
+    EXPECT_THAT(LOGR::getUnderlyingError(), StartsWith(prefix));
+    EXPECT_THAT(LOGR::getUnderlyingError(), HasSubstr("No such file"));
 }

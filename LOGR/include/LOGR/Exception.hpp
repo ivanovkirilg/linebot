@@ -38,6 +38,9 @@ private:
     unsigned long long m_id{};
 };
 
+/// Get a string representation of the current value and meaning of errno.
+std::string getUnderlyingError();
+
 }
 
 #endif // LOGR_INCLUDE_LOGR_EXCEPTION
