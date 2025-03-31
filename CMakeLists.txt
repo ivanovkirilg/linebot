@@ -41,6 +41,7 @@ include_directories(${zpp_bits_SOURCE_DIR})
 
 find_package(Doxygen QUIET)
 
+add_subdirectory(COMM)
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
 add_subdirectory(CTRL)
