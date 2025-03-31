@@ -14,10 +14,14 @@ add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Connection.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/IWatchable.hpp
+    ${EXT_INC_PATH}/${PROJECT_NAME}/Server.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Socket.hpp
+    ${INT_INC_PATH}/Watcher.hpp
 
     ${SRC_PATH}/Connection.cpp
+    ${SRC_PATH}/Server.cpp
     ${SRC_PATH}/Socket.cpp
+    ${SRC_PATH}/Watcher.cpp
 )
 
 target_include_directories(
