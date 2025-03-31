@@ -30,6 +30,35 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_Socket_SUT
 )
 
+## FT_Watcher
+add_executable(
+    FT_Watcher_SUT
+    FT_Watcher/SUT.cpp
+)
+target_link_libraries(FT_Watcher_SUT PRIVATE COMM)
+add_test(
+    NAME COMM::FT_WatcherTest
+    COMMAND
+        ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
+        ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/FT_Watcher/test_watcher.py
+        ${CMAKE_CURRENT_BINARY_DIR}/FT_Watcher_SUT
+)
+
+## FT_Server
+add_executable(
+    FT_Server_SUT
+    FT_Server/SUT.cpp
+)
+target_link_libraries(FT_Server_SUT PRIVATE COMM)
+add_test(
+    NAME COMM::FT_ServerTest
+    COMMAND
+        ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
+        ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/FT_Server/test_server.py
+        ${CMAKE_CURRENT_BINARY_DIR}/FT_Server_SUT
+)
 
 # add_executable(
 #     TODO_test
