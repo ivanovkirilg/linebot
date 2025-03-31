@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(linebot)
 
+find_package(Python COMPONENTS Interpreter REQUIRED)
+
 set(cmake_helpers_DIR cmake_helpers)
 find_package(cmake_helpers REQUIRED)
 
