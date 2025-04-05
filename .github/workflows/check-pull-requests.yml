@@ -1,0 +1,16 @@
+name: Check Pull Requests
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  check-pr:
+    name: Check PRs
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: No Merge Commits
+      uses: Morishiri/block-merge-commits-action@v1.0.1
+      with:
+        repo-token: ${{ secrets.READONLY_API_TOKEN }}
