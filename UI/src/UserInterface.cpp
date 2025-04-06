@@ -15,6 +15,8 @@ using namespace UI;
 namespace
 {
 
+static constexpr int NR_OF_RETRIES = 3;
+
 static constexpr size_t WIDTH = 80;
 
 static constexpr const char* LINEAR_MOVE_PROMPT     = " Enter target position & speed: ";
@@ -91,18 +93,19 @@ struct MoveInput
         }
     }
 
-    void retry(int retries, std::function<void()> method)
+    template <void (MoveInput::*method)()>
+    void retry(int retries)
     {
-        method();
+        (this->*method)();
 
         for (int retry = 0; state == MoveInput::State::INVALID_INPUT; retry++)
         {
-            if (retry > retries)
+            if (retry >= retries)
             {
                 throw InvalidInputException("No valid move entered (retried)");
             }
 
-            method();
+            (this->*method)();
         }
     }
 
@@ -198,13 +201,13 @@ std::optional<DOMN::Move> UserInterface::readMove()
     MoveInput input;
 
     std::cout << " Choose move type: linear(l), triangular(t): ";
-    input.retry(3, std::bind(&MoveInput::tryReadMoveType, &input));
+    input.retry<&MoveInput::tryReadMoveType>(NR_OF_RETRIES);
 
     if (input.state == MoveInput::State::VALID_INPUT)
     {
         std::cout << input.profilePrompt;
     }
-    input.retry(3, std::bind(&MoveInput::tryReadMoveProfile, &input));
+    input.retry<&MoveInput::tryReadMoveProfile>(NR_OF_RETRIES);
 
     if (input.state == MoveInput::State::VALID_INPUT)
     {
