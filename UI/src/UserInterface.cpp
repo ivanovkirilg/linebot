@@ -211,8 +211,8 @@ std::optional<DOMN::Move> UserInterface::readMove()
     if (input.valid())
     {
         std::cout << input.profilePrompt;
+        input.retry<&MoveInput::tryReadMoveProfile>(NR_OF_RETRIES);
     }
-    input.retry<&MoveInput::tryReadMoveProfile>(NR_OF_RETRIES);
 
     if (input.valid())
     {
