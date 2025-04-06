@@ -25,16 +25,14 @@ static constexpr const char* TRIANGULAR_MOVE_PROMPT = " Enter target position & 
 
 struct MoveInput
 {
-    enum class State
-    {
-        END_OF_INPUT,
-        INVALID_INPUT,
-        VALID_INPUT
-    } state{};
-
     DOMN::MoveType type{};
     DOMN::Move move{};
     const char* profilePrompt;
+
+    bool valid() const
+    {
+        return state == State::VALID_INPUT;
+    }
 
     void tryReadMoveType()
     {
@@ -130,6 +128,13 @@ private:
                           parsed.*profileCharacteristic);
         }
     }
+
+    enum class State
+    {
+        END_OF_INPUT,
+        INVALID_INPUT,
+        VALID_INPUT
+    } state{};
 };
 
 static void draw(std::weak_ptr<const IDriver> driver, std::ostream& output)
@@ -203,13 +208,13 @@ std::optional<DOMN::Move> UserInterface::readMove()
     std::cout << " Choose move type: linear(l), triangular(t): ";
     input.retry<&MoveInput::tryReadMoveType>(NR_OF_RETRIES);
 
-    if (input.state == MoveInput::State::VALID_INPUT)
+    if (input.valid())
     {
         std::cout << input.profilePrompt;
     }
     input.retry<&MoveInput::tryReadMoveProfile>(NR_OF_RETRIES);
 
-    if (input.state == MoveInput::State::VALID_INPUT)
+    if (input.valid())
     {
         return input.move;
     }
