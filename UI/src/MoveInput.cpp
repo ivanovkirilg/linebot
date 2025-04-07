@@ -11,6 +11,10 @@ static constexpr const char* LINEAR_MOVE_PROMPT     = " Enter target position & 
 static constexpr const char* TRIANGULAR_MOVE_PROMPT = " Enter target position & acceleration: ";
 
 }
+MoveInput::MoveInput(std::istream& inputStream)
+    : m_inputStream(inputStream)
+{
+};
 
 bool MoveInput::valid() const
 {
@@ -22,7 +26,7 @@ void MoveInput::tryReadMoveType()
     LOGR::Trace trace;
 
     std::string line;
-    if (not std::getline(std::cin, line))
+    if (not std::getline(m_inputStream, line))
     {
         state = State::END_OF_INPUT;
         return;
@@ -52,7 +56,7 @@ void MoveInput::tryReadMoveProfile()
     LOGR::Trace trace;
 
     std::string line;
-    if (not std::getline(std::cin, line))
+    if (not std::getline(m_inputStream, line))
     {
         state = State::END_OF_INPUT;
         return;

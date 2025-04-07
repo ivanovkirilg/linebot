@@ -85,7 +85,7 @@ std::optional<DOMN::Move> UserInterface::readMove()
     LOGR::Trace trace;
     std::lock_guard outLock(m_outputMutex);
 
-    MoveInput input;
+    MoveInput input{std::cin};
 
     std::cout << " Choose move type: linear(l), triangular(t): ";
     input.retry<&MoveInput::tryReadMoveType>(NR_OF_RETRIES);

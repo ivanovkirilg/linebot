@@ -9,8 +9,10 @@
 #include <sstream>
 
 
-struct MoveInput
+class MoveInput
 {
+public:
+    MoveInput(std::istream& inputStream);
     DOMN::Move move{};
     const char* profilePrompt;
 
@@ -36,6 +38,14 @@ struct MoveInput
     }
 
 private:
+    enum class State
+    {
+        END_OF_INPUT,
+        INVALID_INPUT,
+        VALID_INPUT
+    } state{};
+    std::istream& m_inputStream;
+
     template<class SpecificMove, double SpecificMove::*profileCharacteristic>
     void tryParseMoveProfile(const std::string& line)
     {
@@ -56,13 +66,6 @@ private:
                           parsed.*profileCharacteristic);
         }
     }
-
-    enum class State
-    {
-        END_OF_INPUT,
-        INVALID_INPUT,
-        VALID_INPUT
-    } state{};
 };
 
 #endif // UI_INC_MOVE_INPUT
