@@ -10,7 +10,10 @@ add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/UserInterface.hpp
 
+    ${INT_INC_PATH}/MoveInput.hpp
+
     ${SRC_PATH}/UserInterface.cpp
+    ${SRC_PATH}/MoveInput.cpp
 )
 enable_target_warnings(${PROJECT_NAME})
 
