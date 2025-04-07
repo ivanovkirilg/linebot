@@ -11,7 +11,6 @@
 
 struct MoveInput
 {
-    DOMN::MoveType type{};
     DOMN::Move move{};
     const char* profilePrompt;
 
