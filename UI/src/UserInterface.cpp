@@ -5,7 +5,6 @@
 #include "LOGR/Warning.hpp"
 
 #include <cmath>
-#include <functional>
 #include <iostream>
 #include <optional>
 #include <sstream>
