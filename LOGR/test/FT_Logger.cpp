@@ -61,25 +61,34 @@ LogLine parse(const std::string& line)
 
 } // anonymous namespace
 
-TEST(TestLoggerFunctional, CreatesLogfile)
+class TestLoggerFunctional : public ::testing::Test
 {
-    const time_t creationTime = ::time(nullptr);
+protected:
+    void TearDown() override
+    {
+        std::filesystem::remove(expectedFile);
+    }
 
+    const time_t creationTime = ::time(nullptr);
+    const std::string expectedFile = "LOGR_TEST_"
+                                     + std::to_string(creationTime)
+                                     + ".csv";
+};
+
+TEST_F(TestLoggerFunctional, CreatesLogfile)
+{
     ILogger::create("TEST");
 
-    const std::string expectedFile = "LOGR_TEST_"
-                                     + std::to_string(creationTime) + ".csv";
     ASSERT_TRUE(std::filesystem::exists(expectedFile));
 }
 
-TEST(TestLoggerFunctional, LogsDifferentLevels)
+TEST_F(TestLoggerFunctional, LogsDifferentLevels)
 {
     long expectedTraceLocation{};
     long expectedWarnLocation{};
     long expectedExcLocation{};
     long expectedHandleLocation{};
 
-    const time_t creationTime = ::time(nullptr);
     {
         auto logger = ILogger::create("TEST");
 
@@ -96,8 +105,6 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
         expectedHandleLocation = src_loc::current().line() - 1;
     }
 
-    const std::string expectedFile = "LOGR_TEST_"
-                                     + std::to_string(creationTime) + ".csv";
     std::ifstream file(expectedFile);
 
     std::ostringstream threadId;
