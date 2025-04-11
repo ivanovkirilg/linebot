@@ -14,7 +14,7 @@ class MoveInput
 public:
     MoveInput(std::istream& inputStream);
     DOMN::Move move{};
-    const char* profilePrompt;
+    const char* profilePrompt = "";
 
     bool valid() const;
 
