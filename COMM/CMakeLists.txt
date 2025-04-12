@@ -13,6 +13,7 @@ endif()
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Connection.hpp
+    ${EXT_INC_PATH}/${PROJECT_NAME}/InterfaceProtocol.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/IWatchable.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Server.hpp
     ${EXT_INC_PATH}/${PROJECT_NAME}/Socket.hpp
