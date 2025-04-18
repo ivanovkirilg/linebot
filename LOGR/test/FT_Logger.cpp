@@ -46,7 +46,7 @@ LogLine parse(const std::string& line)
     char message[1024]{};
 
     // 0;1724138058.333385;140379180749760;/linebot/MAIN/src/main.cpp;16;int main();v
-    sscanf(line.c_str(), " %d;%lf;%[^;];%[^;];%li;%[^;];%[^;] ",
+    sscanf(line.c_str(), " %d;%lf;%1023[^;];%1023[^;];%li;%1023[^;];%1023[^;] ",
            &level, &timestamp, threadId, file, &lineNr, function, message);
 
     return LogLine {
