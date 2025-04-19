@@ -25,7 +25,7 @@ public:
 
 TEST(TestController, ExecuteMoveTogglesLogging)
 {
-    auto logr = LOGR::ILoggerStub::create("CTRL_UT");
+    auto logr = LOGR::ILogger::create("CTRL_UT", LOGR::StubSelection::STUB);
     auto driverMock = std::make_shared<NiceMock<DriverMock>>();
 
     Controller controller(driverMock);

@@ -36,7 +36,7 @@ std::shared_ptr<ILogger> ILogger::instance()
 }
 
 
-class LoggerStub : public ILoggerStub
+class LoggerStub : public ILogger
 {
 public:
     LoggerStub(const std::string& taskName)
@@ -55,8 +55,9 @@ private:
     const std::string m_taskName;
 };
 
-std::shared_ptr<ILogger> ILoggerStub::create(const std::string& taskName)
+std::shared_ptr<ILogger> ILogger::create(const std::string& taskName, StubSelection stub)
 {
+    (void) stub;
     auto logger = std::make_shared<LoggerStub>(taskName);
     m_instance = std::dynamic_pointer_cast<ILogger>(logger);
     return std::dynamic_pointer_cast<ILogger>(logger);
