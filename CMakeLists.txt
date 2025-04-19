@@ -41,6 +41,15 @@ include_directories(${zpp_bits_SOURCE_DIR})
 
 find_package(Doxygen QUIET)
 
+set(CMAKE_CXX_CPPCHECK cppcheck)
+list(APPEND CMAKE_CXX_CPPCHECK
+  "-i;_deps"
+  "--error-exitcode=2" # 1 is returned on usage error
+  "--enable=warning"
+  "--inconclusive"
+  "--inline-suppr"
+)
+
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
 add_subdirectory(CTRL)
