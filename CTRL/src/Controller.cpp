@@ -13,8 +13,39 @@
 using namespace DOMN;
 
 
+namespace
+{
+
+class LogContext
+{
+public:
+    LogContext(std::shared_ptr<IDriver> driver)
+        : m_driver(driver)
+    {
+        if (m_driver != nullptr)
+        {
+            m_driver->loggingOn();
+        }
+    }
+
+    ~LogContext()
+    {
+        if (m_driver != nullptr)
+        {
+            m_driver->loggingOff();
+        }
+    }
+
+private:
+    std::shared_ptr<IDriver> m_driver;
+};
+
+} // namespace
+
 void Controller::executeMove(const Move& move)
 {
+    LogContext context{m_driver};
+
     switch (move.type)
     {
         case MoveType::LINEAR:
@@ -33,8 +64,6 @@ void Controller::executeMove(const Move& move)
 void Controller::executeMove(const TriangularMove& move)
 {
     LOGR::Trace trace(move.targetPosition, move.acceleration);
-
-    m_driver->loggingOn();
 
     const double forwards = getDirection(move.targetPosition);
     const double backwards = -forwards;
@@ -66,8 +95,6 @@ void Controller::executeMove(const TriangularMove& move)
     }
 
     m_driver->setVelocity(0.0);
-
-    m_driver->loggingOff();
 }
 
 void Controller::executeMove(const LinearMove& move)
@@ -75,8 +102,6 @@ void Controller::executeMove(const LinearMove& move)
     LOGR::Trace trace(move.targetPosition, move.speed);
 
     m_driver->setVelocity(0.0);
-
-    m_driver->loggingOn();
 
     const double distance = getDistance(move.targetPosition);
     const double moveTime = distance / move.speed;
@@ -90,8 +115,6 @@ void Controller::executeMove(const LinearMove& move)
     
     trace.log("Stop");
     m_driver->setVelocity(0.0);
-
-    m_driver->loggingOff();
 }
 
 double Controller::getDirection(double targetPosition) const
