@@ -20,10 +20,12 @@ rectangle service {
 
 component MAIN
 
-MAIN --> service
-MAIN --> control
+MAIN --> UI: visualize\n read moves
+MAIN --> CTRL: execute moves
+MAIN --> DRVR: initialize
 MAIN --> basic
-service --> control
+CTRL --> DRVR: accelerate
+UI --> DRVR: get position\n (to visualize)
 service --> basic
 control --> basic
 ```
