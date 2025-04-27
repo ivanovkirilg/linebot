@@ -1,28 +1,56 @@
 #ifndef DOMN_INCLUDE_DOMN_MOVE
 #define DOMN_INCLUDE_DOMN_MOVE
 
-namespace move
+#include <variant>
+
+
+namespace DOMN
 {
 
 constexpr double MIN_POSITION = 0.0;
 constexpr double MAX_POSITION = 1.0;
 
 constexpr double MIN_SPEED_EXCL = 0.0;
+constexpr double MIN_ACCELERATION_EXCL = 0.0;
 
+enum class MoveType
+{
+    LINEAR,
+    TRIANGULAR
+};
 
-struct Move
+struct LinearMove
 {
     double targetPosition{};
     double speed{};
 };
 
-inline bool isValid(const Move& move)
+struct TriangularMove
+{
+    double targetPosition{};
+    double acceleration{};
+};
+
+struct Move 
+{
+    MoveType type;
+    std::variant<LinearMove, TriangularMove> profile;
+};
+
+inline bool isValid(const LinearMove& move)
 {
     return (move.targetPosition >= MIN_POSITION)
         && (move.targetPosition <= MAX_POSITION)
         && (move.speed > MIN_SPEED_EXCL);
 }
 
+inline bool isValid(const TriangularMove& move)
+{
+    return (move.targetPosition >= MIN_POSITION)
+        && (move.targetPosition <= MAX_POSITION)
+        && (move.acceleration > MIN_ACCELERATION_EXCL);
 }
+
+} // DOMN
 
 #endif // SRC_MOVE

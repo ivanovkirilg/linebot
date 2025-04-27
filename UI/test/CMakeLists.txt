@@ -1,14 +1,17 @@
-project(TODO_test)
+project(UI_test)
 
-# add_executable(
-#     TODO_test
-#     test_reader.cpp
-# )
-# target_link_libraries(
-#     TODO_test
-#     GTest::gtest_main
-#     ${PROJECT_NAME}_lib
-# )
+add_executable(
+    UI_test
+    UT_MoveInput.cpp
+)
+target_link_libraries(
+    UI_test
+    GTest::gmock_main
+    UI
+    DRVR
+    DOMN
+    LOGR
+)
 
 include(GoogleTest)
-# gtest_discover_tests(TODO_test)
+gtest_discover_tests(UI_test)
