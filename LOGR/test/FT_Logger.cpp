@@ -3,7 +3,8 @@
 #include "LOGR/Trace.hpp"
 #include "LOGR/Warning.hpp"
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
+#include "gmock/gmock-matchers.h"
 
 #include <filesystem>
 #include <fstream>
@@ -17,6 +18,9 @@
 using namespace LOGR;
 using namespace internal;
 using src_loc = std::source_location;
+
+using testing::StartsWith;
+using testing::HasSubstr;
 
 
 namespace
@@ -57,25 +61,34 @@ LogLine parse(const std::string& line)
 
 } // anonymous namespace
 
-TEST(TestLoggerFunctional, CreatesLogfile)
+class TestLoggerFunctional : public ::testing::Test
 {
-    const time_t creationTime = ::time(nullptr);
+protected:
+    void TearDown() override
+    {
+        std::filesystem::remove(expectedFile);
+    }
 
+    const time_t creationTime = ::time(nullptr);
+    const std::string expectedFile = "LOGR_TEST_"
+                                     + std::to_string(creationTime)
+                                     + ".csv";
+};
+
+TEST_F(TestLoggerFunctional, CreatesLogfile)
+{
     ILogger::create("TEST");
 
-    const std::string expectedFile = "LOGR_TEST_"
-                                     + std::to_string(creationTime) + ".csv";
     ASSERT_TRUE(std::filesystem::exists(expectedFile));
 }
 
-TEST(TestLoggerFunctional, LogsDifferentLevels)
+TEST_F(TestLoggerFunctional, LogsDifferentLevels)
 {
     long expectedTraceLocation{};
     long expectedWarnLocation{};
     long expectedExcLocation{};
     long expectedHandleLocation{};
 
-    const time_t creationTime = ::time(nullptr);
     {
         auto logger = ILogger::create("TEST");
 
@@ -92,8 +105,6 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
         expectedHandleLocation = src_loc::current().line() - 1;
     }
 
-    const std::string expectedFile = "LOGR_TEST_"
-                                     + std::to_string(creationTime) + ".csv";
     std::ifstream file(expectedFile);
 
     std::ostringstream threadId;
@@ -156,4 +167,17 @@ TEST(TestLoggerFunctional, LogsDifferentLevels)
     EXPECT_EQ(  log.line,      expectedTraceLocation);
     EXPECT_EQ(  log.function,  src_loc::current().function_name());
     EXPECT_EQ(  log.message,   "^");
+}
+
+TEST(TestGetUnderlyingError, ReturnsMessage)
+{
+    std::ifstream nonExistentFile;
+    nonExistentFile.open("justsomenonexistentfileIhopenoonecreatesit.txt");
+
+    ASSERT_FALSE(nonExistentFile.is_open());
+
+    const std::string prefix = std::to_string(ENOENT) + ": ";
+
+    EXPECT_THAT(LOGR::getUnderlyingError(), StartsWith(prefix));
+    EXPECT_THAT(LOGR::getUnderlyingError(), HasSubstr("No such file"));
 }
