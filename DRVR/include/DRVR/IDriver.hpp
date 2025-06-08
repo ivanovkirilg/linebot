@@ -12,9 +12,9 @@ class IDriver
 {
 public:
     /// Current position in the range [0, 1] units.
-    virtual double position() const = 0;
+    virtual double position() = 0;
     /// Current velocity in units/s.
-    virtual double velocity() const = 0;
+    virtual double velocity() = 0;
 
     /// \brief Start a new log line in the current log-file,
     /// containing tab-delimited positions at each refresh/update.
