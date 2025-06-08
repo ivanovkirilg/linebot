@@ -1,4 +1,4 @@
-#include "DriverProc.hpp"
+#include "Driver.hpp"
 
 #include "LOGR/ILogger.hpp"
 
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     auto logger = LOGR::ILogger::create("DRVR");
 
-    DRVR::DriverProc driver{0.5};
+    DRVR::Driver driver{0.5};
 
     driver.bind(port);
 
