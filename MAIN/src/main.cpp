@@ -1,5 +1,5 @@
 #include "UI/UserInterface.hpp"
-#include "DRVR/Driver.hpp"
+#include "DRVR/DriverClient.hpp"
 #include "CTRL/Controller.hpp"
 #include "LOGR/ILogger.hpp"
 #include "LOGR/Trace.hpp"
@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 
     LOGR::Trace trace;
 
-    auto driver = std::make_shared<Driver>(port);
-    driver->run(4ms);
+    auto driver = std::make_shared<DRVR::DriverClient>(port);
+    driver->run(4);
 
     Controller controller(driver);
 

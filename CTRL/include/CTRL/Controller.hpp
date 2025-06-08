@@ -2,7 +2,7 @@
 #define CTRL_INCLUDE_CTRL_CONTROLLER
 
 #include "DOMN/Move.hpp"
-#include "DRVR/IDriver.hpp"
+#include "DRVR/DriverClient.hpp"
 
 #include <memory>
 
@@ -13,7 +13,9 @@
 class Controller
 {
 public:
-    Controller(std::shared_ptr<IDriver> driver) : m_driver(driver) { }
+    Controller(std::shared_ptr<DRVR::IDriverClient> driver)
+    :   m_driver(driver)
+    { }
 
     /// \brief Move as specified, blocking the caller and enabling
     /// the driver's logging for the needed duration.
@@ -30,7 +32,7 @@ private:
 
     double getDistance(double targetPosition) const;
 
-    std::shared_ptr<IDriver> m_driver;
+    std::shared_ptr<DRVR::IDriverClient> m_driver;
 };
 
 #endif // CTRL_INCLUDE_CTRL_CONTROLLER

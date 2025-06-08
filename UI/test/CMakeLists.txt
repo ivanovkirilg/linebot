@@ -8,7 +8,7 @@ target_link_libraries(
     UI_test
     GTest::gmock_main
     UI
-    DRVR
+    Driver_interface
     DOMN
     LOGR
 )

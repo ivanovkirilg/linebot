@@ -11,31 +11,17 @@ endif()
 
 include_directories(${INT_INC_PATH})
 
-add_interface(DRVR DriverProc)
+add_interface(DRVR Driver)
 
 add_executable(
     DRVR_main
-    ${INT_INC_PATH}/DriverProc.hpp
+    ${INT_INC_PATH}/Driver.hpp
 
     ${SRC_PATH}/Driver_main.cpp
-    ${SRC_PATH}/DriverProc.cpp
+    ${SRC_PATH}/Driver.cpp
 )
 enable_target_warnings(DRVR_main)
 
-target_link_libraries(DRVR_main Threads::Threads DriverProc_interface LOGR)
-
-add_library(
-    ${PROJECT_NAME} SHARED
-    ${EXT_INC_PATH}/${PROJECT_NAME}/Driver.hpp
-
-    ${SRC_PATH}/Driver.cpp
-)
-enable_target_warnings(${PROJECT_NAME})
-
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC ${EXT_INC_PATH}
-)
-
-target_link_libraries(${PROJECT_NAME} PUBLIC DriverProc_interface LOGR)
+target_link_libraries(DRVR_main Threads::Threads Driver_interface LOGR)
 
 add_subdirectory(test)

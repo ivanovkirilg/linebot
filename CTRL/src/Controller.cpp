@@ -19,7 +19,7 @@ namespace
 class LogContext
 {
 public:
-    LogContext(std::shared_ptr<IDriver> driver)
+    LogContext(std::shared_ptr<DRVR::IDriverClient> driver)
         : m_driver(driver)
     {
         if (m_driver != nullptr)
@@ -37,7 +37,7 @@ public:
     }
 
 private:
-    std::shared_ptr<IDriver> m_driver;
+    std::shared_ptr<DRVR::IDriverClient> m_driver;
 };
 
 } // namespace
