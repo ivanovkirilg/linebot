@@ -33,20 +33,33 @@ void Driver::setAcceleration(double acceleration)
 
 void Driver::loggingOn()
 {
+    LOGR::Trace trace{m_logCount};
+
     m_logFile << "Log " << m_logCount++ << '\n';
     m_logging = true;
 }
 
 void Driver::loggingOff()
 {
+    LOGR::Trace trace{m_logCount};
+
     m_logging = false;
     m_logFile << std::endl;
 }
 
 void Driver::run(int refreshRate_ms)
 {
+    LOGR::Trace trace{refreshRate_ms};
+
+    if (m_running)
+    {
+        throw std::runtime_error{"already running"};
+    }
+
     auto job = [this, refreshRate_ms]()
     {
+        LOGR::Trace bgTrace;
+
         while (m_running)
         {
             const double deltaT = refreshRate_ms / 1000.0;
@@ -69,6 +82,8 @@ void Driver::run(int refreshRate_ms)
 
 void Driver::terminate()
 {
+    LOGR::Trace trace{"running before =", m_running};
+
     m_running = false;
     m_background.join();
     m_breakLoop = true;
