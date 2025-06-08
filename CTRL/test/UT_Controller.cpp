@@ -20,8 +20,8 @@ class IDriverMock : public IDriver
 public:
     MOCK_METHOD(void, loggingOn, ());
     MOCK_METHOD(void, loggingOff, ());
-    MOCK_METHOD(double, position, (), (const));
-    MOCK_METHOD(double, velocity, (), (const));
+    MOCK_METHOD(double, position, ());
+    MOCK_METHOD(double, velocity, ());
     MOCK_METHOD(void, run, (std::chrono::milliseconds refreshRate));
     MOCK_METHOD(void, terminate, ());
     MOCK_METHOD(void, setVelocity, (double velocity));
