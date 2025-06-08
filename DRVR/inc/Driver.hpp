@@ -58,6 +58,8 @@ public:
 private:
     using DriverServer::DriverServer;
 
+    void simulate(int refreshRate);
+
     std::atomic<double> m_position{};
     std::atomic<double> m_velocity{};
     std::atomic<double> m_acceleration{};

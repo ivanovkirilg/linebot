@@ -56,28 +56,27 @@ void Driver::run(int refreshRate_ms)
         throw std::runtime_error{"already running"};
     }
 
-    auto job = [this, refreshRate_ms]()
-    {
-        LOGR::Trace bgTrace;
-
-        while (m_running)
-        {
-            const double deltaT = refreshRate_ms / 1000.0;
-            m_velocity += m_acceleration * deltaT;
-            m_position += m_velocity * deltaT;
-
-            if (m_logging)
-            {
-                m_logFile << m_position << '\t';
-            }
-
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(refreshRate_ms));
-        }
-    };
-
     m_running = true;
-    m_background = std::thread(job);
+    m_background = std::thread(&Driver::simulate, this, refreshRate_ms);
+}
+
+void Driver::simulate(int refreshRate_ms)
+{
+    LOGR::Trace trace;
+
+    while (m_running)
+    {
+        const double deltaT = refreshRate_ms / 1000.0;
+        m_velocity += m_acceleration * deltaT;
+        m_position += m_velocity * deltaT;
+
+        if (m_logging)
+        {
+            m_logFile << m_position << '\t';
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(refreshRate_ms));
+    }
 }
 
 void Driver::terminate()
