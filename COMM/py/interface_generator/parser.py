@@ -4,6 +4,11 @@ from .syntax_tree import *
 def diagnose_parameter(tokens: list[Token]):
     match tokens:
         case [
+            DataTypeToken() as data_type,
+            WordToken() as name
+            ]:
+            print(f"Missing direction ('in' or 'out') for parameter '{data_type.spelling} {name.spelling}'")
+        case [
             KeywordToken('in') | KeywordToken('out') as direction,
             DataTypeToken() as data_type
             ]:
