@@ -6,9 +6,6 @@ from .tokens import *
 def tokenize(translation_unit: str) -> list[Token]:
     tokens = []
 
-    # method, in, out
-    keyword_regex = r"\bmethod\b|\bin\b|\bout\b"
-
     # Letters, digits, underscore;
     # beginning with a letter
     word_regex = r'[a-zA-Z][a-zA-Z0-9_]*'
@@ -29,7 +26,6 @@ def tokenize(translation_unit: str) -> list[Token]:
 
     regex = '|'.join(
         [
-            f'(?P<keyword>{keyword_regex})',
             f'(?P<word>{word_regex})',
             f'(?P<float>{float_regex})',
             f'(?P<int>{int_regex})',
@@ -37,25 +33,19 @@ def tokenize(translation_unit: str) -> list[Token]:
         ]
     )
 
-    for match in re.finditer(regex, translation_unit):
-        spelling = match.group()
+    for matched in re.finditer(regex, translation_unit):
+        spelling = matched.group()
 
-        if match.group('keyword'):
-            tokens.append(KeywordToken(spelling))
-
-        elif match.group('word'):
-            tokens.append(WordToken(spelling))
-
-        elif match.group('punct'):
-            tokens.append(PunctuationToken(spelling))
-
-        elif match.group('float'):
-            tokens.append(FloatToken(spelling))
-
-        elif match.group('int'):
-            tokens.append(IntegerToken(spelling))
-
+        if matched.group('word'):
+            if spelling in DATA_TYPE:   tok_type = DataTypeToken
+            elif spelling in KEYWORDS:  tok_type = KeywordToken
+            else:                       tok_type = WordToken
+        elif matched.group('punct'):    tok_type = PunctuationToken
+        elif matched.group('float'):    tok_type = FloatToken
+        elif matched.group('int'):      tok_type = IntegerToken
         else:
             raise ValueError("Token kind not supported for: " + spelling)
+
+        tokens.append(tok_type(spelling))
 
     return tokens

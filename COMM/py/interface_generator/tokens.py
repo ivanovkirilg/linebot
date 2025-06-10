@@ -1,6 +1,30 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 
+class DataType(Enum):
+    VOID = 'void'
+
+    BYTE = 'byte'
+    BOOL = 'bool'
+
+    INT = 'int'
+    FLOAT = 'float'
+    DOUBLE = 'double'
+
+    CHAR = 'char'
+    STRING = 'string'
+
+DATA_TYPE = {
+    'void': DataType.VOID,
+    'byte': DataType.BYTE,
+    'bool': DataType.BOOL,
+    'int': DataType.INT,
+    'float': DataType.FLOAT,
+    'double': DataType.DOUBLE,
+    'char': DataType.CHAR,
+    'string': DataType.STRING,
+}
+
 class PunctuationKind(Enum):
     OPEN_PAREN = auto()
     CLOSE_PAREN = auto()
@@ -34,6 +58,14 @@ class Token:
 @dataclass
 class WordToken(Token):
     pass
+
+@dataclass
+class DataTypeToken(Token):
+    kind: DataType = None
+
+    def __post_init__(self):
+        if self.kind is None:
+            self.kind = DATA_TYPE[self.spelling]
 
 @dataclass
 class KeywordToken(WordToken):

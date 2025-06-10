@@ -37,7 +37,7 @@ def parse_parameters(parameter_tokens: list[Token], out_params: list[Parameter])
                 return
             case [
                     KeywordToken() as direction,
-                    WordToken() as data_type,
+                    DataTypeToken() as data_type,
                     WordToken() as name,
                 ]:
                 out_params.append(
@@ -89,7 +89,7 @@ def parse(tokens: list[Token]) -> list[MethodDeclaration]:
                 PunctuationToken(')'),
 
                 PunctuationToken('->'),
-                WordToken() as return_type
+                DataTypeToken() as return_type
             ]:
                 # TODO diagnostics on KeyError
                 return_spec = ReturnSpec(DATA_TYPE[return_type.spelling])
