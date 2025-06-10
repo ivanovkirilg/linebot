@@ -1,0 +1,4 @@
+method do_a()
+method do_b(in int b)
+method do_c() -> char
+method do_d()

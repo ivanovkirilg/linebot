@@ -1,0 +1,2 @@
+method do_a(int a);
+method do_b(in int b, int bb);

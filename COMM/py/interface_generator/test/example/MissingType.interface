@@ -1,0 +1,3 @@
+method do_a(in a);
+method do_b(in int b, in bb);
+method do_c(out c, in double cc);

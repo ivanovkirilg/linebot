@@ -1,0 +1,4 @@
+metod do_a();
+method do_b(in doable b);
+method do_c(int int c);
+method do_d() -> boll;
