@@ -37,13 +37,13 @@ def parse_parameters(parameter_tokens: list[Token], out_params: list[Parameter])
                 return
             case [
                     KeywordToken() as direction,
-                    WordToken() as datatype,
+                    WordToken() as data_type,
                     WordToken() as name,
                 ]:
                 out_params.append(
                     Parameter(
                         PARAM_DIRECTION[direction.kind],
-                        DATA_TYPE[datatype.spelling],
+                        DATA_TYPE[data_type.spelling],
                         name.spelling)
                 )
             case _:
