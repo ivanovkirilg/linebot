@@ -2,42 +2,53 @@ from typing import Iterable
 from .tokens import *
 from .syntax_tree import *
 
+def diagnose_parameter(tokens: list[Token]):
+    match tokens:
+        case [
+            KeywordToken('in') | KeywordToken('out') as direction,
+            WordToken() as other
+            ]:
+            if other.spelling in DATA_TYPE:
+                print(f"Missing parameter name for '{direction.spelling} {other.spelling}'")
+            else:
+                print(f"Missing data type for parameter '{direction.spelling} {other.spelling}'")
+        case _:
+            print(">>>> DIAGNOSTICS FAILED <<<<")
 
-def separate_statements(tokens: list[Token]) -> list[list[Token]]:
-    statements = []
+def separate(tokens: list[Token], delimiter: Token) -> list[list[Token]]:
+    sections = []
     start = end = 0
     while start is not None:
         try:
-            end = tokens.index(PunctuationToken(';'), start)
-            statements.append(tokens[start:end])
+            end = tokens.index(delimiter, start)
+            sections.append(tokens[start:end])
             start = end + 1
         except ValueError:
+            if start != len(tokens):
+                sections.append(tokens[start:])
             start = None
-    return statements
+    return sections
 
-def parse_parameters(parameter_tokens: Iterable[Token], out_params: list[Parameter]):
-    match parameter_tokens:
-        case []:
-            return
-        case [
-                KeywordToken() as direction,
-                WordToken() as datatype,
-                WordToken() as name,
-                *rest_of_tokens
-            ]:
-            out_params.append(
-                Parameter(
-                    PARAM_DIRECTION[direction.kind],
-                    DATA_TYPE[datatype.spelling],
-                    name.spelling)
-            )
-            if rest_of_tokens:
-                if rest_of_tokens[0] == PunctuationToken(','):
-                    parse_parameters(rest_of_tokens[1:], out_params)
-                else:
-                    raise ValueError(f"Expected ',' at {rest_of_tokens}")
-        case _:
-            raise ValueError(f"Invalid parameters structure {parameter_tokens}")
+def parse_parameters(parameter_tokens: list[Token], out_params: list[Parameter]):
+    parameters = separate(parameter_tokens, PunctuationToken(','))
+    for parameter in parameters:
+        match parameter:
+            case []:
+                return
+            case [
+                    KeywordToken() as direction,
+                    WordToken() as datatype,
+                    WordToken() as name,
+                ]:
+                out_params.append(
+                    Parameter(
+                        PARAM_DIRECTION[direction.kind],
+                        DATA_TYPE[datatype.spelling],
+                        name.spelling)
+                )
+            case _:
+                diagnose_parameter(parameter)
+                raise ValueError(f"Invalid parameters structure {parameter}")
 
 def construct_method(name: WordToken,
                      param_tokens: list[Token],
@@ -53,7 +64,7 @@ def construct_method(name: WordToken,
 
 
 def parse(tokens: list[Token]) -> list[MethodDeclaration]:
-    statements = separate_statements(tokens)
+    statements = separate(tokens, PunctuationToken(';'))
 
     methods = []
 
