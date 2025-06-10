@@ -1,5 +1,6 @@
 from .tokens import *
 from .syntax_tree import *
+from . import diag
 
 class ParseError(Exception):
     pass
@@ -47,6 +48,7 @@ class Parser:
                             name.spelling)
                     )
                 case _:
+                    self.diagnose_parameter(parameter)
                     raise ParseError(f"Invalid parameters structure {parameter}")
 
     def construct_method(self, name: WordToken,
@@ -111,3 +113,41 @@ class Parser:
                                      + ' '.join([tok.spelling for tok in statement]))
 
         return methods
+
+    def highlight(self, token: Token, last: Token | None = None, between = False):
+        start = (token.location.column_range[0]
+                 if not between
+                 else token.location.column_range[1])
+        end = (token.location.column_range[1]
+               if last is None else
+               last.location.column_range[1]
+               if not between else
+               last.location.column_range[0])
+
+        diag.highlight_error(self._source[token.location.line_nr - 1], start, end)
+
+    def diagnose_parameter(self, tokens: list[Token]):
+        diag.error('Invalid parameter', tokens[0].location.line_nr)
+        self.highlight(tokens[0], tokens[-1])
+
+        match tokens:
+            case [
+                DataTypeToken() as data_type,
+                WordToken() as name
+                ]:
+                diag.eprint(f"Missing direction 'in' or 'out' here:")
+                self.highlight(data_type, name, between=True)
+            case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                DataTypeToken() as data_type
+                ]:
+                diag.eprint(f"Missing parameter name here:")
+                self.highlight(direction, data_type, between=True)
+            case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                WordToken() as name
+                ]:
+                diag.eprint(f"Missing data type here:")
+                self.highlight(direction, name, between=True)
+            case _:
+                diag.failed()
