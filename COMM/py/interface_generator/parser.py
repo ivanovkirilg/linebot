@@ -6,12 +6,14 @@ def diagnose_parameter(tokens: list[Token]):
     match tokens:
         case [
             KeywordToken('in') | KeywordToken('out') as direction,
-            WordToken() as other
+            DataTypeToken() as data_type
             ]:
-            if other.spelling in DATA_TYPE:
-                print(f"Missing parameter name for '{direction.spelling} {other.spelling}'")
-            else:
-                print(f"Missing data type for parameter '{direction.spelling} {other.spelling}'")
+            print(f"Missing parameter name for '{direction.spelling} {data_type.spelling}'")
+        case [
+            KeywordToken('in') | KeywordToken('out') as direction,
+            WordToken() as name
+            ]:
+            print(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
         case _:
             print(">>>> DIAGNOSTICS FAILED <<<<")
 
