@@ -107,3 +107,16 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_interface_generator_server_SUT
         ${CMAKE_CURRENT_BINARY_DIR}/FT_interface_generator_client_SUT
 )
+
+## Manual diagnostics test
+add_custom_target(COMM_diag
+    ${CMAKE_COMMAND} -E env "PYTHONPATH=${COMM_PYTHONPATH}"
+    ${Python_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_diagnostics.py -m interface_diagnostics.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/Invalid
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/MissingParamDirection
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/MissingParamName
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/MissingParamType
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/MisspelledWords
+    ${CMAKE_CURRENT_SOURCE_DIR}/Diagnostics/Unterminated
+)
