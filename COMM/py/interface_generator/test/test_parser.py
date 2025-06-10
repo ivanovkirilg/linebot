@@ -1,11 +1,14 @@
 import unittest
 
-from ..parser import parse
+from ..parser import Parser
 from ..tokens import *
 from ..syntax_tree import *
 
 
 class TestParser(unittest.TestCase):
+    def setUp(self) -> None:
+        self.parser = Parser()
+
     @staticmethod
     def get_basic_method(name) -> list[Token]:
         return [
@@ -19,7 +22,7 @@ class TestParser(unittest.TestCase):
     def test_parses_basic_method(self):
         tokens = self.get_basic_method('do_sth')
 
-        synt_tree = parse(tokens)
+        synt_tree = self.parser.parse(tokens)
 
         expected = [
             MethodDeclaration('do_sth', ReturnSpec(DataType.VOID), [])
@@ -33,7 +36,7 @@ class TestParser(unittest.TestCase):
             self.get_basic_method('do_other_thing')
         )
 
-        synt_tree = parse(tokens)
+        synt_tree = self.parser.parse(tokens)
 
         expected = [
             MethodDeclaration('do_sth', ReturnSpec(DataType.VOID), []),
@@ -62,7 +65,7 @@ class TestParser(unittest.TestCase):
             PunctuationToken(';'),
         ]
 
-        synt_tree = parse(tokens)
+        synt_tree = self.parser.parse(tokens)
 
         expected = [
             MethodDeclaration(
@@ -89,7 +92,7 @@ class TestParser(unittest.TestCase):
             PunctuationToken(';'),
         ]
 
-        synt_tree = parse(tokens)
+        synt_tree = self.parser.parse(tokens)
 
         expected = [
             MethodDeclaration(

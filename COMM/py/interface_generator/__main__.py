@@ -1,7 +1,7 @@
 import argparse
 
 from .lexer import tokenize
-from .parser import parse
+from .parser import Parser
 from .generator import Generator, FileKind
 
 
@@ -11,7 +11,8 @@ def main(verbose, interface_file, namespace, output_dir):
 
     tokens = tokenize(interface_definition)
 
-    declarations = parse(tokens)
+    parser = Parser(interface_definition.splitlines())
+    declarations = parser.parse(tokens)
     if verbose:
         print(declarations)
 
