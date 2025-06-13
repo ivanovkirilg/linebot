@@ -3,7 +3,7 @@ import re
 
 from .tokens import *
 
-def tokenize(translation_unit: str) -> list[Token]:
+def tokenize(translation_unit: str, file_name: str = '') -> list[Token]:
     tokens = []
 
     # Letters, digits, underscore;
@@ -33,19 +33,21 @@ def tokenize(translation_unit: str) -> list[Token]:
         ]
     )
 
-    for matched in re.finditer(regex, translation_unit):
-        spelling = matched.group()
+    for line_nr, line in enumerate(translation_unit.splitlines()):
+        for matched in re.finditer(regex, line):
+            spelling = matched.group()
 
-        if matched.group('word'):
-            if spelling in DATA_TYPE:   tok_type = DataTypeToken
-            elif spelling in KEYWORDS:  tok_type = KeywordToken
-            else:                       tok_type = WordToken
-        elif matched.group('punct'):    tok_type = PunctuationToken
-        elif matched.group('float'):    tok_type = FloatToken
-        elif matched.group('int'):      tok_type = IntegerToken
-        else:
-            raise ValueError("Token kind not supported for: " + spelling)
+            if matched.group('word'):
+                if spelling in DATA_TYPE:   tok_type = DataTypeToken
+                elif spelling in KEYWORDS:  tok_type = KeywordToken
+                else:                       tok_type = WordToken
+            elif matched.group('punct'):    tok_type = PunctuationToken
+            elif matched.group('float'):    tok_type = FloatToken
+            elif matched.group('int'):      tok_type = IntegerToken
+            else:
+                raise ValueError("Token kind not supported for: " + spelling)
 
-        tokens.append(tok_type(spelling))
+            loc = Location(file_name, line_nr + 1, matched.span())
+            tokens.append( tok_type(spelling).at(loc) )
 
     return tokens
