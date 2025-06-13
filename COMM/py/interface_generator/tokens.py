@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 class DataType(Enum):
     VOID = 'void'
@@ -52,8 +52,22 @@ KEYWORDS = {
 }
 
 @dataclass
+class Location:
+    line_nr: int
+    column_range: tuple[int, int]
+
+@dataclass
 class Token:
     spelling: str
+    location: Location = field(
+        default_factory=lambda: Location(0, (0, 0)),
+        init=False,   # allow Tokens without location, esp. for testing
+        compare=False # 'method' == 'method' regardless of location
+    )
+
+    def at(self, location: Location):
+        self.location = location
+        return self
 
 @dataclass
 class WordToken(Token):
