@@ -9,7 +9,7 @@ def main(verbose, interface_file, namespace, output_dir):
     with open(interface_file, 'r') as f:
         interface_definition = f.read()
 
-    tokens = tokenize(interface_definition)
+    tokens = tokenize(interface_definition, interface_file)
 
     declarations = parse(tokens)
     if verbose:

@@ -105,3 +105,23 @@ class TestLexer(unittest.TestCase):
         ]
 
         self.assertEqual(tokens, expected)
+
+    # TODO data type token
+
+    def test_location(self):
+        tu = 'method word\n -> line 2'
+        #     0123456    \n 123     9a
+        #            789ab     45678
+
+        tokens = tokenize(tu, 'testfile')
+        locations = [tok.location for tok in tokens]
+
+        expected = [
+            Location('testfile', 1, (0, 6)),
+            Location('testfile', 1, (7, 11)),
+            Location('testfile', 2, (1, 3)),
+            Location('testfile', 2, (4, 8)),
+            Location('testfile', 2, (9, 10))
+        ]
+
+        self.assertEqual(locations, expected)
