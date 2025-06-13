@@ -1,4 +1,3 @@
-from typing import Iterable
 from .tokens import *
 from .syntax_tree import *
 
