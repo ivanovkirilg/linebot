@@ -1,112 +1,118 @@
 from .tokens import *
 from .syntax_tree import *
+from .diag import eprint, highlight_error
 
-def diagnose_parameter(tokens: list[Token]):
-    match tokens:
-        case [
-            DataTypeToken() as data_type,
-            WordToken() as name
-            ]:
-            print(f"Missing direction ('in' or 'out') for parameter '{data_type.spelling} {name.spelling}'")
-        case [
-            KeywordToken('in') | KeywordToken('out') as direction,
-            DataTypeToken() as data_type
-            ]:
-            print(f"Missing parameter name for '{direction.spelling} {data_type.spelling}'")
-        case [
-            KeywordToken('in') | KeywordToken('out') as direction,
-            WordToken() as name
-            ]:
-            print(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
-        case _:
-            print(">>>> DIAGNOSTICS FAILED <<<<")
+class Parser:
+    def __init__(self, source: list[str] = []):
+        self._source = source
 
-def separate(tokens: list[Token], delimiter: Token) -> list[list[Token]]:
-    sections = []
-    start = end = 0
-    while start is not None:
-        try:
-            end = tokens.index(delimiter, start)
-            sections.append(tokens[start:end])
-            start = end + 1
-        except ValueError:
-            if start != len(tokens):
-                sections.append(tokens[start:])
-            start = None
-    return sections
-
-def parse_parameters(parameter_tokens: list[Token], out_params: list[Parameter]):
-    parameters = separate(parameter_tokens, PunctuationToken(','))
-    for parameter in parameters:
-        match parameter:
-            case []:
-                return
+    def diagnose_parameter(self, tokens: list[Token]):
+        match tokens:
             case [
-                    KeywordToken() as direction,
-                    DataTypeToken() as data_type,
-                    WordToken() as name,
+                DataTypeToken() as data_type,
+                WordToken() as name
                 ]:
-                out_params.append(
-                    Parameter(
-                        PARAM_DIRECTION[direction.kind],
-                        DATA_TYPE[data_type.spelling],
-                        name.spelling)
-                )
-            case _:
-                diagnose_parameter(parameter)
-                raise ValueError(f"Invalid parameters structure {parameter}")
-
-def construct_method(name: WordToken,
-                     param_tokens: list[Token],
-                     return_spec: ReturnSpec) -> MethodDeclaration:
-    parameters = []
-    parse_parameters(param_tokens, parameters)
-
-    return MethodDeclaration(
-        name.spelling,
-        return_spec,
-        parameters
-    )
-
-
-def parse(tokens: list[Token]) -> list[MethodDeclaration]:
-    statements = separate(tokens, PunctuationToken(';'))
-
-    methods = []
-
-    for statement in statements:
-        match statement:
+                eprint(f"Missing direction ('in' or 'out') for parameter '{data_type.spelling} {name.spelling}'")
             case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                DataTypeToken() as data_type
+                ]:
+                eprint(f"Missing parameter name for '{direction.spelling} {data_type.spelling}'")
+            case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                WordToken() as name
+                ]:
+                eprint(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
+            case _:
+                eprint(">>>> DIAGNOSTICS FAILED <<<<")
+        highlight_error(self._source[tokens[0].location.line_nr - 1], tokens[0].location.column_range[0], tokens[-1].location.column_range[1])
+
+    def separate(self, tokens: list[Token], delimiter: Token) -> list[list[Token]]:
+        sections = []
+        start = end = 0
+        while start is not None:
+            try:
+                end = tokens.index(delimiter, start)
+                sections.append(tokens[start:end])
+                start = end + 1
+            except ValueError:
+                if start != len(tokens):
+                    sections.append(tokens[start:])
+                start = None
+        return sections
+
+    def parse_parameters(self, parameter_tokens: list[Token], out_params: list[Parameter]):
+        parameters = self.separate(parameter_tokens, PunctuationToken(','))
+        for parameter in parameters:
+            match parameter:
+                case []:
+                    return
+                case [
+                        KeywordToken() as direction,
+                        DataTypeToken() as data_type,
+                        WordToken() as name,
+                    ]:
+                    out_params.append(
+                        Parameter(
+                            PARAM_DIRECTION[direction.kind],
+                            DATA_TYPE[data_type.spelling],
+                            name.spelling)
+                    )
+                case _:
+                    self.diagnose_parameter(parameter)
+                    raise ValueError(f"Invalid parameters structure {parameter}")
+
+    def construct_method(self, name: WordToken,
+                         param_tokens: list[Token],
+                         return_spec: ReturnSpec) -> MethodDeclaration:
+        parameters = []
+        self.parse_parameters(param_tokens, parameters)
+
+        return MethodDeclaration(
+            name.spelling,
+            return_spec,
+            parameters
+        )
+
+
+    def parse(self, tokens: list[Token]) -> list[MethodDeclaration]:
+        statements = self.separate(tokens, PunctuationToken(';'))
+
+        methods = []
+
+        for statement in statements:
+            match statement:
+                case [
+                        KeywordToken('method'),
+                        WordToken() as name,
+                        PunctuationToken('('),
+                        *param_tokens,
+                        PunctuationToken(')')
+                    ]:
+                    methods.append(
+                        self.construct_method(name, param_tokens, ReturnSpec(DataType.VOID))
+                    )
+
+                case [
                     KeywordToken('method'),
                     WordToken() as name,
                     PunctuationToken('('),
                     *param_tokens,
-                    PunctuationToken(')')
+                    PunctuationToken(')'),
+
+                    PunctuationToken('->'),
+                    DataTypeToken() as return_type
                 ]:
-                methods.append(
-                    construct_method(name, param_tokens, ReturnSpec(DataType.VOID))
-                )
+                    # TODO diagnostics on KeyError
+                    return_spec = ReturnSpec(DATA_TYPE[return_type.spelling])
 
-            case [
-                KeywordToken('method'),
-                WordToken() as name,
-                PunctuationToken('('),
-                *param_tokens,
-                PunctuationToken(')'),
+                    methods.append(
+                        self.construct_method(name, param_tokens, return_spec)
+                    )
 
-                PunctuationToken('->'),
-                DataTypeToken() as return_type
-            ]:
-                # TODO diagnostics on KeyError
-                return_spec = ReturnSpec(DATA_TYPE[return_type.spelling])
+                case _:
+                    raise ValueError("Invalid structure in statement: "
+                                     + ' '.join([tok.spelling for tok in statement]))
 
-                methods.append(
-                    construct_method(name, param_tokens, return_spec)
-                )
-
-            case _:
-                raise ValueError("Invalid structure in statement: "
-                                 + ' '.join([tok.spelling for tok in statement]))
-
-    return methods
+        return methods
 
