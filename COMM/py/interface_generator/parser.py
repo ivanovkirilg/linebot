@@ -1,17 +1,10 @@
 from .tokens import *
 from .syntax_tree import *
+from .diag import eprint, highlight_error
 
 class Parser:
     def __init__(self, source: list[str] = []):
         self._source = source
-
-    def highlight_error(self, tokens: list[Token]):
-        start_col = tokens[0].location.column_range[0]
-        end_col = tokens[-1].location.column_range[1]
-        print(self._source[tokens[0].location.line_nr - 1])
-        print(' ' * start_col,
-              '^' * (end_col - start_col),
-              sep='')
 
     def diagnose_parameter(self, tokens: list[Token]):
         match tokens:
@@ -19,20 +12,20 @@ class Parser:
                 DataTypeToken() as data_type,
                 WordToken() as name
                 ]:
-                print(f"Missing direction ('in' or 'out') for parameter '{data_type.spelling} {name.spelling}'")
+                eprint(f"Missing direction ('in' or 'out') for parameter '{data_type.spelling} {name.spelling}'")
             case [
                 KeywordToken('in') | KeywordToken('out') as direction,
                 DataTypeToken() as data_type
                 ]:
-                print(f"Missing parameter name for '{direction.spelling} {data_type.spelling}'")
+                eprint(f"Missing parameter name for '{direction.spelling} {data_type.spelling}'")
             case [
                 KeywordToken('in') | KeywordToken('out') as direction,
                 WordToken() as name
                 ]:
-                print(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
+                eprint(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
             case _:
-                print(">>>> DIAGNOSTICS FAILED <<<<")
-        self.highlight_error(tokens)
+                eprint(">>>> DIAGNOSTICS FAILED <<<<")
+        highlight_error(self._source[tokens[0].location.line_nr - 1], tokens[0].location.column_range[0], tokens[-1].location.column_range[1])
 
     def separate(self, tokens: list[Token], delimiter: Token) -> list[list[Token]]:
         sections = []
