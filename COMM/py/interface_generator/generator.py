@@ -121,7 +121,7 @@ class Generator:
         )
 
     def generate_client_cpp(self) -> str:
-        def _generate_return_temporary(method: MethodDeclaration) -> tuple[str]:
+        def _generate_return_temporary(method: MethodDeclaration) -> tuple[str, str]:
             from .templates.client_source import RET_TEMPORARY_TEMPLATE, RETURN_TEMPLATE
             ret_type = method.return_spec.data_type
             if ret_type != DataType.VOID:
@@ -166,7 +166,7 @@ class Generator:
         )
 
     def generate_server_cpp(self) -> str:
-        def _generate_return_temporary(method: MethodDeclaration) -> tuple[str]:
+        def _generate_return_temporary(method: MethodDeclaration) -> tuple[str, str, str]:
             from .templates.server_source import RET_TEMPORARY_TEMPLATE, \
                 RET_ASSIGNMENT_TEMPLATE, RET_WRITE_TEMPLATE
             ret_type = method.return_spec.data_type
