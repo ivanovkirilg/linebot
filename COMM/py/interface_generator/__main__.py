@@ -1,7 +1,7 @@
 import argparse
 
 from .lexer import tokenize
-from .parser import Parser
+from .parser import Parser, ParseError
 from .generator import Generator, FileKind
 
 def parse_arguments():
@@ -29,7 +29,7 @@ class Application:
 
         try:
             declarations = parser.parse(tokens)
-        except Exception as err:
+        except ParseError as err:
             print(f'Failed to parse {self._interface_file}')
             if self._verbose:
                 print(f'{err}')

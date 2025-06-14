@@ -2,6 +2,9 @@ from .tokens import *
 from .syntax_tree import *
 from .diag import eprint, highlight_error
 
+class ParseError(Exception):
+    pass
+
 class Parser:
     def __init__(self, source: list[str] = []):
         self._source = source
@@ -60,7 +63,7 @@ class Parser:
                     )
                 case _:
                     self.diagnose_parameter(parameter)
-                    raise ValueError(f"Invalid parameters structure {parameter}")
+                    raise ParseError(f"Invalid parameters structure {parameter}")
 
     def construct_method(self, name: WordToken,
                          param_tokens: list[Token],
@@ -111,7 +114,7 @@ class Parser:
                     )
 
                 case _:
-                    raise ValueError("Invalid structure in statement: "
+                    raise ParseError("Invalid structure in statement: "
                                      + ' '.join([tok.spelling for tok in statement]))
 
         return methods
