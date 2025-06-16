@@ -5,6 +5,28 @@ from .diag import eprint, highlight_error
 class ParseError(Exception):
     pass
 
+def diag_failed():
+    eprint(">>>> DIAGNOSTICS FAILED <<<<")
+
+def up_to(iter, delimiter):
+    for elem in iter:
+        if elem == delimiter:
+            return
+        yield elem
+
+def until(iter, condition):
+    for elem in iter:
+        if condition(elem):
+            return
+        yield elem
+
+def is_param_token(token: Token) -> bool:
+    match token:
+        case KeywordToken('in') | KeywordToken('out') | DataTypeToken() | WordToken() | PunctuationToken(','):
+            return True
+        case _:
+            return False
+
 class Parser:
     def __init__(self, source: list[str] = []):
         self._source = source
@@ -27,8 +49,41 @@ class Parser:
                 ]:
                 eprint(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
             case _:
-                eprint(">>>> DIAGNOSTICS FAILED <<<<")
+                diag_failed()
         highlight_error(self._source[tokens[0].location.line_nr - 1], tokens[0].location.column_range[0], tokens[-1].location.column_range[1])
+
+    def diagnose_unterminated_method(self, name_tok: Token, *rest: Token):
+        unterminated = list(up_to(rest, KeywordToken('method')))
+        if len(unterminated) < len(rest) or unterminated[-1] == PunctuationToken(')'):
+            match unterminated:
+                case [
+                    *params,
+                    PunctuationToken(')'),
+                    PunctuationToken('->'),
+                    DataTypeToken() as last
+                    ] | [
+                    *params,
+                    PunctuationToken(')') as last
+                    ]:
+                    eprint(f"Method declaration for '{name_tok.spelling}' missing ';' (not terminated):")
+                    loc = last.location
+                    highlight_error(self._source[loc.line_nr - 1], loc.column_range[1], loc.column_range[1] + 1)
+                case _:
+                    diag_failed()
+        else:
+            diag_failed()
+
+    def diagnose_statement(self, tokens: list[Token]):
+        match tokens:
+            case [
+                KeywordToken('method'),
+                WordToken() as name,
+                PunctuationToken('('),
+                *rest
+                ]:
+                self.diagnose_unterminated_method(name, *rest)
+            case _:
+                diag_failed()
 
     def separate(self, tokens: list[Token], delimiter: Token) -> list[list[Token]]:
         sections = []
@@ -92,9 +147,12 @@ class Parser:
                         *param_tokens,
                         PunctuationToken(')')
                     ]:
-                    methods.append(
-                        self.construct_method(name, param_tokens, ReturnSpec(DataType.VOID))
-                    )
+                    if all(map(is_param_token, param_tokens)):
+                        methods.append(
+                            self.construct_method(name, param_tokens, ReturnSpec(DataType.VOID))
+                        )
+                    else:
+                        self.diagnose_statement(statement)
 
                 case [
                     KeywordToken('method'),
@@ -114,6 +172,7 @@ class Parser:
                     )
 
                 case _:
+                    self.diagnose_statement(statement)
                     raise ParseError("Invalid structure in statement: "
                                      + ' '.join([tok.spelling for tok in statement]))
 
