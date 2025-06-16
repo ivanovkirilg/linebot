@@ -132,6 +132,20 @@ class Parser:
             parameters
         )
 
+    def parse_method(self,
+                     statement: list[Token],
+                     name: WordToken,
+                     param_tokens: list[Token],
+                     return_type: DataTypeToken | None = None):
+        return_spec = ReturnSpec(
+            (DATA_TYPE[return_type.spelling] if return_type else DataType.VOID)
+        )
+
+        if all(map(is_param_token, param_tokens)):
+            return self.construct_method(name, param_tokens, return_spec)
+        else:
+            self.diagnose_statement(statement)
+            raise ParseError('Invalid method declaration')
 
     def parse(self, tokens: list[Token]) -> list[MethodDeclaration]:
         statements = self.separate(tokens, PunctuationToken(';'))
@@ -147,13 +161,9 @@ class Parser:
                         *param_tokens,
                         PunctuationToken(')')
                     ]:
-                    if all(map(is_param_token, param_tokens)):
-                        methods.append(
-                            self.construct_method(name, param_tokens, ReturnSpec(DataType.VOID))
-                        )
-                    else:
-                        self.diagnose_statement(statement)
-
+                    methods.append(
+                        self.parse_method(statement, name, param_tokens)
+                    )
                 case [
                     KeywordToken('method'),
                     WordToken() as name,
@@ -164,11 +174,8 @@ class Parser:
                     PunctuationToken('->'),
                     DataTypeToken() as return_type
                 ]:
-                    # TODO diagnostics on KeyError
-                    return_spec = ReturnSpec(DATA_TYPE[return_type.spelling])
-
                     methods.append(
-                        self.construct_method(name, param_tokens, return_spec)
+                        self.parse_method(statement, name, param_tokens, return_type)
                     )
 
                 case _:
