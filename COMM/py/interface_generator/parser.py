@@ -5,6 +5,18 @@ from . import diag
 class ParseError(Exception):
     pass
 
+def up_to(iter, delimiter):
+    for elem in iter:
+        if elem == delimiter:
+            return
+        yield elem
+
+def until(iter, condition):
+    for elem in iter:
+        if condition(elem):
+            return
+        yield elem
+
 def is_param_token(token: Token) -> bool:
     match token:
         case KeywordToken('in') | KeywordToken('out') | DataTypeToken() | WordToken() | PunctuationToken(','):
@@ -75,6 +87,7 @@ class Parser:
         if all(map(is_param_token, param_tokens)):
             return self.construct_method(name, param_tokens, return_spec)
         else:
+            self.diagnose_statement(statement)
             raise ParseError('Invalid method declaration')
 
     def parse(self, tokens: list[Token]) -> list[MethodDeclaration]:
@@ -109,6 +122,7 @@ class Parser:
                     )
 
                 case _:
+                    self.diagnose_statement(statement)
                     raise ParseError("Invalid structure in statement: "
                                      + ' '.join([tok.spelling for tok in statement]))
 
@@ -149,5 +163,41 @@ class Parser:
                 ]:
                 diag.eprint(f"Missing data type here:")
                 self.highlight(direction, name, between=True)
+            case _:
+                diag.failed()
+
+    def diagnose_unterminated_method(self, name_tok: Token, *rest: Token):
+        unterminated = list(up_to(rest, KeywordToken('method')))
+        if len(unterminated) < len(rest) or unterminated[-1] == PunctuationToken(')'):
+            match unterminated:
+                case [
+                    *params,
+                    PunctuationToken(')'),
+                    PunctuationToken('->'),
+                    DataTypeToken() as last
+                    ] | [
+                    *params,
+                    PunctuationToken(')') as last
+                    ]:
+                    diag.eprint(f"Statement not terminated, missing ';' here:")
+                    loc = last.location
+                    diag.highlight_error(self._source[loc.line_nr - 1], loc.column_range[1], loc.column_range[1] + 1)
+                case _:
+                    diag.failed()
+        else:
+            diag.failed()
+
+    def diagnose_statement(self, tokens: list[Token]):
+        diag.error('Invalid statement', tokens[0].location.line_nr)
+        diag.eprint(self._source[tokens[0].location.line_nr - 1])
+
+        match tokens:
+            case [
+                KeywordToken('method'),
+                WordToken() as name,
+                PunctuationToken('('),
+                *rest
+                ]:
+                self.diagnose_unterminated_method(name, *rest)
             case _:
                 diag.failed()
