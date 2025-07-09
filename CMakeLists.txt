@@ -39,8 +39,11 @@ FetchContent_MakeAvailable(zpp_bits)
 
 include_directories(${zpp_bits_SOURCE_DIR})
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 find_package(Doxygen QUIET)
 
+add_subdirectory(COMM)
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
 add_subdirectory(CTRL)
