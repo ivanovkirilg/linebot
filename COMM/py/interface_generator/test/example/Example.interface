@@ -1,0 +1,6 @@
+
+method set(in double value);
+
+method get() -> double;
+
+method calculate(out double square, out double cube);
