@@ -1,6 +1,11 @@
+from typing import Iterable
 from .tokens import *
 from .syntax_tree import *
 from . import diag
+
+import difflib
+
+SIMILARITY_THRESHOLD = 0.7
 
 class ParseError(Exception):
     pass
@@ -140,6 +145,17 @@ class Parser:
 
         diag.highlight_error(self._source[token.location.line_nr - 1], start, end)
 
+    def diagnose_misspelling(self, invalid_token: Token, possibilities: Iterable[str], invalid_message: str):
+        maybe_misspelling = difflib.get_close_matches(
+            invalid_token.spelling, possibilities, n=1, cutoff=SIMILARITY_THRESHOLD)
+
+        if maybe_misspelling:
+            diag.eprint(invalid_message)
+            diag.eprint(f"Did you mean '{maybe_misspelling[0]}'?")
+            self.highlight(invalid_token)
+        else:
+            diag.failed()
+
     def diagnose_parameter(self, tokens: list[Token]):
         diag.error('Invalid parameter', tokens[0].location.line_nr)
         self.highlight(tokens[0], tokens[-1])
@@ -163,6 +179,19 @@ class Parser:
                 ]:
                 diag.eprint(f"Missing data type here:")
                 self.highlight(direction, name, between=True)
+            case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                WordToken() as not_data_type,
+                WordToken() as name
+                ]:
+                self.diagnose_misspelling(not_data_type, DATA_TYPE.keys(), f"Invalid data type")
+            case [
+                Token() as not_direction,
+                DataTypeToken() as data_type,
+                WordToken() as name
+                ]:
+                self.diagnose_misspelling(not_direction, ['in', 'out'], f"Invalid direction")
+
             case _:
                 diag.failed()
 
@@ -196,8 +225,28 @@ class Parser:
                 KeywordToken('method'),
                 WordToken() as name,
                 PunctuationToken('('),
+                *param_tokens,
+                PunctuationToken(')'),
+                PunctuationToken('->'),
+                WordToken() as not_return_type
+                ]:
+                self.diagnose_misspelling(not_return_type, DATA_TYPE.keys(), f"Invalid return type")
+
+            case [
+                KeywordToken('method'),
+                WordToken() as name,
+                PunctuationToken('('),
                 *rest
                 ]:
                 self.diagnose_unterminated_method(name, *rest)
+            case [
+                WordToken() as not_method,
+                WordToken() as name,
+                PunctuationToken('('),
+                *params,
+                PunctuationToken(')')
+                ]:
+                self.diagnose_misspelling(not_method, ['method'], f"Invalid statement")
+
             case _:
                 diag.failed()
