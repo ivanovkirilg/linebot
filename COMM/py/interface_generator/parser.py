@@ -1,6 +1,9 @@
 from .tokens import *
 from .syntax_tree import *
 from .diag import eprint, highlight_error
+from difflib import SequenceMatcher, get_close_matches
+
+SIMILARITY_THRESHOLD = 0.7
 
 class ParseError(Exception):
     pass
@@ -48,6 +51,28 @@ class Parser:
                 WordToken() as name
                 ]:
                 eprint(f"Missing data type for parameter '{direction.spelling} {name.spelling}'")
+            case [
+                KeywordToken('in') | KeywordToken('out') as direction,
+                WordToken() as not_data_type,
+                WordToken() as name
+                ]:
+                maybe_data_type = get_close_matches(not_data_type.spelling, DATA_TYPE.keys(), n=1, cutoff=SIMILARITY_THRESHOLD)
+                if maybe_data_type:
+                    eprint(f"Invalid data type for parameter '{name.spelling}'")
+                    eprint(f"Did you mean '{maybe_data_type[0]}'?")
+                else:
+                    diag_failed()
+            case [
+                Token() as not_direction,
+                DataTypeToken() as data_type,
+                WordToken() as name
+                ]:
+                maybe_direction = get_close_matches(not_direction.spelling, ['in', 'out'], n=1, cutoff=SIMILARITY_THRESHOLD)
+                if maybe_direction:
+                    eprint(f"Invalid direction for parameter '{name.spelling}'")
+                    eprint(f"Did you mean '{maybe_direction[0]}'?")
+                else:
+                    diag_failed()
             case _:
                 diag_failed()
         highlight_error(self._source[tokens[0].location.line_nr - 1], tokens[0].location.column_range[0], tokens[-1].location.column_range[1])
@@ -73,8 +98,27 @@ class Parser:
         else:
             diag_failed()
 
+    def diagnose_misspelled_method(self, not_method: WordToken):
+        eprint("Invalid statement: did you mean 'method'?")
+        highlight_error(self._source[not_method.location.line_nr - 1], *not_method.location.column_range)
+
     def diagnose_statement(self, tokens: list[Token]):
         match tokens:
+            case [
+                KeywordToken('method'),
+                WordToken() as name,
+                PunctuationToken('('),
+                *param_tokens,
+                PunctuationToken(')'),
+                PunctuationToken('->'),
+                WordToken() as not_return_type
+                ]:
+                maybe_return_type = get_close_matches(not_return_type.spelling, DATA_TYPE.keys(), n=1, cutoff=SIMILARITY_THRESHOLD)
+                if maybe_return_type:
+                    eprint(f"Invalid return type for method '{name.spelling}': '{not_return_type.spelling}'")
+                    eprint(f"Did you mean '{maybe_return_type[0]}'?")
+                else:
+                    diag_failed()
             case [
                 KeywordToken('method'),
                 WordToken() as name,
@@ -82,6 +126,17 @@ class Parser:
                 *rest
                 ]:
                 self.diagnose_unterminated_method(name, *rest)
+            case [
+                WordToken() as not_method,
+                WordToken() as name,
+                PunctuationToken('('),
+                *params,
+                PunctuationToken(')')
+                ]:
+                if SequenceMatcher(None, not_method.spelling, 'method').ratio() > SIMILARITY_THRESHOLD:
+                    self.diagnose_misspelled_method(not_method)
+                else:
+                    diag_failed()
             case _:
                 diag_failed()
 
