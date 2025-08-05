@@ -1,7 +1,7 @@
 #ifndef UI_INCLUDE_UI_USER_INTERFACE
 #define UI_INCLUDE_UI_USER_INTERFACE
 
-#include "DRVR/IDriver.hpp"
+#include "DRVR/DriverClient.hpp"
 #include "DOMN/Move.hpp"
 #include "LOGR/Exception.hpp"
 
@@ -25,7 +25,7 @@ class UserInterface
 {
 public:
     void run(std::chrono::milliseconds refreshRate,
-             std::weak_ptr<const IDriver> driver);
+             std::weak_ptr<DRVR::IDriverClient> driver);
     void terminate();
 
     std::optional<DOMN::Move> readMove();

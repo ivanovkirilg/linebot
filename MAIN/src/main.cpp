@@ -1,22 +1,31 @@
 #include "UI/UserInterface.hpp"
-#include "DRVR/Driver.hpp"
+#include "DRVR/DriverClient.hpp"
 #include "CTRL/Controller.hpp"
 #include "LOGR/ILogger.hpp"
 #include "LOGR/Trace.hpp"
 
-#include <chrono>
+#include <memory>
 #include <iostream>
 
 
-int main()
+int main(int argc, char *argv[])
 {
     using namespace std::literals;
+
+    if (argc != 2)
+    {
+        std::cout << "Provide exactly 1 argument: port for Driver interface\n";
+        return 1;
+    }
+
+    int port = std::atoi(argv[1]);
+
     auto logger = LOGR::ILogger::create("MAIN");
 
     LOGR::Trace trace;
 
-    auto driver = std::make_shared<Driver>(0.5);
-    driver->run(4ms);
+    auto driver = std::make_shared<DRVR::DriverClient>(port);
+    driver->run(4);
 
     Controller controller(driver);
 

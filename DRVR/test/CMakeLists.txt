@@ -1,14 +1,17 @@
-project(TODO_test)
+project(DRVR_test)
 
-# add_executable(
-#     TODO_test
-#     test_reader.cpp
-# )
-# target_link_libraries(
-#     TODO_test
-#     GTest::gtest_main
-#     ${PROJECT_NAME}_lib
-# )
+add_executable(
+    FT_Driver
+    FT_Driver.cpp
+    ${SRC_PATH}/Driver.cpp
+)
+target_link_libraries(
+    FT_Driver
+    Driver_interface
+    DOMN
+    GTest::gtest_main
+)
+enable_target_warnings(FT_Driver)
 
 include(GoogleTest)
-# gtest_discover_tests(TODO_test)
+gtest_discover_tests(FT_Driver)
