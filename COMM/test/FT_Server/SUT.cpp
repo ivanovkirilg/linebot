@@ -3,7 +3,7 @@
 #include "LOGR/ILogger.hpp"
 
 #include <cassert>
-#include <cstdlib>
+#include <iostream>
 
 #include "zpp_bits.h"
 
@@ -60,6 +60,8 @@ int main(int argc, char* argv[])
     auto logger = LOGR::ILogger::create("COMM_FT", LOGR::StubSelection::STUB);
 
     TestServer server{port};
+
+    std::cout << "listening" << std::endl;
 
     server.requestLoop();
 }
