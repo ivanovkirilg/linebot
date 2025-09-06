@@ -13,6 +13,8 @@ SUT = sys.argv[1]
 
 proc = socket_testing.launch_sut(SUT, PORT)
 
+proc.stdout.readline()  # Wait for SUT to bind socket first
+
 clientA = socket.create_connection((HOST, PORT))
 clientB = socket.create_connection((HOST, PORT))
 
