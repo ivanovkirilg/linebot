@@ -105,3 +105,21 @@ class TestLexer(unittest.TestCase):
         ]
 
         self.assertEqual(tokens, expected)
+
+    def test_data_type(self):
+        tu = 'void byte bool int float double char string'
+
+        tokens = tokenize(tu)
+
+        expected = [
+            DataTypeToken('void', DataType.VOID),
+            DataTypeToken('byte', DataType.BYTE),
+            DataTypeToken('bool', DataType.BOOL),
+            DataTypeToken('int', DataType.INT),
+            DataTypeToken('float', DataType.FLOAT),
+            DataTypeToken('double', DataType.DOUBLE),
+            DataTypeToken('char', DataType.CHAR),
+            DataTypeToken('string', DataType.STRING)
+        ]
+
+        self.assertEqual(tokens, expected)
