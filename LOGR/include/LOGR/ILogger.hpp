@@ -4,7 +4,9 @@
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <thread>
 
+#include "LOGR/internal.hpp"
 
 namespace LOGR
 {
@@ -58,7 +60,10 @@ protected:
     friend class Exception;
 
     static std::shared_ptr<ILogger> instance();
-    virtual void queueLogLine(const std::string& line) = 0;
+    virtual void queueLog(internal::Level level,
+        const std::source_location& loc,
+        std::string&& message,
+        std::thread::id threadId = std::this_thread::get_id()) = 0;
 
     static std::weak_ptr<ILogger> m_instance;
 };

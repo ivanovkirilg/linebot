@@ -28,8 +28,8 @@ namespace
 
 struct LogLine
 {
-    Level level;
     double timestamp;
+    std::string level;
     std::string threadId;
     std::string file;
     long line;
@@ -41,7 +41,7 @@ LogLine parse(const std::string& line)
 {
     LogLine fields;
 
-    int level{};
+    char level[16]{};
     double timestamp{};
     char threadId[1024]{};
     char file[1024]{};
@@ -50,14 +50,17 @@ LogLine parse(const std::string& line)
     char message[1024]{};
 
     // 0;1724138058.333385;140379180749760;/linebot/MAIN/src/main.cpp;16;int main();v
-    sscanf(line.c_str(), " %d;%lf;%1023[^;];%1023[^;];%li;%1023[^;];%1023[^;] ",
-           &level, &timestamp, threadId, file, &lineNr, function, message);
+    sscanf(line.c_str(), " %lf;%15[^;];%1023[^;];%1023[^;];%li;%1023[^;];%1023[^;] ",
+           &timestamp, level, threadId, file, &lineNr, function, message);
 
     return LogLine {
-        static_cast<Level>(level),
-        timestamp, threadId, file, lineNr, function, message
+        timestamp, level, threadId, file, lineNr, function, message
     };
 }
+
+constexpr const char* TRACE = "TRACE";
+constexpr const char* WARNING = "WARN";
+constexpr const char* EXCEPTION = "EXC";
 
 } // anonymous namespace
 
@@ -116,7 +119,7 @@ TEST_F(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     Level::TRACE);
+    EXPECT_EQ(  log.level,     TRACE);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
     EXPECT_EQ(  log.file,      src_loc::current().file_name());
@@ -127,7 +130,7 @@ TEST_F(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     Level::WARNING);
+    EXPECT_EQ(  log.level,     WARNING);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
     EXPECT_EQ(  log.file,      src_loc::current().file_name());
@@ -138,7 +141,7 @@ TEST_F(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     Level::EXCEPTION);
+    EXPECT_EQ(  log.level,     EXCEPTION);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
     EXPECT_EQ(  log.file,      src_loc::current().file_name());
@@ -149,7 +152,7 @@ TEST_F(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     Level::EXCEPTION);
+    EXPECT_EQ(  log.level,     EXCEPTION);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
     EXPECT_EQ(  log.file,      src_loc::current().file_name());
@@ -160,7 +163,7 @@ TEST_F(TestLoggerFunctional, LogsDifferentLevels)
     ASSERT_TRUE(std::getline(file, line));
     log = parse(line);
 
-    EXPECT_EQ(  log.level,     Level::TRACE);
+    EXPECT_EQ(  log.level,     TRACE);
     EXPECT_NEAR(log.timestamp, creationTime, 1);
     EXPECT_EQ(  log.threadId,  threadId.str());
     EXPECT_EQ(  log.file,      src_loc::current().file_name());

@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+using namespace LOGR::internal;
+
 namespace
 {
 
@@ -32,7 +34,8 @@ static inline std::string generateLogfileName(const std::string& taskName)
     return stream.str();
 }
 
-void LoggerImpl::queueLogLine(const std::string& line)
+void LoggerImpl::queueLog(Level level,
+        const std::source_location& loc, std::string&& message, std::thread::id threadId)
 {
     if (not m_logger)
     {
@@ -40,29 +43,33 @@ void LoggerImpl::queueLogLine(const std::string& line)
                            "per executable (or at least at one time).");
     }
 
-    std::unique_lock lock(m_logger->m_toLogMutex);
-
-    m_logger->m_toLog.emplace(line);
+    Log log{level, loc, std::move(message), threadId};
+    {
+        std::unique_lock lock(m_logger->m_toLogMutex);
+        m_logger->m_toLog.push(std::move(log));
+    }
 }
 
 void LoggerImpl::logSome(size_t nrLinesToLog)
 {
-    std::vector<std::string> toLog;
+    thread_local std::vector<Log> logs;
     {
         std::unique_lock lock(m_toLogMutex);
 
         nrLinesToLog = std::min(m_toLog.size(), nrLinesToLog);
+        // TODO more efficient way of moving them?
         for (size_t i = 0; i < nrLinesToLog; i++)
         {
-            toLog.emplace_back(m_toLog.front());
+            logs.emplace_back(m_toLog.front());
             m_toLog.pop();
         }
     }
 
-    for (const std::string& line : toLog)
+    for (Log& log : logs)
     {
-        m_logFile << line;
+        m_logFile << log.intoFormatted();
     }
+    logs.clear();
 
     m_logFile.flush();
 }
@@ -100,7 +107,7 @@ LoggerImpl::~LoggerImpl()
 {
     m_keepLogging = false;
     m_ioThread.join();
-    
+
     logSome(m_toLog.size());
 
     m_logFile.close();
