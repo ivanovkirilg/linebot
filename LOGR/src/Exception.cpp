@@ -9,7 +9,7 @@
 #include <cstring>
 
 #include "LOGR/internal.hpp"
-#include "LoggerImpl.hpp"
+#include "LOGR/ILogger.hpp"
 
 
 std::atomic<unsigned long long> LOGR::Exception::freeId = 1;
@@ -18,17 +18,19 @@ LOGR::Exception::Exception(const std::string& message,
     const std::source_location& loc)
     : std::runtime_error(message), m_id(freeId++)
 {
-    auto line = internal::startLine(internal::Level::EXCEPTION, loc);
+    std::ostringstream line;
     line << "> [" << m_id << "] " << this->what() << "\n";
-    LoggerImpl::instance()->queueLogLine(line.str());
+
+    ILogger::instance()->queueLog(internal::Level::EXCEPTION, loc, std::move(line).str());
 }
 
 void LOGR::Exception::handle(const std::string& message,
     const std::source_location& loc) const
 {
-    auto line = internal::startLine(internal::Level::EXCEPTION, loc);
+    std::ostringstream line;
     line << "< [" << m_id << "] " << message << "\n";
-    LoggerImpl::instance()->queueLogLine(line.str());
+
+    ILogger::instance()->queueLog(internal::Level::EXCEPTION, loc, std::move(line).str());
 }
 
 long long LOGR::Exception::id() const

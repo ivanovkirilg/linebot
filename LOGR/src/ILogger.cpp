@@ -5,6 +5,7 @@
 #include "LoggerImpl.hpp"
 #include "LOGR/internal.hpp"
 
+using namespace LOGR::internal;
 
 namespace LOGR
 {
@@ -44,10 +45,14 @@ public:
     { }
 
 protected:
-    virtual void queueLogLine(const std::string& line) override
+    virtual void queueLog(Level level, const std::source_location& loc,
+            std::string&& message, std::thread::id threadId) override
     {
+        Log log{level, loc, std::move(message), threadId};
+
         std::unique_lock logLock(m_logMutex);
-        std::cerr << "[" << m_taskName << "]" << internal::SEPARATOR << line;
+        std::cerr << "[" << m_taskName << "]" << SEPARATOR
+                  << log.intoFormatted();
     }
 
 private:
