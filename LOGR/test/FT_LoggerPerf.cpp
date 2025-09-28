@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     using namespace std::chrono;
     auto logger = LOGR::ILogger::create("PERF");
 
-    const int iterations = 100000;
+    const int iterations = 500000;
     auto start = high_resolution_clock::now();
 
     for (int i = 0; i < iterations; ++i) {
