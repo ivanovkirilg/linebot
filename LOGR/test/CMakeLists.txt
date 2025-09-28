@@ -18,8 +18,6 @@ target_link_libraries(
     FT_LoggerPerf
     LOGR
 )
-target_compile_options(FT_LoggerPerf PRIVATE -pg)
-target_link_options(FT_LoggerPerf PRIVATE -pg)
 
 include(GoogleTest)
 gtest_discover_tests(LOGR_test)

@@ -26,8 +26,6 @@ add_library(
     ${SRC_PATH}/LoggerImpl.cpp
 )
 enable_target_warnings(${PROJECT_NAME})
-target_compile_options(LOGR PRIVATE -pg)
-target_link_options(LOGR PRIVATE -pg)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})
 
