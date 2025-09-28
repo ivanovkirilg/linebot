@@ -24,10 +24,12 @@ static void draw(std::weak_ptr<DRVR::IDriverClient> driver, std::ostream& output
     std::shared_ptr<DRVR::IDriverClient> dr = driver.lock();
     if (dr)
     {
+        const double position = dr->position();
+
         output << '\r' << '|';
         for (size_t i = 0; i < WIDTH; i++)
         {
-            if (std::round(dr->position() * WIDTH) == i)
+            if (std::round(position * WIDTH) == i)
             {
                 output << '+';
             }
