@@ -43,6 +43,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 find_package(Doxygen QUIET)
 
+add_subdirectory(SYNC)
 add_subdirectory(COMM)
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
