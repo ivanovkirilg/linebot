@@ -45,6 +45,7 @@ find_package(Doxygen QUIET)
 
 add_custom_target(interfaces)
 
+add_subdirectory(SYNC)
 add_subdirectory(COMM)
 add_subdirectory(DOMN)
 add_subdirectory(LOGR)
