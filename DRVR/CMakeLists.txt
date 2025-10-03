@@ -22,6 +22,6 @@ add_executable(
 )
 enable_target_warnings(DRVR_main)
 
-target_link_libraries(DRVR_main Threads::Threads Driver_interface DOMN LOGR)
+target_link_libraries(DRVR_main PRIVATE Threads::Threads Driver_interface DOMN SYNC LOGR)
 
 add_subdirectory(test)
