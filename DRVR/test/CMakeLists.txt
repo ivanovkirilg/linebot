@@ -9,6 +9,7 @@ target_link_libraries(
     FT_Driver
     Driver_interface
     DOMN
+    SYNC
     GTest::gtest_main
 )
 enable_target_warnings(FT_Driver)
