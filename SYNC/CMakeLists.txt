@@ -21,4 +21,6 @@ enable_target_warnings(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXT_INC_PATH})
 
+target_link_libraries(${PROJECT_NAME} LOGR)
+
 add_subdirectory(test)
