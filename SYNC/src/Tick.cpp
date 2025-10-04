@@ -2,6 +2,8 @@
 
 #include "LOGR/Warning.hpp"
 
+#include <fstream>
+#include <sstream>
 #include <thread>
 
 using namespace SYNC;
@@ -11,8 +13,22 @@ Tick::Tick(duration refreshRate)
     : m_refreshRate(refreshRate),
     m_currentTime(system_clock::now()),
     m_previousTime(m_currentTime),
-    m_deltaTime()
+    m_deltaTime(),
+    m_deltaTimeIdx(0),
+    m_lastDeltaTimes()
 {
+}
+
+Tick::~Tick()
+{
+    std::ostringstream logfile_name;
+    logfile_name << std::this_thread::get_id() << "_Tick_deltatimes";
+    std::ofstream logfile{logfile_name.str()};
+
+    for (auto& deltaTime : m_lastDeltaTimes)
+    {
+        logfile << deltaTime << '\n';
+    }
 }
 
 void Tick::operator()()
@@ -22,6 +38,9 @@ void Tick::operator()()
 
     std::this_thread::sleep_for(m_refreshRate - m_deltaTime);
     m_previousTime = system_clock::now();
+
+    m_lastDeltaTimes[m_deltaTimeIdx % NR_LAST_DELTA_TIMES] = m_deltaTime;
+    m_deltaTimeIdx++;
 }
 
 void StrictTick::operator()(const std::source_location& loc)
