@@ -2,6 +2,7 @@
 #define SYNC_INCLUDE_SYNC_TICK
 
 #include <chrono>
+#include <source_location>
 
 namespace SYNC
 {
@@ -19,10 +20,18 @@ public:
 
     inline clock::duration deltaTime() { return std::max(m_deltaTime, m_refreshRate); }
 
-private:
+protected:
     const clock::duration m_refreshRate;
     clock::time_point m_endOfLastTick;
     clock::duration m_deltaTime;
+};
+
+class StrictTick : public Tick
+{
+public:
+    using Tick::Tick;
+
+    void operator()(const std::source_location& loc = std::source_location::current());
 };
 
 } // SYNC

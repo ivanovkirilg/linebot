@@ -1,5 +1,7 @@
 #include "SYNC/Tick.hpp"
 
+#include "LOGR/Warning.hpp"
+
 #include <thread>
 
 using namespace SYNC;
@@ -25,4 +27,15 @@ void Tick::operator()()
 
     m_deltaTime = endOfTick - m_endOfLastTick;
     m_endOfLastTick = endOfTick;
+}
+
+void StrictTick::operator()(const std::source_location& loc)
+{
+    Tick::operator()();
+
+    if (m_deltaTime > (m_refreshRate + MAX_DRIFT))
+    {
+        LOGR::Warning<const char*, const clock::duration&, const char*, const clock::duration&>
+        {"Overran", m_refreshRate, "with delta time", m_deltaTime, loc};
+    }
 }
