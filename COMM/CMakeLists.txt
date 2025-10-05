@@ -72,6 +72,8 @@ function(add_interface component interface)
     )
 
     target_link_libraries(${interface}_interface PUBLIC COMM)
+
+    add_dependencies(interfaces ${interface}_interface)
 endfunction()
 
 add_subdirectory(test)
