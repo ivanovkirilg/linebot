@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 jobs:
-  dummy:
+  known-fail-but-passed:
     runs-on: ubuntu-latest
     if: >
       github.event.workflow_run.event == 'pull_request' &&
@@ -14,6 +14,30 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: mshick/add-pr-comment@v2
+      - name: Check for artifacts
+        id: artifact_check
+        uses: actions/github-script@v8
         with:
-          message: "Build and test passed!"
+          script: |
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+            core.setOutput("found", (data.artifacts.length > 0) ? "true" : "false")
+      - name: Download comment contents
+        if: steps.artifact_check.outputs.found == 'true'
+        uses: actions/download-artifact@v5
+        with:
+          pattern: known-fail-passed-*-comment
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Post or update comment
+        if: steps.artifact_check.outputs.found == 'true'
+        uses: mshick/add-pr-comment@v2.8.2
+        with:
+          message-id: known-fail-passed
+          message-path: known-fail-passed-*-comment.txt
+          refresh-message-position: true
+          allow-repeats: true
