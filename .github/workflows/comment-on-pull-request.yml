@@ -2,8 +2,9 @@ name: Post comments on a Pull Request
 
 on:
   workflow_run:
-    workflows: [CMake on a single platform]
-    types: [completed]
+    workflows: ["CMake on a single platform"]
+    types:
+      - completed
 
 jobs:
   known-fail-but-passed:
