@@ -1,8 +1,9 @@
 #!/bin/env bash
 
 function report_passed() {
+    filtered_pass=$(echo $1 | sed 's/:/_/g')
     echo "The test \"$1\" has been marked as a 'known fail', but passed!" \
-         >> "known-fail-passed-$1-comment.txt"
+         >> "known-fail-passed-$filtered_pass-comment.txt"
 }
 
 known_fails=$(ctest -N -L known-fail | awk '/Test #/ { print $3 }')
