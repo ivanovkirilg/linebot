@@ -6,14 +6,18 @@ on:
     types: [completed]
 
 jobs:
-  dummy:
+  known-fail-but-passed:
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.event == 'pull_request' &&
+        github.event.workflow_run.conclusion == 'success'
     permissions:
       pull-requests: write
     steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: known-fail-passed-comment
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
       - uses: mshick/add-pr-comment@v2
         with:
-          message: "Build and test passed!"
+          message-path: known-fail-passed-*-comment.txt
