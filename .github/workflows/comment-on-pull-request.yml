@@ -1,0 +1,19 @@
+name: Post comments on a Pull Request
+
+on:
+  workflow_run:
+    workflows: [CMake on a single platform]
+    types: [completed]
+
+jobs:
+  dummy:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: "Build and test passed!"
