@@ -13,5 +13,4 @@ target_link_libraries(
 )
 enable_target_warnings(FT_Driver)
 
-include(GoogleTest)
-gtest_discover_tests(FT_Driver)
+add_test(NAME DRVR::FT_Driver COMMAND FT_Driver)

@@ -7,7 +7,7 @@ add_executable(
 )
 target_link_libraries(FT_Connection_SUT PRIVATE COMM)
 add_test(
-    NAME COMM::FT_ConnectionTest
+    NAME COMM::FT_Connection
     COMMAND
         ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
         ${Python_EXECUTABLE}
@@ -22,7 +22,7 @@ add_executable(
 )
 target_link_libraries(FT_Socket_SUT PRIVATE COMM)
 add_test(
-    NAME COMM::FT_SocketTest
+    NAME COMM::FT_Socket
     COMMAND
         ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
         ${Python_EXECUTABLE}
@@ -37,7 +37,7 @@ add_executable(
 )
 target_link_libraries(FT_Watcher_SUT PRIVATE COMM)
 add_test(
-    NAME COMM::FT_WatcherTest
+    NAME COMM::FT_Watcher
     COMMAND
         ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
         ${Python_EXECUTABLE}
@@ -52,7 +52,7 @@ add_executable(
 )
 target_link_libraries(FT_Server_SUT PRIVATE COMM)
 add_test(
-    NAME COMM::FT_ServerTest
+    NAME COMM::FT_Server
     COMMAND
         ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
         ${Python_EXECUTABLE}
@@ -99,7 +99,7 @@ target_link_libraries(
 )
 
 add_test(
-    NAME COMM::FT_interface_generator_test
+    NAME COMM::FT_interface_generator
     COMMAND
         ${CMAKE_COMMAND} -E env "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}"
         ${Python_EXECUTABLE}
@@ -107,16 +107,3 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_interface_generator_server_SUT
         ${CMAKE_CURRENT_BINARY_DIR}/FT_interface_generator_client_SUT
 )
-
-# add_executable(
-#     TODO_test
-#     test_reader.cpp
-# )
-# target_link_libraries(
-#     TODO_test
-#     GTest::gtest_main
-#     ${PROJECT_NAME}_lib
-# )
-
-include(GoogleTest)
-# gtest_discover_tests(TODO_test)

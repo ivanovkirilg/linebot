@@ -1,11 +1,11 @@
 project(UI_test)
 
 add_executable(
-    UI_test
+    UT_MoveInput
     UT_MoveInput.cpp
 )
 target_link_libraries(
-    UI_test
+    UT_MoveInput
     GTest::gmock_main
     UI
     Driver_interface
@@ -13,5 +13,4 @@ target_link_libraries(
     LOGR
 )
 
-include(GoogleTest)
-gtest_discover_tests(UI_test)
+add_test(NAME UI::UT_MoveInput COMMAND UT_MoveInput)
