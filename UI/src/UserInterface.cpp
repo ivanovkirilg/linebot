@@ -4,6 +4,7 @@
 
 #include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
+#include "SYNC/Tick.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -59,6 +60,8 @@ void UserInterface::run(
         m_running = true;
         m_running.notify_one();
 
+        SYNC::Tick tick{refreshRate};
+
         while (m_running && not driver.expired())
         {
             if (m_outputMutex.try_lock())
@@ -67,7 +70,7 @@ void UserInterface::run(
                 draw(driver, std::cout);
             }
 
-            std::this_thread::sleep_for(refreshRate);
+            tick();
         }
 
         m_running = false;
