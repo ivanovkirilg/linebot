@@ -1,14 +1,13 @@
 project(CTRL_test)
 
 add_executable(
-    ${PROJECT_NAME}
+    UT_Controller
     UT_Controller.cpp
 )
 target_link_libraries(
-    ${PROJECT_NAME}
+    UT_Controller
     GTest::gmock_main
     CTRL
 )
 
-include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME})
+add_test(NAME CTRL::UT_Controller COMMAND UT_Controller)
