@@ -52,3 +52,9 @@ add_subdirectory(CTRL)
 add_subdirectory(DRVR)
 add_subdirectory(MAIN)
 add_subdirectory(UI)
+
+add_test(NAME does_fail COMMAND false)
+set_tests_properties(does_fail PROPERTIES LABELS known-fail)
+
+add_test(NAME does_NOT_fail COMMAND true)
+set_tests_properties(does_NOT_fail PROPERTIES LABELS known-fail)
