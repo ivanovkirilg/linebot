@@ -105,3 +105,41 @@ class TestLexer(unittest.TestCase):
         ]
 
         self.assertEqual(tokens, expected)
+
+    def test_data_type(self):
+        tu = 'void byte bool int float double char string'
+
+        tokens = tokenize(tu)
+
+        expected = [
+            DataTypeToken('void', DataType.VOID),
+            DataTypeToken('byte', DataType.BYTE),
+            DataTypeToken('bool', DataType.BOOL),
+            DataTypeToken('int', DataType.INT),
+            DataTypeToken('float', DataType.FLOAT),
+            DataTypeToken('double', DataType.DOUBLE),
+            DataTypeToken('char', DataType.CHAR),
+            DataTypeToken('string', DataType.STRING)
+        ]
+
+        self.assertEqual(tokens, expected)
+
+    def test_location(self):
+        tu = 'method word\n -> line 2'
+        #     0123456
+        #            789ab
+        #                \n 123
+        #                      45678
+        #                           9a
+        expected = [
+            Location(1, (0, 6)),
+            Location(1, (7, 11)),
+            Location(2, (1, 3)),
+            Location(2, (4, 8)),
+            Location(2, (9, 10))
+        ]
+
+        tokens = tokenize(tu)
+        locations = [tok.location for tok in tokens]
+
+        self.assertEqual(locations, expected)

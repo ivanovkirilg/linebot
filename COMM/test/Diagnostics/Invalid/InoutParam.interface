@@ -1,0 +1,1 @@
+method do_something(inout int data);
