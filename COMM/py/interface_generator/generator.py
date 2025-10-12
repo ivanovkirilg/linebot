@@ -29,7 +29,7 @@ class Generator:
         def _generate_define(self, header_file: str):
             define = header_file.removesuffix('.hpp')
             # Punctuation to _
-            define = re.sub(r'[./\: ()]', '_', define)
+            define = re.sub(r'[./\: ()-]', '_', define)
             # CamelCase to SHOUT_CASE
             define = re.sub(r'([a-z])([A-Z])', r'\1_\2', define)
             return define.upper()
