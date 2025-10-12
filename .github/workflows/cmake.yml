@@ -56,8 +56,7 @@ jobs:
 
       - name: Test
         working-directory: ${{github.workspace}}/build
-        #                                                         label-exclude
-        run: ctest -C ${{matrix.build-type}} --output-on-failure -LE known-fail --timeout 5
+        run: ctest -C ${{matrix.build-type}} --output-on-failure --label-exclude known-fail --timeout 5
 
       - name: Test known failures
         working-directory: ${{github.workspace}}/build
