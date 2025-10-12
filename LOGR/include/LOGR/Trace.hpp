@@ -28,10 +28,8 @@ public:
         : m_loc(loc)
     {
         std::ostringstream line;
-        line << "v";
         ((line << " " << std::forward<Ts>(args)), ...);
-        line << "\n";
-        ILogger::instance()->queueLog(internal::Level::TRACE, m_loc, std::move(line).str());
+        ILogger::instance()->queueLog(internal::Level::TRACE_BEGIN, m_loc, std::move(line).str());
     }
 
     Trace(Ts&&... args,
@@ -40,22 +38,20 @@ public:
         : m_loc(loc)
     {
         (args, ...); // Silence 'Wunused' for compiler versions that don't understand requires()
-        ILogger::instance()->queueLog(internal::Level::TRACE, m_loc, "v\n");
+        ILogger::instance()->queueLog(internal::Level::TRACE_BEGIN, m_loc, "");
     }
 
     ~Trace()
     {
-        ILogger::instance()->queueLog(internal::Level::TRACE, m_loc, "^\n");
+        ILogger::instance()->queueLog(internal::Level::TRACE_END, m_loc, "");
     }
 
     template <typename... T1s>
     void log(T1s&&... args)
     {
         std::ostringstream line;
-        line << "|";
         ((line << " " << std::forward<T1s>(args)), ...);
-        line << "\n";
-        ILogger::instance()->queueLog(internal::Level::TRACE, m_loc, std::move(line).str());
+        ILogger::instance()->queueLog(internal::Level::TRACE_LOG, m_loc, std::move(line).str());
     }
 
 private:

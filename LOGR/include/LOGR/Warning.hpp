@@ -27,9 +27,7 @@ public:
         const std::source_location& loc = std::source_location::current())
     {
         std::ostringstream line;
-        line << "!";
         ((line << " " << std::forward<Ts>(args)), ...);
-        line << "\n";
 
         ILogger::instance()->queueLog(internal::Level::WARNING, loc, std::move(line).str());
     }

@@ -33,11 +33,44 @@ std::string Log::intoFormatted()
             << microseconds.count();
 
     const char* levelStr = "???";
+    const char* prefix = "?";
     switch (level)
     {
-        case Level::TRACE:     levelStr = "TRACE"; break;
-        case Level::WARNING:   levelStr = "WARN";  break;
-        case Level::EXCEPTION: levelStr = "EXC";   break;
+        case Level::TRACE_BEGIN:
+        {
+            levelStr = "TRACE";
+            prefix = "v";
+        } break;
+
+        case Level::TRACE_LOG:
+        {
+            levelStr = "TRACE";
+            prefix = "|";
+        } break;
+
+        case Level::TRACE_END:
+        {
+            levelStr = "TRACE";
+            prefix = "^";
+        } break;
+
+        case Level::WARNING:
+        {
+            levelStr = "WARN";
+            prefix = "!";
+        } break;
+
+        case Level::EXCEPTION_RAISE:
+        {
+            levelStr = "EXC";
+            prefix = ">";
+        } break;
+
+        case Level::EXCEPTION_HANDLE:
+        {
+            levelStr = "EXC";
+            prefix = "<";
+        } break;
     }
 
     std::ostringstream line;
@@ -47,7 +80,7 @@ std::string Log::intoFormatted()
          << location.file_name()     << SEPARATOR
          << location.line()          << SEPARATOR
          << location.function_name() << SEPARATOR
-         << message // NOTE: messages are not sanitized!!!
-        ;
+         << prefix << message << '\n'; // NOTE: messages are not sanitized!!!
+
     return std::move(line).str();
 }

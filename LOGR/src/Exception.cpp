@@ -19,18 +19,18 @@ LOGR::Exception::Exception(const std::string& message,
     : std::runtime_error(message), m_id(freeId++)
 {
     std::ostringstream line;
-    line << "> [" << m_id << "] " << this->what() << "\n";
+    line << " [" << m_id << "] " << this->what();
 
-    ILogger::instance()->queueLog(internal::Level::EXCEPTION, loc, std::move(line).str());
+    ILogger::instance()->queueLog(internal::Level::EXCEPTION_RAISE, loc, std::move(line).str());
 }
 
 void LOGR::Exception::handle(const std::string& message,
     const std::source_location& loc) const
 {
     std::ostringstream line;
-    line << "< [" << m_id << "] " << message << "\n";
+    line << " [" << m_id << "] " << message;
 
-    ILogger::instance()->queueLog(internal::Level::EXCEPTION, loc, std::move(line).str());
+    ILogger::instance()->queueLog(internal::Level::EXCEPTION_HANDLE, loc, std::move(line).str());
 }
 
 long long LOGR::Exception::id() const

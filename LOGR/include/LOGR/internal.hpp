@@ -17,9 +17,12 @@ constexpr char SEPARATOR = ';';
 
 enum class Level
 {
-    TRACE,
+    TRACE_BEGIN,
+    TRACE_LOG,
+    TRACE_END,
     WARNING,
-    EXCEPTION
+    EXCEPTION_RAISE,
+    EXCEPTION_HANDLE,
 };
 
 struct Log
