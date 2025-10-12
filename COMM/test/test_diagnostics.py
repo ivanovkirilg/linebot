@@ -111,6 +111,13 @@ def parse_arguments():
                             help='Output markdown file path')
     return arg_parser.parse_args()
 
+def run_generator(file: Path) -> tuple[str, str, int]:
+    cmd = ['python3', '-m', 'interface_generator', str(file), '-n', 'TEST', '-o', '/tmp']
+    generator = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+    return *generator.communicate(), generator.returncode
+
 def process_directory(directory: Path) -> list[ExecutionData]:
     executions = []
 
@@ -118,14 +125,11 @@ def process_directory(directory: Path) -> list[ExecutionData]:
         with open(file, 'r') as f:
             source = f.read()
 
-        cmd = ['python3', '-m', 'interface_generator', str(file), '-n', 'TEST', '-o', '/tmp']
-        generator = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        out, err, returncode = run_generator(file)
 
-        out, err = generator.communicate()
         print('.', end='', flush=True)
 
-        execution = ExecutionData(file, source, out, err, generator.returncode)
+        execution = ExecutionData(file, source, out, err, returncode)
         executions.append(execution)
 
     return executions
