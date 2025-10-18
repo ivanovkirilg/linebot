@@ -5,9 +5,9 @@ import subprocess
 from enum import Enum
 
 class LogLevel(Enum):
-    TRACE = 'TRACE'
-    WARNING = 'WARN'
-    EXCEPTION = 'EXC'
+    TRACE     = 'TRACE'
+    WARNING   = 'WARN '
+    EXCEPTION = 'EXC  '
 
 def some_port():
     sock = create_socket()

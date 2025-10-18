@@ -45,7 +45,7 @@ public:
     { }
 
 protected:
-    virtual void queueLog(Level level, const std::source_location& loc,
+    virtual void queueLog(Kind level, const std::source_location& loc,
             std::string&& message, std::thread::id threadId) override
     {
         Log log{level, loc, std::move(message), threadId};

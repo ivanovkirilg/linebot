@@ -34,7 +34,7 @@ static inline std::string generateLogfileName(const std::string& taskName)
     return stream.str();
 }
 
-void LoggerImpl::queueLog(Level level,
+void LoggerImpl::queueLog(Kind level,
         const std::source_location& loc, std::string&& message, std::thread::id threadId)
 {
     if (not m_logger)

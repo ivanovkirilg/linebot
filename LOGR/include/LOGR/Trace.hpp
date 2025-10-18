@@ -29,7 +29,7 @@ public:
     {
         std::ostringstream line;
         ((line << " " << std::forward<Ts>(args)), ...);
-        ILogger::instance()->queueLog(internal::Level::TRACE_BEGIN, m_loc, std::move(line).str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_BEGIN, m_loc, std::move(line).str());
     }
 
     Trace(Ts&&... args,
@@ -38,12 +38,12 @@ public:
         : m_loc(loc)
     {
         (args, ...); // Silence 'Wunused' for compiler versions that don't understand requires()
-        ILogger::instance()->queueLog(internal::Level::TRACE_BEGIN, m_loc, "");
+        ILogger::instance()->queueLog(internal::Kind::TRACE_BEGIN, m_loc, "");
     }
 
     ~Trace()
     {
-        ILogger::instance()->queueLog(internal::Level::TRACE_END, m_loc, "");
+        ILogger::instance()->queueLog(internal::Kind::TRACE_END, m_loc, "");
     }
 
     template <typename... T1s>
@@ -51,7 +51,7 @@ public:
     {
         std::ostringstream line;
         ((line << " " << std::forward<T1s>(args)), ...);
-        ILogger::instance()->queueLog(internal::Level::TRACE_LOG, m_loc, std::move(line).str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_LOG, m_loc, std::move(line).str());
     }
 
 private:

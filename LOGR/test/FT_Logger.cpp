@@ -59,8 +59,8 @@ LogLine parse(const std::string& line)
 }
 
 constexpr const char* TRACE = "TRACE";
-constexpr const char* WARNING = "WARN";
-constexpr const char* EXCEPTION = "EXC";
+constexpr const char* WARNING = "WARN ";
+constexpr const char* EXCEPTION = "EXC  ";
 
 } // anonymous namespace
 

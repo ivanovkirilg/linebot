@@ -29,7 +29,7 @@ public:
         std::ostringstream line;
         ((line << " " << std::forward<Ts>(args)), ...);
 
-        ILogger::instance()->queueLog(internal::Level::WARNING, loc, std::move(line).str());
+        ILogger::instance()->queueLog(internal::Kind::WARNING, loc, std::move(line).str());
     }
 };
 

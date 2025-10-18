@@ -60,7 +60,7 @@ protected:
     friend class Exception;
 
     static std::shared_ptr<ILogger> instance();
-    virtual void queueLog(internal::Level level,
+    virtual void queueLog(internal::Kind level,
         const std::source_location& loc,
         std::string&& message,
         std::thread::id threadId = std::this_thread::get_id()) = 0;

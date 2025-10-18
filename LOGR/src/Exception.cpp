@@ -21,7 +21,7 @@ LOGR::Exception::Exception(const std::string& message,
     std::ostringstream line;
     line << " [" << m_id << "] " << this->what();
 
-    ILogger::instance()->queueLog(internal::Level::EXCEPTION_RAISE, loc, std::move(line).str());
+    ILogger::instance()->queueLog(internal::Kind::EXCEPTION_RAISE, loc, std::move(line).str());
 }
 
 void LOGR::Exception::handle(const std::string& message,
@@ -30,7 +30,7 @@ void LOGR::Exception::handle(const std::string& message,
     std::ostringstream line;
     line << " [" << m_id << "] " << message;
 
-    ILogger::instance()->queueLog(internal::Level::EXCEPTION_HANDLE, loc, std::move(line).str());
+    ILogger::instance()->queueLog(internal::Kind::EXCEPTION_HANDLE, loc, std::move(line).str());
 }
 
 long long LOGR::Exception::id() const

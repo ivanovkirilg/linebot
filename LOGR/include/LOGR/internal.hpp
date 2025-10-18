@@ -15,25 +15,27 @@ namespace internal
 
 constexpr char SEPARATOR = ';';
 
-enum class Level
+enum class Kind
 {
     TRACE_BEGIN,
     TRACE_LOG,
     TRACE_END,
+
     WARNING,
+
     EXCEPTION_RAISE,
     EXCEPTION_HANDLE,
 };
 
 struct Log
 {
-    Level level;
+    Kind kind;
     std::chrono::system_clock::duration timestamp;
     std::thread::id threadId;
     std::source_location location;
     std::string message;
 
-    Log(Level level, const std::source_location& loc, std::string&& message, std::thread::id threadId);
+    Log(Kind level, const std::source_location& loc, std::string&& message, std::thread::id threadId);
 
     std::string intoFormatted();
 };
