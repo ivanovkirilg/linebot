@@ -50,9 +50,9 @@ TEST_F(TestDriverFunctional, Moves)
 {
     constexpr double inputVelocity = 0.2;
 
-    driver.setVelocity(inputVelocity);
-
     EXPECT_NEAR(driver.position(), STARTING_POSITION, .00001);
+
+    driver.setVelocity(inputVelocity);
     EXPECT_NEAR(driver.velocity(), inputVelocity, .00001);
 
     constexpr int sleepTicks = 10;
@@ -69,9 +69,9 @@ TEST_F(TestDriverFunctional, Accelerates)
 {
     constexpr double inputAcceleration = 0.2;
 
-    driver.setAcceleration(inputAcceleration);
-
     EXPECT_NEAR(driver.velocity(), 0.0, .00001);
+
+    driver.setAcceleration(inputAcceleration);
 
     constexpr int sleepTicks = 10;
     constexpr std::chrono::milliseconds sleepTime{REFRESH_RATE_MS * sleepTicks};

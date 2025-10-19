@@ -3,6 +3,7 @@
 #include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
 #include "LOGR/Warning.hpp"
+#include "SYNC/Tick.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -69,14 +70,11 @@ void Driver::simulate(int refreshRate_ms)
 
     LOGR::Trace trace;
 
-    auto currentTime = system_clock::now();
-    auto previousTime = currentTime;
+    SYNC::StrictTick tick{milliseconds(refreshRate_ms)};
 
     while (m_running)
     {
-        currentTime = system_clock::now();
-
-        const auto deltaTime_ms = duration_cast<milliseconds>(currentTime - previousTime);
+        const auto deltaTime_ms = duration_cast<milliseconds>(tick.deltaTime());
         const double deltaTime_s = deltaTime_ms.count() / 1000.0;
 
         m_velocity += m_acceleration * deltaTime_s;
@@ -95,8 +93,7 @@ void Driver::simulate(int refreshRate_ms)
             m_logFile << m_position << '\t';
         }
 
-        previousTime = currentTime;
-        std::this_thread::sleep_for(milliseconds(refreshRate_ms));
+        tick();
     }
 }
 
