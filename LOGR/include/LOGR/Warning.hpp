@@ -26,11 +26,10 @@ public:
     Warning(Ts&&... args,
         const std::source_location& loc = std::source_location::current())
     {
-        auto line = internal::startLine(internal::Level::WARNING, loc);
-        line << "!";
+        std::ostringstream line;
         ((line << " " << std::forward<Ts>(args)), ...);
-        line << "\n";
-        ILogger::instance()->queueLogLine(line.str());
+
+        ILogger::instance()->queueLog(internal::Kind::WARNING, loc, std::move(line).str());
     }
 };
 

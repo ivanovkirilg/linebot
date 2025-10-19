@@ -5,9 +5,9 @@ import subprocess
 from enum import Enum
 
 class LogLevel(Enum):
-    TRACE = '0'
-    WARNING = '1'
-    EXCEPTION = '2'
+    TRACE     = 'TRACE'
+    WARNING   = 'WARN '
+    EXCEPTION = 'EXC  '
 
 def some_port():
     sock = create_socket()
@@ -35,7 +35,7 @@ def launch_sut(sut_exe, *args, debug=False, pipe_err=False, **kwargs):
                             **kwargs)
 
 def get_trace_of_levels(trace: str, levels: set[LogLevel], logr_stubbed: bool) -> list[str]:
-    loglevel_field = 0 + (1 * logr_stubbed)
+    loglevel_field = 1 + (1 * logr_stubbed)
 
     return [';'.join(line)
             for line in csv.reader(trace.splitlines(), delimiter=';')

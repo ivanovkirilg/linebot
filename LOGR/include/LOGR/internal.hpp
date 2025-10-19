@@ -1,8 +1,10 @@
 #ifndef LOGR_INCLUDE_LOGR_INTERNAL
 #define LOGR_INCLUDE_LOGR_INTERNAL
 
+#include <chrono>
 #include <source_location>
-#include <sstream>
+#include <string>
+#include <thread>
 
 
 namespace LOGR
@@ -10,16 +12,33 @@ namespace LOGR
 
 namespace internal
 {
+
 constexpr char SEPARATOR = ';';
 
-enum class Level
+enum class Kind
 {
-    TRACE,
+    TRACE_BEGIN,
+    TRACE_LOG,
+    TRACE_END,
+
     WARNING,
-    EXCEPTION
+
+    EXCEPTION_RAISE,
+    EXCEPTION_HANDLE,
 };
 
-std::ostringstream startLine(Level level, const std::source_location& loc);
+struct Log
+{
+    Kind kind;
+    std::chrono::system_clock::duration timestamp;
+    std::thread::id threadId;
+    std::source_location location;
+    std::string message;
+
+    Log(Kind level, const std::source_location& loc, std::string&& message, std::thread::id threadId);
+
+    std::string intoFormatted();
+};
 
 }
 

@@ -1,7 +1,6 @@
 #ifndef LOGR_INCLUDE_LOGR_LOGGER
 #define LOGR_INCLUDE_LOGR_LOGGER
 
-#include <stdexcept>
 #include <string>
 #include <fstream>
 
@@ -25,14 +24,17 @@ public:
     LoggerImpl(const std::string& taskName);
     virtual ~LoggerImpl() override;
 
-    virtual void queueLogLine(const std::string& line) override;
+    virtual void queueLog(internal::Kind level,
+        const std::source_location& loc,
+        std::string&& message,
+        std::thread::id threadId) override;
 
 private:
     void logSome(size_t nrLinesToLog);
 
     const std::string m_taskName;
 
-    std::queue<std::string> m_toLog;
+    std::queue<internal::Log> m_toLog;
     std::mutex m_toLogMutex;
 
     std::ofstream m_logFile;

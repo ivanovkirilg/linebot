@@ -27,11 +27,9 @@ public:
           requires(sizeof...(Ts) > 0)
         : m_loc(loc)
     {
-        auto line = internal::startLine(internal::Level::TRACE, m_loc);
-        line << "v";
+        std::ostringstream line;
         ((line << " " << std::forward<Ts>(args)), ...);
-        line << "\n";
-        ILogger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_BEGIN, m_loc, std::move(line).str());
     }
 
     Trace(Ts&&... args,
@@ -40,26 +38,20 @@ public:
         : m_loc(loc)
     {
         (args, ...); // Silence 'Wunused' for compiler versions that don't understand requires()
-        auto line = internal::startLine(internal::Level::TRACE, m_loc);
-        line << "v\n";
-        ILogger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_BEGIN, m_loc, "");
     }
 
     ~Trace()
     {
-        auto line = internal::startLine(internal::Level::TRACE, m_loc);
-        line << "^\n";
-        ILogger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_END, m_loc, "");
     }
 
     template <typename... T1s>
     void log(T1s&&... args)
     {
-        auto line = internal::startLine(internal::Level::TRACE, m_loc);
-        line << "|";
+        std::ostringstream line;
         ((line << " " << std::forward<T1s>(args)), ...);
-        line << "\n";
-        ILogger::instance()->queueLogLine(line.str());
+        ILogger::instance()->queueLog(internal::Kind::TRACE_LOG, m_loc, std::move(line).str());
     }
 
 private:
