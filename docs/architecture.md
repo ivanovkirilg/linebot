@@ -1,33 +1,41 @@
 # Architecture
 
-## Layer Diagram
+## Layers
 
 ```plantuml
-
-rectangle basic {
-    component DOMN
-    component LOGR
+@startuml
+rectangle infra {
+  [COMM]
+  [LOGR]
+  [SYNC]
 }
 
-rectangle control {
-    component DRVR
+rectangle domain {
+  [DOMN]
 }
 
-rectangle service {
-    component CTRL
-    component UI
+rectangle functional {
+  [DRVR]
 }
 
-component MAIN
+rectangle executive {
+  [CTRL]
+}
+executive --> functional
 
-MAIN --> UI: visualize\n read moves
-MAIN --> CTRL: execute moves
-MAIN --> DRVR: initialize
-MAIN --> basic
-CTRL --> DRVR: accelerate
-UI --> DRVR: get position\n (to visualize)
-service --> basic
-control --> basic
+rectangle planning {
+  [MAIN] #LightPink
+}
+planning --> executive
+
+rectangle presentation {
+  [UI]
+}
+presentation ..> planning
+
+' Existing undesired dependencies
+MAIN -up[#red]-> UI
+@enduml
 ```
 
 ## Sequence Diagram
@@ -52,5 +60,4 @@ loop
     ...
   return
 end loop
-
 ```
