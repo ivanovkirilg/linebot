@@ -1,0 +1,32 @@
+@startuml
+
+rectangle infra {
+    component COMM
+    component LOGR
+    component SYNC
+    component DOMN
+}
+
+rectangle functional {
+    component DRVR
+}
+
+rectangle executive {
+    component CTRL
+}
+
+rectangle planning {
+    component MAIN #LightPink
+}
+
+rectangle presentation {
+    component UI
+}
+
+executive --> functional
+planning --> executive
+presentation ..> planning
+
+MAIN -up[#red]-> UI
+
+@enduml
