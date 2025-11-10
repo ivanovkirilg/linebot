@@ -40,3 +40,32 @@ test-expected-pass:
     - CTEST_OPTS="--test-dir build/ --output-on-failure --timeout 5"
     - ctest $CTEST_OPTS --label-exclude "known-fail|known-unstable"
     - ctest $CTEST_OPTS --label-regex known-unstable --repeat until-pass:5
+
+.has-requests:
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt -y update && apt -y install python3-requests
+
+check-known-fails:
+  stage: generic-test
+  extends: .has-requests
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+          - RelWithDebInfo
+          - Debug
+  needs:
+    - job: cmake-build
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[matrix.BUILD_TYPE]]
+  script:
+    # Requires CI_PRIVATE_TOKEN env variable
+    - python3 ci/check_known_fails.py ${BUILD_TYPE}
+  artifacts:
+    paths:
+      - known-fail-passed-${BUILD_TYPE}.md
+    when: always
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: on_success
