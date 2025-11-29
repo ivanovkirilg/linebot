@@ -4,9 +4,6 @@ project(linebot)
 
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
-set(cmake_helpers_DIR cmake_helpers)
-find_package(cmake_helpers REQUIRED)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -38,6 +35,20 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(zpp_bits)
 
 include_directories(${zpp_bits_SOURCE_DIR})
+
+function(enable_target_warnings target)
+  target_compile_options(
+    ${target} PRIVATE
+      -Wall
+      -Wextra
+      -Wpedantic
+      -Wundef
+      -Wuninitialized
+      -Wshadow
+      -Wunused-parameter
+      -Wnull-dereference
+  )
+endfunction()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
