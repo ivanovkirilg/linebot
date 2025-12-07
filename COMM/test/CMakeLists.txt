@@ -60,6 +60,12 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/FT_Server_SUT
 )
 
+set_tests_properties(
+    COMM::FT_Server
+    PROPERTIES
+    LABELS "known-unstable"
+)
+
 ## UT_interface_generator (py tests)
 add_test(
     NAME COMM::UT_interface_generator
