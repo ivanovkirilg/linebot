@@ -8,6 +8,7 @@ image: danger89/cmake:trixie-cppcheck-2.18.0@sha256:73a2aad54bf615db790ef94907b5
 stages:
   - build
   - generic-test
+  - specific-test
 
 cmake-build:
   stage: build
@@ -69,3 +70,33 @@ check-known-fails:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: on_success
+
+test-LOGR-perf:
+  stage: specific-test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - LOGR/**/*
+      when: always
+    - when: never
+  needs: []
+  extends: .has-requests
+
+  script:
+    - git fetch
+    # Baseline build & test
+    - git checkout $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - cmake -B build/ -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    - cmake --build build/ -j --target LOGR_perf_baseline
+    - sleep 5
+    # Changed build & test
+    - git checkout $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    - cmake --build build/ -j --target LOGR_perf_test
+    # Requires CI_PRIVATE_TOKEN env variable
+    - python3 ci/upload_sticky_comment.py --file build/LOGR_perf_comment.md
+  artifacts:
+    name: LOGR-perf-comment
+    paths:
+      - build/LOGR_perf_comment.md
+      - build/LOGR_perf_*.txt
+    when: always
