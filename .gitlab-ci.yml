@@ -1,0 +1,102 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+image: danger89/cmake:trixie-cppcheck-2.18.0@sha256:73a2aad54bf615db790ef94907b58ac5b0330e4f0cc6cc1f0287146add5d6f0c
+
+stages:
+  - build
+  - generic-test
+  - specific-test
+
+cmake-build:
+  stage: build
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+          - RelWithDebInfo
+          - Debug
+  script:
+    - cmake -B build -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+    - cmake --build build --config ${BUILD_TYPE} -j
+  artifacts:
+    paths:
+      - build/
+    name: cmake-build-${BUILD_TYPE}
+
+test-expected-pass:
+  stage: generic-test
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+          - RelWithDebInfo
+          - Debug
+  needs:
+    - job: cmake-build
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[matrix.BUILD_TYPE]]
+  script:
+    - CTEST_OPTS="--test-dir build/ --output-on-failure --timeout 5"
+    - ctest $CTEST_OPTS --label-exclude "known-fail|known-unstable"
+    - ctest $CTEST_OPTS --label-regex known-unstable --repeat until-pass:5
+
+.has-requests:
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt -y update && apt -y install python3-requests
+
+check-known-fails:
+  stage: generic-test
+  extends: .has-requests
+  parallel:
+    matrix:
+      - BUILD_TYPE:
+          - RelWithDebInfo
+          - Debug
+  needs:
+    - job: cmake-build
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[matrix.BUILD_TYPE]]
+  script:
+    # Requires CI_PRIVATE_TOKEN env variable
+    - python3 ci/check_known_fails.py ${BUILD_TYPE}
+  artifacts:
+    paths:
+      - known-fail-passed-${BUILD_TYPE}.md
+    when: always
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: on_success
+
+test-LOGR-perf:
+  stage: specific-test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - LOGR/**/*
+      when: always
+    - when: never
+  needs: []
+  extends: .has-requests
+
+  script:
+    - git fetch
+    # Baseline build & test
+    - git checkout $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - cmake -B build/ -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    - cmake --build build/ -j --target LOGR_perf_baseline
+    - sleep 5
+    # Changed build & test
+    - git checkout $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    - cmake --build build/ -j --target LOGR_perf_test
+    # Requires CI_PRIVATE_TOKEN env variable
+    - python3 ci/upload_sticky_comment.py --file build/LOGR_perf_comment.md
+  artifacts:
+    name: LOGR-perf-comment
+    paths:
+      - build/LOGR_perf_comment.md
+      - build/LOGR_perf_*.txt
+    when: always

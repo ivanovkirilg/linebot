@@ -19,6 +19,8 @@ BASELINE_FILE = "LOGR_perf_baseline.txt"
 TEST_FILE = "LOGR_perf_test.txt"
 COMMENT_FILE = "LOGR_perf_comment.md"
 
+COMMENT_TAG = "[pipeline-comment test-LOGR-perf]: #"
+
 @dataclass
 class Results:
     times: list[int]
@@ -141,6 +143,8 @@ def generate_pull_request_comment(validation: Validation):
         f"{table}\n"
         f"Threshold: {validation.threshold:.0f}ns\n"
     )
+
+    comment += f'\n{COMMENT_TAG}\n'
 
     with open(COMMENT_FILE, "w") as f:
         f.write(comment)
