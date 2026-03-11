@@ -1,4 +1,4 @@
-# LineBot Architecture
+# Architecture
 
 ## Layer Diagram
 

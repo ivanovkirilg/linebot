@@ -7,10 +7,6 @@ set(INT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 include_directories(${INT_INC_PATH})
 include_directories(${EXT_INC_PATH})
 
-# if(Doxygen_FOUND)
-#     doxygen_add_docs(SYNC_docs)
-# endif()
-
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Tick.hpp

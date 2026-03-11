@@ -7,10 +7,6 @@ set(INTERFACE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(${INT_INC_PATH})
 
-if(Doxygen_FOUND)
-    doxygen_add_docs(COMM_docs)
-endif()
-
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Connection.hpp
