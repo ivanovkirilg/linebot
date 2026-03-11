@@ -9,11 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(cmake/dependencies.cmake)
 
-enable_testing()
+include(cmake/generate_docs.cmake)
 
-if(Doxygen_FOUND)
-  doxygen_add_docs(docs)
-endif()
+enable_testing()
 
 function(enable_target_warnings target)
   target_compile_options(

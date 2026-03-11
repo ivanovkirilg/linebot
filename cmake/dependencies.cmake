@@ -25,9 +25,3 @@ FetchContent_MakeAvailable(googletest zpp_bits)
 include_directories(${zpp_bits_SOURCE_DIR})
 
 find_package(Doxygen QUIET)
-
-if(Doxygen_FOUND)
-  # Don't generate documentation for dependencies
-  set(DOXYGEN_EXCLUDE_PATTERNS ${FETCHCONTENT_BASE_DIR})
-  set(DOXYGEN_GENERATE_TREEVIEW YES)
-endif()
