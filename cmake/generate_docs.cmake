@@ -20,5 +20,5 @@ if(Doxygen_FOUND)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   )
 
-  add_dependencies(docs docs_pages_to_namespaces)
+  add_dependencies(docs interfaces_srcs docs_pages_to_namespaces)
 endif()

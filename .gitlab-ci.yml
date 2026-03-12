@@ -15,6 +15,11 @@ stages:
     - export DEBIAN_FRONTEND=noninteractive
     - apt -y update && apt -y install python3-requests
 
+.has-java:
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt -y update && apt -y install default-jdk
+
 cmake-build:
   stage: build
   parallel:
@@ -29,6 +34,31 @@ cmake-build:
     paths:
       - build/
     name: cmake-build-${BUILD_TYPE}
+
+.generate-docs:
+  stage: build
+  extends: .has-java
+  script:
+    - cmake -B build
+    - cmake --build build --target docs
+  artifacts:
+    paths:
+      - build/html/
+
+generate-docs-mr:
+  extends: .generate-docs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  environment:
+    name: MR/${CI_MERGE_REQUEST_IID}/Docs
+    url: https://${CI_PROJECT_NAMESPACE}.gitlab.io/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/build/html/index.html
+
+generate-docs-main:
+  extends: .generate-docs
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  pages:
+    publish: build/html
 
 test-expected-pass:
   stage: generic-test

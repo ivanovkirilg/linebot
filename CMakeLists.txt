@@ -12,6 +12,7 @@ enable_testing()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+add_custom_target(interfaces_srcs)
 add_custom_target(interfaces)
 
 add_subdirectory(SYNC)
