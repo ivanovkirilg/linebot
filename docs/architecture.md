@@ -72,13 +72,17 @@ MAIN -up[#red]-> UI
 @enduml
 ```
 
-## Sequence Diagram
+## Typical Execution Sequence
 
 ```plantuml
-participant MAIN
-participant CTRL
-participant UI
-participant DRVR
+box MAIN process
+  participant MAIN
+  participant CTRL
+  participant UI
+end box
+box DRVR process #lightblue
+  participant DRVR
+end box
 
 MAIN -> DRVR: initialize()
 MAIN -> UI: initialize(IDriver)
