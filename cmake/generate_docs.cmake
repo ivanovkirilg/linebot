@@ -12,4 +12,13 @@ if(Doxygen_FOUND)
   set(DOXYGEN_PLANTUML_JAR_PATH ${FETCHCONTENT_BASE_DIR}/plantuml.jar)
 
   doxygen_add_docs(docs)
+
+  add_custom_target(
+    docs_pages_to_namespaces
+    ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs/page_to_namespace_docs.py
+      SYNC COMM DOMN LOGR CTRL DRVR MAIN UI --verbose
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
+
+  add_dependencies(docs docs_pages_to_namespaces)
 endif()
