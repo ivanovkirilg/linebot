@@ -7,10 +7,6 @@ set(INTERFACE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(${INT_INC_PATH})
 
-if(Doxygen_FOUND)
-    doxygen_add_docs(COMM_docs)
-endif()
-
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Connection.hpp
@@ -38,12 +34,15 @@ set(COMM_PYTHONPATH ${CMAKE_CURRENT_SOURCE_DIR}/py CACHE PATH
     "Path to COMM python packages (like interface_generator)")
 
 function(add_interface component interface)
+    set(INTERFACE_SOURCES
+        ${INTERFACE_PATH}/${interface}Client.hpp
+        ${INTERFACE_PATH}/${interface}Client.cpp
+        ${INTERFACE_PATH}/${interface}Server.hpp
+        ${INTERFACE_PATH}/${interface}Server.cpp
+    )
     add_custom_command(
         OUTPUT
-            ${INTERFACE_PATH}/${interface}Client.hpp
-            ${INTERFACE_PATH}/${interface}Client.cpp
-            ${INTERFACE_PATH}/${interface}Server.hpp
-            ${INTERFACE_PATH}/${interface}Server.cpp
+            ${INTERFACE_SOURCES}
         COMMAND
             ${CMAKE_COMMAND} -E env "PYTHONPATH=${COMM_PYTHONPATH}"
             ${Python_EXECUTABLE} -m interface_generator -n ${component} -o ${INTERFACE_PATH} ${EXT_INC_PATH}/${PROJECT_NAME}/${interface}.interface
@@ -63,16 +62,17 @@ function(add_interface component interface)
         VERBATIM
     )
     add_library(
+        ${interface}_interface_srcs INTERFACE
+        ${INTERFACE_SOURCES}
+    )
+    add_library(
         ${interface}_interface SHARED
-        ${INTERFACE_PATH}/${interface}Client.hpp
-        ${INTERFACE_PATH}/${interface}Server.hpp
-
-        ${INTERFACE_PATH}/${interface}Client.cpp
-        ${INTERFACE_PATH}/${interface}Server.cpp
+        ${INTERFACE_SOURCES}
     )
 
     target_link_libraries(${interface}_interface PUBLIC COMM)
 
+    add_dependencies(interfaces_srcs ${interface}_interface_srcs)
     add_dependencies(interfaces ${interface}_interface)
 endfunction()
 

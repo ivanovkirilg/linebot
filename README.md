@@ -1,4 +1,4 @@
-# linebot
+# linebot   {#mainpage}
 
 _Is it a robot? Is it an app? It's an over-engineered `+` in the terminal!_
 

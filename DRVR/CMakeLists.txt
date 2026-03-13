@@ -5,10 +5,6 @@ set(EXT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 set(INTERFACE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
-if(Doxygen_FOUND)
-    doxygen_add_docs(DRVR_docs)
-endif()
-
 include_directories(${INT_INC_PATH})
 
 add_interface(DRVR Driver)

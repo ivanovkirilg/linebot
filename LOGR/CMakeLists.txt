@@ -6,10 +6,6 @@ set(INT_INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 include_directories(${INT_INC_PATH})
 
-if(Doxygen_FOUND)
-    doxygen_add_docs(LOGR_docs)
-endif()
-
 add_library(
     ${PROJECT_NAME} SHARED
     ${EXT_INC_PATH}/${PROJECT_NAME}/Exception.hpp
