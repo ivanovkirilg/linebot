@@ -10,6 +10,11 @@ stages:
   - generic-test
   - specific-test
 
+.has-requests:
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt -y update && apt -y install python3-requests
+
 cmake-build:
   stage: build
   parallel:
@@ -41,11 +46,6 @@ test-expected-pass:
     - CTEST_OPTS="--test-dir build/ --output-on-failure --timeout 5"
     - ctest $CTEST_OPTS --label-exclude "known-fail|known-unstable"
     - ctest $CTEST_OPTS --label-regex known-unstable --repeat until-pass:5
-
-.has-requests:
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt -y update && apt -y install python3-requests
 
 check-known-fails:
   stage: generic-test
