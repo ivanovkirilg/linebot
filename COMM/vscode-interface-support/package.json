@@ -1,0 +1,37 @@
+{
+  "name": "linebot-comm-interface-support",
+  "displayName": "linebot COMM interface support",
+  "description": "Language support for the COMM interfaces specific to the linebot project.",
+  "icon": "linebot_icon.jpeg",
+  "publisher": "ivanovkirilg",
+  "license": "MIT",
+  "version": "0.1.0",
+  "repository": "https://gitlab.com/ivanovkirilg/linebot",
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "comm-interface",
+        "aliases": [
+          "COMM interface"
+        ],
+        "extensions": [
+          ".interface"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "comm-interface",
+        "scopeName": "source.comm-interface",
+        "path": "./syntaxes/comm-interface.tmLanguage.json"
+      }
+    ]
+  }
+}

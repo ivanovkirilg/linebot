@@ -4,5 +4,6 @@ bld/
 .cache/
 
 .vscode/
+*.vsix
 
 __pycache__
