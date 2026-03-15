@@ -16,3 +16,37 @@ function(enable_target_warnings target)
       -Wnull-dereference
   )
 endfunction()
+
+function(enable_target_coverage target)
+  target_compile_options(${target} PRIVATE -coverage)
+  target_link_options(${target} PRIVATE -coverage)
+endfunction()
+
+function(add_cpp_test namespace target)
+  cmake_parse_arguments(PARSE_ARGV 2 arg
+    "NO_COVERAGE" "" "SOURCES;LIBRARIES;INCDIRS"
+  )
+
+  add_executable(
+    ${target}
+    ${arg_SOURCES}
+  )
+  target_link_libraries(
+    ${target}
+    ${arg_LIBRARIES}
+    GTest::gmock_main
+  )
+  target_include_directories(
+    ${target}
+    PRIVATE
+    ${arg_INCDIRS}
+  )
+  enable_target_warnings(${target})
+
+  # Beware: double negative for the sake of a preferable default
+  if(${arg_NO_COVERAGE} STREQUAL "FALSE")
+    enable_target_coverage(${target})
+  endif()
+
+  add_test(NAME ${namespace}::${target} COMMAND ${target})
+endfunction()
