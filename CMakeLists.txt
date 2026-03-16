@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 4.2)
 
 project(linebot)
 
@@ -14,6 +14,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(interfaces_srcs)
 add_custom_target(interfaces)
+
+add_custom_target(coverage)
 
 add_subdirectory(SYNC)
 add_subdirectory(COMM)

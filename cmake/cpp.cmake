@@ -27,6 +27,8 @@ function(add_cpp_test namespace target)
     "NO_COVERAGE" "" "SOURCES;LIBRARIES;INCDIRS"
   )
 
+  set(TEST_NAME "${namespace}::${target}")
+
   add_executable(
     ${target}
     ${arg_SOURCES}
@@ -46,7 +48,42 @@ function(add_cpp_test namespace target)
   # Beware: double negative for the sake of a preferable default
   if(${arg_NO_COVERAGE} STREQUAL "FALSE")
     enable_target_coverage(${target})
+
+    set(COVERAGE_TARGET ${namespace}_${target}_cov)
+    set(COVERAGE_DIR ${CMAKE_BINARY_DIR}/coverage/${target})
+
+    add_custom_target(
+      ${COVERAGE_TARGET}
+      lcov --capture
+        -d $<TARGET_INTERMEDIATE_DIR:${target}>
+        # Line mismatch seems to be an issue with the GTest macros,
+        # but TODO should be investigated further
+        --ignore-errors inconsistent
+        # (intermediate file)
+        -o ${target}_lcov.info
+
+      # Filter down to just the component files
+      COMMAND lcov --extract
+        ${target}_lcov.info ${namespace}
+        --ignore-errors inconsistent
+        # (intermediate file)
+        -o ${target}_${namespace}_lcov.info
+
+      COMMAND genhtml
+        ${target}_${namespace}_lcov.info
+        --demangle-cpp
+        -o ${COVERAGE_DIR}
+
+      COMMAND echo Generated coverage report: ${COVERAGE_DIR}/index.html
+    )
+
+    set(COMPONENT_COVERAGE_TARGET ${namespace}_cov)
+    if(NOT TARGET ${COMPONENT_COVERAGE_TARGET})
+      add_custom_target(${COMPONENT_COVERAGE_TARGET})
+      add_dependencies(coverage ${COMPONENT_COVERAGE_TARGET})
+    endif()
+    add_dependencies(${COMPONENT_COVERAGE_TARGET} ${COVERAGE_TARGET})
   endif()
 
-  add_test(NAME ${namespace}::${target} COMMAND ${target})
+  add_test(NAME ${TEST_NAME} COMMAND ${target})
 endfunction()
