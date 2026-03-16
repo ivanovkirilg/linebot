@@ -1,15 +1,16 @@
 project(LOGR_test)
 
-add_executable(
-    FT_Logger
+add_cpp_test(
+  LOGR FT_Logger
+  SOURCES
     FT_Logger.cpp
+    ${SRC_PATH}/Exception.cpp
+    ${SRC_PATH}/ILogger.cpp
+    ${SRC_PATH}/internal.cpp
+    ${SRC_PATH}/LoggerImpl.cpp
+  INCDIRS
+    ${EXT_INC_PATH}
 )
-target_link_libraries(
-    FT_Logger
-    GTest::gmock_main
-    LOGR
-)
-add_test(NAME LOGR::FT_Logger COMMAND FT_Logger)
 
 add_executable(
     FT_LoggerPerf
