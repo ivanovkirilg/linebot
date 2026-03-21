@@ -3,7 +3,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-image: danger89/cmake:trixie-cppcheck-2.18.0@sha256:73a2aad54bf615db790ef94907b58ac5b0330e4f0cc6cc1f0287146add5d6f0c
+image: registry.gitlab.com/ivanovkirilg/linebot
 
 stages:
   - build
