@@ -11,16 +11,6 @@ stages:
   - generic-test
   - specific-test
 
-.has-requests:
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt -y update && apt -y install python3-requests
-
-.has-java:
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt -y update && apt -y install default-jdk
-
 cmake-build:
   stage: build
   parallel:
@@ -38,7 +28,6 @@ cmake-build:
 
 .generate-docs:
   stage: build
-  extends: .has-java
   script:
     - cmake -B build
     - cmake --build build --target docs
@@ -80,7 +69,6 @@ test-expected-pass:
 
 check-known-fails:
   stage: generic-test
-  extends: .has-requests
   parallel:
     matrix:
       - BUILD_TYPE:
@@ -111,7 +99,6 @@ test-LOGR-perf:
       when: always
     - when: never
   needs: []
-  extends: .has-requests
 
   script:
     - git fetch
