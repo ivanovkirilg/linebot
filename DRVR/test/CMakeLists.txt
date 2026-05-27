@@ -1,17 +1,12 @@
 project(DRVR_test)
 
-add_executable(
-    FT_Driver
+add_cpp_test(
+  DRVR FT_Driver
+  SOURCES
     FT_Driver.cpp
     ${SRC_PATH}/Driver.cpp
-)
-target_link_libraries(
-    FT_Driver
+  LIBRARIES
     Driver_interface
     DOMN
     SYNC
-    GTest::gtest_main
 )
-enable_target_warnings(FT_Driver)
-
-add_test(NAME DRVR::FT_Driver COMMAND FT_Driver)

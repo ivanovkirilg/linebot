@@ -66,6 +66,11 @@ test-expected-pass:
     - CTEST_OPTS="--test-dir build/ --output-on-failure --timeout 5"
     - ctest $CTEST_OPTS --label-exclude "known-fail|known-unstable"
     - ctest $CTEST_OPTS --label-regex known-unstable --repeat until-pass:5
+    - cmake --build build --target coverage
+  artifacts:
+    paths:
+      - build/coverage
+    expose_as: coverage
 
 check-known-fails:
   stage: generic-test
