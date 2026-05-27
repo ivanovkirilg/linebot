@@ -1,12 +1,26 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-24.04",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
+        // C++
+        "ms-vscode.cpptools",
+        "ms-vscode.cpp-devtools",
         "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
         "akiramiyakoda.cppincludeguard",
+        // Python
+        "ms-python.python",
+        // Tooling
         "mechatroner.rainbow-csv",
-        "jebbs.plantuml"
+        "jebbs.plantuml",
+        "gitlab.gitlab-workflow",
+        "redhat.vscode-yaml",
+        // Quality of Life
+        "ow.vscode-subword-navigation"
       ],
       "settings": {
         "C/C++ Include Guard.Comment Style": "Line",
@@ -20,6 +34,5 @@
         "editor.inlayHints.enabled": "offUnlessPressed" // at least until I set up an auto-formatter
       }
     }
-  },
-  "postCreateCommand": "./.devcontainer/init.sh"
+  }
 }

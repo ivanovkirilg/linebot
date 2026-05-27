@@ -2,23 +2,14 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "pipeline-testing"
 
-image: danger89/cmake:trixie-cppcheck-2.18.0@sha256:73a2aad54bf615db790ef94907b58ac5b0330e4f0cc6cc1f0287146add5d6f0c
+image: registry.gitlab.com/ivanovkirilg/linebot
 
 stages:
   - build
   - generic-test
   - specific-test
-
-.has-requests:
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt -y update && apt -y install python3-requests
-
-.has-java:
-  before_script:
-    - export DEBIAN_FRONTEND=noninteractive
-    - apt -y update && apt -y install default-jdk
 
 cmake-build:
   stage: build
@@ -37,7 +28,6 @@ cmake-build:
 
 .generate-docs:
   stage: build
-  extends: .has-java
   script:
     - cmake -B build
     - cmake --build build --target docs
@@ -79,7 +69,6 @@ test-expected-pass:
 
 check-known-fails:
   stage: generic-test
-  extends: .has-requests
   parallel:
     matrix:
       - BUILD_TYPE:
@@ -110,7 +99,6 @@ test-LOGR-perf:
       when: always
     - when: never
   needs: []
-  extends: .has-requests
 
   script:
     - git fetch
