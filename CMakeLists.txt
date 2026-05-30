@@ -4,8 +4,6 @@ project(linebot)
 
 include(cmake/dependencies.cmake)
 
-include(cmake/generate_docs.cmake)
-
 include(cmake/cpp.cmake)
 
 enable_testing()
@@ -17,6 +15,8 @@ add_custom_target(interfaces)
 
 add_custom_target(coverage)
 
+add_subdirectory(docs)
+
 add_subdirectory(SYNC)
 add_subdirectory(COMM)
 add_subdirectory(DOMN)
@@ -25,3 +25,5 @@ add_subdirectory(CTRL)
 add_subdirectory(DRVR)
 add_subdirectory(MAIN)
 add_subdirectory(UI)
+
+generate_docs()
