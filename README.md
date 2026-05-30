@@ -2,27 +2,22 @@
 
 _Is it a robot? Is it an app? It's an over-engineered `+` in the terminal!_
 
-
-## Purpose
-
 This project arises from the personal interests of its creator, and has only
 a vague direction and purpose — _to be developed_; to be a stage for learning
 various concepts and patterns in programming (and beyond).
 
 
-### License
+## Licensing
 
-To that end, `linebot` is available to others who may find it a suitable stage
-for their own learning: although a conscious decision has been made **not** to
-attach a license to it at least as of yet, feel free to drop a line to
-ivanovkirilg@gmail.com if you want a formal permission to use it, or if you
-wish to contribute.
+This project is provided under the MIT License, see [LICENSE](LICENSE.md).
 
-Currently, this project depends on:
-- [cmake_helpers](https://github.com/zhivkopetrov/cmake_helpers) (MIT License)
-- [zpp::bits](https://github.com/eyalz800/zpp_bits) (MIT License)
-- [gtest](https://github.com/google/googletest) (BSD-3-Clause license)
-
+It depends on:
+- [zpp::bits](https://github.com/eyalz800/zpp_bits)
+  - **Copyright 2021, Eyal Z**, used under the MIT License
+- [gtest](https://github.com/google/googletest) 
+  - **Copyright 2008, Google Inc.**, used under the BSD-3-Clause License
+- [plantuml](https://github.com/plantuml/plantuml/)
+  - **Copyright 2009-2025, Arnaud Roques**, used under the MIT License
 
 
 ## Development

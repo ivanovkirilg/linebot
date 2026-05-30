@@ -5,9 +5,9 @@ if(Doxygen_FOUND)
 
   file(
     DOWNLOAD
-      https://github.com/plantuml/plantuml/releases/download/v1.2026.2/plantuml.jar
+      https://github.com/plantuml/plantuml/releases/download/v1.2026.5/plantuml-mit-1.2026.5.jar
       ${FETCHCONTENT_BASE_DIR}/plantuml.jar
-      EXPECTED_HASH SHA256=3cdce52133c424dea22425b947ae9d47f2167b0866dfcf99e714d4ea1689975c
+      EXPECTED_HASH SHA256=2e8bf02b5f4dd3fde7bca135dea6b2b319da5c1febd88f9dc6d683d240a47697
   )
   set(DOXYGEN_PLANTUML_JAR_PATH ${FETCHCONTENT_BASE_DIR}/plantuml.jar)
 
