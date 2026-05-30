@@ -77,3 +77,5 @@ function(add_interface component interface)
 endfunction()
 
 add_subdirectory(test)
+
+exclude_from_docs(${CMAKE_CURRENT_SOURCE_DIR}/vscode-interface-support)
