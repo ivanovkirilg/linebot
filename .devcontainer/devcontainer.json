@@ -5,6 +5,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        // linebot
+        "ivanovkirilg.linebot-comm-interface-support",
         // C++
         "ms-vscode.cpptools",
         "ms-vscode.cpp-devtools",
