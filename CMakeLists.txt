@@ -4,8 +4,6 @@ project(linebot)
 
 include(cmake/dependencies.cmake)
 
-include(cmake/generate_docs.cmake)
-
 include(cmake/cpp.cmake)
 
 enable_testing()
@@ -16,6 +14,8 @@ add_custom_target(interfaces_srcs)
 add_custom_target(interfaces)
 
 add_custom_target(coverage)
+
+add_subdirectory(docs)
 
 add_subdirectory(SYNC)
 add_subdirectory(COMM)
