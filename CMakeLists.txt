@@ -25,3 +25,5 @@ add_subdirectory(CTRL)
 add_subdirectory(DRVR)
 add_subdirectory(MAIN)
 add_subdirectory(UI)
+
+generate_docs()
