@@ -12,7 +12,6 @@
         "ms-vscode.cpp-devtools",
         "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cmake-tools",
-        "twxs.cmake",
         "akiramiyakoda.cppincludeguard",
         // Python
         "ms-python.python",
