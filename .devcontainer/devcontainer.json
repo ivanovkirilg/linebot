@@ -32,7 +32,7 @@
         "C_Cpp.intelliSenseEngine": "disabled",
         "cmake.skipConfigureIfCachePresent": true,
         "cmake.generator": "Unix Makefiles",
-        "clangd.path": "clangd-21",
+        "clangd.path": "clangd-22",
         "editor.inlayHints.enabled": "offUnlessPressed" // at least until I set up an auto-formatter
       }
     }

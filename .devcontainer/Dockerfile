@@ -12,9 +12,8 @@ RUN usermod --login $USERNAME --move-home --home /home/$USERNAME ubuntu \
 # Install (pre-requisites and) clang
 RUN apt -y update && apt -y upgrade \
     && apt -y install lsb-release wget software-properties-common gnupg
-RUN --mount=type=bind,source=llvm.sh,target=/tmp/llvm.sh \
-    /tmp/llvm.sh 21
+RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 # llvm install script adds new apt repo
-RUN apt -y update && apt -y upgrade
+RUN apt -y update && apt -y install clang-22 && apt -y upgrade
 
 USER $USERNAME
