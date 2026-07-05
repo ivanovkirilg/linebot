@@ -2,8 +2,8 @@
     {
         "name": "Codespaces Kit",
         "compilers": {
-            "C": "/usr/bin/clang",
-            "CXX": "/usr/bin/clang++"
+            "C": "/usr/bin/clang-22",
+            "CXX": "/usr/bin/clang++-22"
         },
         "preferredGenerator": {
             "name": "Unix Makefiles"
