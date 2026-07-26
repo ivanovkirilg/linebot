@@ -51,8 +51,9 @@ TEST_F(TestController, ExecuteMoveTogglesLogging)
 TEST_F(TestController, LinearMoveSetsDriverVelocity)
 {
     DOMN::Move linearMove {
-        DOMN::MoveType::LINEAR,
-        DOMN::LinearMove{ .targetPosition = 0.1, .speed = 0.9 } };
+        .targetPosition = 0.1,
+        .type = DOMN::MoveProfile::LINEAR,
+        .profile = DOMN::LinearProfile{ .speed = 0.9 } };
 
     {
         InSequence sequence;
@@ -69,8 +70,9 @@ TEST_F(TestController, LinearMoveSetsDriverVelocity)
 TEST_F(TestController, TriangularMoveSetsDriverAcceleration)
 {
     DOMN::Move triangularMove {
-        DOMN::MoveType::TRIANGULAR,
-        DOMN::TriangularMove{ .targetPosition = 0.1, .acceleration = 0.2 } };
+        .targetPosition = 0.1,
+        .type = DOMN::MoveProfile::TRIANGULAR,
+        .profile = DOMN::TriangularProfile{ .acceleration = 0.2 } };
 
     ON_CALL(*m_driverMock, position()).WillByDefault(ReturnRoundRobin(
         { .5, .4, .3, .2, .1 }

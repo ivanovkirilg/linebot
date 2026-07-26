@@ -16,7 +16,7 @@ public:
     bool valid() const;
 
     void tryReadMoveType();
-    void tryReadMoveProfile();
+    void tryReadMove();
 
     template <void (MoveInput::*method)()>
     void retry(int retries)
@@ -45,9 +45,6 @@ private:
     State m_state{};
     std::istream& m_inputStream;
     const char* m_profilePrompt = "";
-
-    template<class SpecificMove, double SpecificMove::*profileCharacteristic>
-    void tryParseMoveProfile(const std::string& line);
 };
 
 #endif // UI_INC_MOVE_INPUT

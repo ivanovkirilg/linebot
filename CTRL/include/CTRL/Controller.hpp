@@ -25,8 +25,8 @@ public:
     void executeMove(const DOMN::Move& move);
 
 private:
-    void executeMove(const DOMN::LinearMove& move);
-    void executeMove(const DOMN::TriangularMove& move);
+    void executeMove(double targetPosition, const DOMN::LinearProfile& profile);
+    void executeMove(double targetPosition, const DOMN::TriangularProfile& profile);
 
     double getDirection(double targetPosition) const;
 
