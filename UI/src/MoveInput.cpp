@@ -1,5 +1,6 @@
 #include "MoveInput.hpp"
 
+#include "DOMN/Move.hpp"
 #include "LOGR/Trace.hpp"
 #include "LOGR/Warning.hpp"
 
@@ -42,13 +43,13 @@ void MoveInput::tryReadMoveType()
     if (line == "l" or line == "linear")
     {
         m_state = State::VALID_INPUT;
-        move.type = DOMN::MoveType::LINEAR;
+        move.type = DOMN::MoveProfile::LINEAR;
         m_profilePrompt = LINEAR_MOVE_PROMPT;
     }
     else if (line == "t" or line == "triangular")
     {
         m_state = State::VALID_INPUT;
-        move.type = DOMN::MoveType::TRIANGULAR;
+        move.type = DOMN::MoveProfile::TRIANGULAR;
         m_profilePrompt = TRIANGULAR_MOVE_PROMPT;
     }
     else
@@ -58,7 +59,7 @@ void MoveInput::tryReadMoveType()
     }
 }
 
-void MoveInput::tryReadMoveProfile()
+void MoveInput::tryReadMove()
 {
     LOGR::Trace trace;
 
@@ -69,39 +70,34 @@ void MoveInput::tryReadMoveProfile()
         return;
     }
 
-    switch (move.type)
+    std::istringstream lineStream{line};
+
+    DOMN::Move parsed;
+    parsed.type = move.type;
+
+    lineStream >> parsed.targetPosition;
+
+    if (parsed.type == DOMN::MoveProfile::LINEAR)
     {
-        case DOMN::MoveType::LINEAR:
-            tryParseMoveProfile<DOMN::LinearMove, &DOMN::LinearMove::speed>(line);
-            break;
-
-        case DOMN::MoveType::TRIANGULAR:
-            tryParseMoveProfile<DOMN::TriangularMove, &DOMN::TriangularMove::acceleration>(line);
-            break;
-
-        default:
-            // TODO
-            break;
+        double speed{};
+        lineStream >> speed;
+        parsed.profile = DOMN::LinearProfile{speed};
     }
-}
-
-template<class SpecificMove, double SpecificMove::*profileCharacteristic>
-void MoveInput::tryParseMoveProfile(const std::string& line)
-{
-    SpecificMove parsed;
-    std::istringstream lineStream(line);
-    lineStream >> parsed.targetPosition >> parsed.*profileCharacteristic;
+    else if (parsed.type == DOMN::MoveProfile::TRIANGULAR)
+    {
+        double acceleration{};
+        lineStream >> acceleration;
+        parsed.profile = DOMN::TriangularProfile{acceleration};
+    }
 
     if (DOMN::isValid(parsed))
     {
         m_state = State::VALID_INPUT;
-        move.profile = parsed;
+        move = parsed;
     }
     else
     {
         m_state = State::INVALID_INPUT;
-        LOGR::Warning("Received invalid move profile ",
-                      parsed.targetPosition,
-                      parsed.*profileCharacteristic);
+        LOGR::Warning("Received invalid move:", parsed);
     }
 }

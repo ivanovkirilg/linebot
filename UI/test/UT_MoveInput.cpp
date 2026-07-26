@@ -25,33 +25,33 @@ protected:
         moveInput = std::make_unique<MoveInput>(input);
     }
 
-    void expect_linear_move()
+    void expect_linear_type()
     {
         EXPECT_TRUE(moveInput->valid());
-        EXPECT_EQ(moveInput->move.type, DOMN::MoveType::LINEAR);
+        EXPECT_EQ(moveInput->move.type, DOMN::MoveProfile::LINEAR);
         EXPECT_THAT(moveInput->profilePrompt(), HasSubstr("speed"));
     }
 
     void expect_linear_profile(double position, double speed)
     {
-        const auto& profile = std::get<DOMN::LinearMove>(moveInput->move.profile);
+        const auto& profile = std::get<DOMN::LinearProfile>(moveInput->move.profile);
 
-        EXPECT_EQ(profile.targetPosition, position);
+        EXPECT_EQ(moveInput->move.targetPosition, position);
         EXPECT_EQ(profile.speed, speed);
     }
 
-    void expect_triangular_move()
+    void expect_triangular_type()
     {
         EXPECT_TRUE(moveInput->valid());
-        EXPECT_EQ(moveInput->move.type, DOMN::MoveType::TRIANGULAR);
+        EXPECT_EQ(moveInput->move.type, DOMN::MoveProfile::TRIANGULAR);
         EXPECT_THAT(moveInput->profilePrompt(), HasSubstr("acceleration"));
     }
 
     void expect_triangular_profile(double position, double acceleration)
     {
-        const auto& profile = std::get<DOMN::TriangularMove>(moveInput->move.profile);
+        const auto& profile = std::get<DOMN::TriangularProfile>(moveInput->move.profile);
 
-        EXPECT_EQ(profile.targetPosition, position);
+        EXPECT_EQ(moveInput->move.targetPosition, position);
         EXPECT_EQ(profile.acceleration, acceleration);
     }
 };
@@ -63,7 +63,7 @@ TEST_F(TestMoveInput, ReadsAbbreviatedLinearMoveType)
 
     moveInput->tryReadMoveType();
 
-    expect_linear_move();
+    expect_linear_type();
 }
 
 TEST_F(TestMoveInput, ReadsFullLinearMoveType)
@@ -72,7 +72,7 @@ TEST_F(TestMoveInput, ReadsFullLinearMoveType)
 
     moveInput->tryReadMoveType();
 
-    expect_linear_move();
+    expect_linear_type();
 }
 
 TEST_F(TestMoveInput, ReadsAbbreviatedTriangularMoveType)
@@ -81,7 +81,7 @@ TEST_F(TestMoveInput, ReadsAbbreviatedTriangularMoveType)
 
     moveInput->tryReadMoveType();
 
-    expect_triangular_move();
+    expect_triangular_type();
 }
 
 TEST_F(TestMoveInput, ReadsFullTriangularMoveType)
@@ -90,7 +90,7 @@ TEST_F(TestMoveInput, ReadsFullTriangularMoveType)
 
     moveInput->tryReadMoveType();
 
-    expect_triangular_move();
+    expect_triangular_type();
 }
 
 TEST_F(TestMoveInput, RejectsInvalidMoveType)
@@ -106,8 +106,8 @@ TEST_F(TestMoveInput, ReadsLinearMoveProfile)
 {
     input.str("0.5 0.1\n");
 
-    moveInput->move.type = DOMN::MoveType::LINEAR;
-    moveInput->tryReadMoveProfile();
+    moveInput->move.type = DOMN::MoveProfile::LINEAR;
+    moveInput->tryReadMove();
 
     expect_linear_profile(0.5, 0.1);
 }
@@ -115,9 +115,9 @@ TEST_F(TestMoveInput, ReadsLinearMoveProfile)
 TEST_F(TestMoveInput, ReadsTriangularMoveProfile)
 {
     input.str("0.5 0.1\n");
-    moveInput->move.type = DOMN::MoveType::TRIANGULAR;
+    moveInput->move.type = DOMN::MoveProfile::TRIANGULAR;
 
-    moveInput->tryReadMoveProfile();
+    moveInput->tryReadMove();
 
     expect_triangular_profile(0.5, 0.1);
 }
@@ -128,7 +128,7 @@ TEST_F(TestMoveInput, RetriesOnInvalidInput)
 
     EXPECT_NO_THROW(moveInput->retry<&MoveInput::tryReadMoveType>(2));
 
-    expect_linear_move();
+    expect_linear_type();
 }
 
 TEST_F(TestMoveInput, ThrowsOnTooManyInvalidInputs)
@@ -152,12 +152,12 @@ TEST_F(TestMoveInput, RejectsEmptyInput)
 TEST_F(TestMoveInput, RejectsWholeInvalidLines)
 {
     input.str("a 0.8 0.9\n0.5 0.1\n");
-    moveInput->move.type = DOMN::MoveType::LINEAR;
+    moveInput->move.type = DOMN::MoveProfile::LINEAR;
 
-    moveInput->tryReadMoveProfile();
+    moveInput->tryReadMove();
     ASSERT_FALSE(moveInput->valid());
 
-    moveInput->tryReadMoveProfile();
+    moveInput->tryReadMove();
     ASSERT_TRUE(moveInput->valid());
 
     expect_linear_profile(0.5, 0.1);

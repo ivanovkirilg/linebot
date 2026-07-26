@@ -48,11 +48,11 @@ void Controller::executeMove(const Move& move)
 
     switch (move.type)
     {
-        case MoveType::LINEAR:
-            executeMove(std::get<LinearMove>(move.profile));
+        case MoveProfile::LINEAR:
+            executeMove(move.targetPosition, std::get<LinearProfile>(move.profile));
             break;
-        case MoveType::TRIANGULAR:
-            executeMove(std::get<TriangularMove>(move.profile));
+        case MoveProfile::TRIANGULAR:
+            executeMove(move.targetPosition, std::get<TriangularProfile>(move.profile));
             break;
 
         default:
@@ -61,13 +61,13 @@ void Controller::executeMove(const Move& move)
     };
 }
 
-void Controller::executeMove(const TriangularMove& move)
+void Controller::executeMove(double targetPosition, const DOMN::TriangularProfile& profile)
 {
-    LOGR::Trace trace(move.targetPosition, move.acceleration);
+    LOGR::Trace trace(targetPosition, profile.acceleration);
 
-    const double forwards = getDirection(move.targetPosition);
+    const double forwards = getDirection(targetPosition);
     const double backwards = -forwards;
-    const double distance = getDistance(move.targetPosition);
+    const double distance = getDistance(targetPosition);
     const double maxVelocityPoint = m_driver->position() + (distance / 2) * forwards;
 
     using compare = std::function<bool (double)>;
@@ -75,16 +75,16 @@ void Controller::executeMove(const TriangularMove& move)
         ? (compare) [this](double target) { return m_driver->position() < target; }
         : (compare) [this](double target) { return m_driver->position() > target; };
 
-    m_driver->setAcceleration(move.acceleration * forwards);
+    m_driver->setAcceleration(profile.acceleration * forwards);
 
     while (notReached(maxVelocityPoint))
     {
         // Wait
     }
 
-    m_driver->setAcceleration(move.acceleration * backwards);
+    m_driver->setAcceleration(profile.acceleration * backwards);
 
-    while (notReached(move.targetPosition))
+    while (notReached(targetPosition))
     {
         const double minimumSpeed = 0.01; // Arbitrary
 
@@ -97,18 +97,18 @@ void Controller::executeMove(const TriangularMove& move)
     m_driver->setVelocity(0.0);
 }
 
-void Controller::executeMove(const LinearMove& move)
+void Controller::executeMove(double targetPosition, const DOMN::LinearProfile& profile)
 {
-    LOGR::Trace trace(move.targetPosition, move.speed);
+    LOGR::Trace trace(targetPosition, profile.speed);
 
     m_driver->setVelocity(0.0);
 
-    const double distance = getDistance(move.targetPosition);
-    const double moveTime = distance / move.speed;
-    const double direction = getDirection(move.targetPosition);
+    const double distance = getDistance(targetPosition);
+    const double moveTime = distance / profile.speed;
+    const double direction = getDirection(targetPosition);
 
     trace.log("Start");
-    m_driver->setVelocity(move.speed * direction);
+    m_driver->setVelocity(profile.speed * direction);
 
     const long moveTimeMs = moveTime * 1000;
     std::this_thread::sleep_for(std::chrono::milliseconds(moveTimeMs));
